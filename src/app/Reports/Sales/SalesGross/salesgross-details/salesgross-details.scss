@@ -1,0 +1,94 @@
+
+.popuppointer{
+  cursor: pointer;
+  color: #026df3;
+  text-decoration: underline;
+
+//  pointer-events: none;
+//   color: #000;
+}
+.popupdisable{
+  pointer-events: none;
+  color: #000;
+  // text-decoration: underline;
+}
+.unclickable {
+  filter: grayscale(50%);
+  cursor: not-allowed;
+  opacity: 0.5; /* Adjust the opacity as needed */
+}
+
+// ::ng-deep .modal-dialog {
+//   max-width: 95%; /* adjust width */
+//   left: 20px;
+//   z-index: 9999;
+// }
+
+::ng-deep .modal-content {
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  // top: 50px
+}
+
+.hover {
+  background-color: #d3ecff !important;
+  color: #000 !important;
+}
+
+
+.negative {
+  color: #D6003D;
+}
+
+
+.ScrollOff::-webkit-scrollbar {
+  width: 0px !important;
+  height: 10px;
+  background-color: #aaa;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 1800px) {
+
+}
+
+.loading {
+  width: 400px;
+  min-height: 150px;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.form-control {
+    // padding: 0.375rem 0.75rem 0.225rem 0.75rem !important;
+    font-family: 'FaktPro-Normal';
+    font-size: 0.9rem;
+    border: 1px solid #e0e1e2 !important;
+    background: #f1f1f1;
+    border-radius: 6px;
+  }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

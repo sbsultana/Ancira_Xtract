@@ -1,0 +1,182 @@
+<ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="white" type="ball-clip-rotate">
+    <p style="font-size: 20px; color: white">Loading..</p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="totals-block mb-2 col-12">
+                <div class="row">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span>
+                            <span class="divNormal">
+                                Count:
+                            </span>
+                            <span class="divBold">
+                                {{Partsdetailsdata.length}}
+                            </span>
+                        </span>
+                        <div class="search ms-auto">
+
+                            <input type="text" class="form-control Search" placeholder="Search" #myInput
+                                [(ngModel)]="searchText" (keypress)="onKeypressEvent($event)">
+
+                            <img src="images/Magnifer.svg" alt="">
+                            <!-- <button class="btn btn-outline-primary me-2 searchbtn">
+                                Search
+                            </button> -->
+                        </div>
+                        <button class="btn btn-outline-primary mx-2 searchbtn" (click)="searchFilter()">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="PartsDetails">
+                <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 mt-2">
+                    <!-- (scroll)="updateVerticalScroll($event)" -->
+                    <div class="scorecard-single-header searchparts-tbl" id="scrollcent" #scrollcent>
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+
+                                    <th>Dealer Name </th>
+                                    <th>Part Number</th>
+                                    <th>Description</th>
+                                    <th>Manufacturer</th>
+                                    <th>On Hand</th>
+                                    <th>On Order </th>
+                                    <th>Source</th>
+                                    <th>List</th>
+                                    <th>Cost</th>
+                                    <th>Last Sale Date </th>
+                                    <th>Last Trans Date</th>
+                                    <th>Date Added </th>
+                                    <th>Special Status</th>
+
+
+                                    <th>Class </th>
+                                    <th>Comment</th>
+                                    <th>Comp</th>
+                                    <th>Exchange</th>
+                                    <th>Last Count Date</th>
+                                    <th>Memo Part Flag</th>
+                                    <th>MFG controlled</th>
+                                    <th>Misc</th>
+                                    <th>Multiple</th>
+                                    <th>New Order Quantity</th>
+                                    <th>Pack</th>
+                                    <th>Pack Multiple Flag</th>
+                                    <th>Price Unit</th>
+                                    <th>Sortkey1</th>
+                                    <th>Trade</th>
+                                    <th>Unit Weight</th>
+                                    <th>Update Code</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let am of Partsdetailsdata;let i=index  "
+                                    [ngClass]="{'Selectedrow': i.toString() == index  }">
+
+
+                                    <td>
+                                        {{ am.dealername == null || am.dealername ==
+                                        undefined || am.dealername == "" ? '-' :am.dealername}}
+                                    </td>
+                                    <td class="text-start">{{am.partnumber == null || am.partnumber == undefined || am.partnumber
+                                        == "" ? '-' : am.partnumber}} </td>
+                                    <td class="text-start">{{am.description == null || am.description == undefined ||
+                                        am.description == "" ? '-' : am.description}}</td>
+                                    <td class="text-center">{{am.manufacturer == null || am.manufacturer == undefined ||
+                                        am.manufacturer
+                                        == "" ? '-' : am.manufacturer}} </td>
+                                    <td>{{am.onhand == null || am.onhand == undefined || am.onhand
+                                        == "" ? '-' : am.onhand}} </td>
+                                    <td>{{am.onorderqty == null || am.onorderqty == undefined || am.onorderqty
+                                        == "" ? '-' : am.onorderqty}} </td>
+                                    <td>{{am.source == null || am.source == undefined || am.source
+                                        == "" ? '-' : am.source}} </td>
+
+                                    <td>{{am.list == null || am.list == undefined || am.list
+                                        == "" ? '-' : am.list}} </td>
+
+                                    <td>{{am.cost == null || am.cost ==
+                                        undefined || am.cost == "" ?
+                                        '-' : am.cost}}</td>
+                                    <td class="text-center">{{am.lastsaledate == null || am.lastsaledate == undefined || am.lastsaledate
+                                        == "" ? '-' : am.lastsaledate | date: 'MM.dd.yyyy'}} </td>
+                                    <td class="text-center">{{am.lasttransdate == null || am.lasttransdate == undefined || am.lasttransdate
+                                        == "" ? '-' : am.lasttransdate | date: 'MM.dd.yyyy'}} </td>
+                                    <td class="text-center">{{ am.dateadded == null ? '-' : am.dateadded | date: 'MM.dd.yyyy'}}</td>
+                                    <td class="text-center">{{am.specialstatus == null || am.specialstatus == undefined || am.specialstatus
+                                        == "" ? '-' : am.specialstatus}} </td>
+
+
+
+
+                                    <td>{{ am.class == null || am.class ==
+                                        undefined || am.class == "" ? '-' : am.class}}</td>
+
+                                    <td>{{ am.comment == null || am.comment ==
+                                        undefined || am.comment == "" ? '-' : am.comment}}</td>
+                                    <td>
+                                        {{ am.comp == null|| am.comp == 0 ? '-' : am.comp}}
+                                    </td>
+                                    <td>{{am.exchange == null || am.exchange == undefined ||
+                                        am.exchange == "" ? '-' : am.exchange}}
+                                    </td>
+
+                                    <td class="text-center">{{am.lastcountdate == null || am.lastcountdate == undefined || am.lastcountdate
+                                        == "" ? '-' : am.lastcountdate | date: 'MM.dd.yyyy'}} </td>
+
+                                    <td>{{am.memopartflag == null || am.memopartflag == undefined || am.memopartflag
+                                        == "" ? '-' : am.memopartflag}} </td>
+                                    <td>{{am.mfgcontrolled == null || am.mfgcontrolled == undefined || am.mfgcontrolled
+                                        == "" ? '-' : am.mfgcontrolled}} </td>
+                                    <td>{{am.misc == null || am.misc == undefined || am.misc
+                                        == "" ? '-' : am.misc}} </td>
+                                    <td>{{am.multiple == null || am.multiple == undefined || am.multiple
+                                        == "" ? '-' : am.multiple}} </td>
+                                    <td>{{am.neworderqty == null || am.neworderqty == undefined || am.neworderqty
+                                        == "" ? '-' : am.neworderqty}} </td>
+
+                                    <td>{{am.pack == null || am.pack == undefined || am.pack
+                                        == "" ? '-' : am.pack}} </td>
+                                    <td class="text-center">{{am.packmultipleflag == null || am.packmultipleflag == undefined ||
+                                        am.packmultipleflag
+                                        == "" ? '-' : am.packmultipleflag}} </td>
+                                    <td>{{am.priceunit == null || am.priceunit == undefined || am.priceunit
+                                        == "" ? '-' : am.priceunit}} </td>
+
+
+                                    <td class="text-start">{{am.sortkey1 == null || am.sortkey1 == undefined || am.sortkey1
+                                        == "" ? '-' : am.sortkey1}} </td>
+
+
+                                    <td>{{am.trade == null || am.trade == undefined || am.trade
+                                        == "" ? '-' : am.trade}} </td>
+                                    <td>{{am.unitweight == null || am.unitweight == undefined || am.unitweight == 0 ||
+                                        am.unitweight
+                                        == "" ? '-' : am.unitweight}} </td>
+                                    <td class="text-center">{{am.updatecode == null || am.updatecode == undefined || am.updatecode
+                                        == "" ? '-' : am.updatecode}} </td>
+
+                                </tr>
+                            </tbody>
+                            <tbody *ngIf="NoData">
+                                <tr>
+                                    <td colspan="14" style="text-align:center">No Records Found</td>
+                                    <td colspan="16" style="text-align:center"></td>
+                                </tr>
+                            </tbody>
+                            <tbody *ngIf="NoDatainitail">
+                                <tr>
+                                    <td colspan="30" class="text-start">Please enter Keyword to Search</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,394 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+  <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+  <div>
+    <div class="container-fluid">
+      <div class="reports-bar">
+        <div class="filter-dropdowns" *ngIf="partsDetails== 'Y'">
+          <div class="dropdown">
+            <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                {{storecount}}
+                {{storedisplayname}} )</span>
+              <span class="arrow"></span></button>
+            <app-stores
+              [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+              [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+          </div>
+          <div class="dropdown">
+            <button class="dropdown-toggle" (click)="togglePopover(6)">
+              Report Totals <span class="light-font">( {{ TotalReport == 'T' ? 'Top' :'Bottom' }}
+                )</span>
+              <span class="arrow"></span>
+            </button>
+
+            <div class="timeframe" *ngIf="activePopover === 6">
+              <div class="date-filter-card mt-2">
+                <button class="outline-button" (click)="multipleorsingle('TB','T')" [class.active]="TotalReport=='T'">
+                  Top
+                </button>
+                <button class="outline-button" (click)="multipleorsingle('TB','B')" [class.active]="TotalReport=='B'">
+                  Bottom
+                </button>
+
+              </div>
+            </div>
+          </div>
+
+
+          <div class="dropdown">
+            <button class="dropdown-toggle" (click)="togglePopover(5)">
+
+              Source <span class="light-font">( {{
+                selectedpartssource.length == 0 ||selectedpartssource=='' || selectedpartssource== undefined ? 'Select
+                Source' :
+                (selectedpartssource.length ==
+                1 ? selectedpartssource : 'Selected') }}
+                {{selectedpartssource.length > 1 ? selectedpartssource.length: ''
+                }}
+                )</span>
+              <span class="arrow"></span>
+            </button>
+            <div class="timeframe my-2" *ngIf="activePopover === 5" style="max-height: 80vh;overflow-y: auto;">
+
+              <div>
+                <div class="date-filter-card btn-subtype">
+                  <button type="button" class="outline-button" *ngIf="PartsSource.length>1" (click)="allsource()"
+                    [ngClass]="{'active':selectedpartssource.length == PartsSource.length,'inactive':selectedpartssource.length != PartsSource.length}">All
+                    Source</button>
+                  <button type="button" class="btn report-btn inactive" *ngIf="PartsSource.length == 0">
+                    No Parts Source
+                  </button>
+
+                  <button type="button" class="outline-button" *ngFor="let pts of PartsSource;let i=index"
+                    (click)='Selectedpartssource(pts)'
+                    [ngClass]="{'active':selectedpartssource.indexOf(pts.AP_Source)>=0,'inactive':selectedpartssource.indexOf(pts.AP_Source)<0 }">{{pts.AP_Source}}
+                    <span *ngIf="selectedpartssource.indexOf(pts)>=0" style="float:right">
+                      {{selectedpartssource.indexOf(pts)+1}}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <div class="dropdown">
+            <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="scorecard-multi-header partsaging-tbl" *ngIf="partsDetails=='Y'">
+        <table class="table mb-0 w-100">
+
+          <thead>
+            <tr>
+              <th rowspan="2">AS OF</th>
+              <th colspan="4">STOCK</th>
+              <th colspan="4">NON-STOCK</th>
+              <th colspan="4" class="boxshadow-none">TOTAL</th>
+            </tr>
+
+            <tr>
+              <!-- <th colspan="1"></th> -->
+              <!-- STOCK -->
+              <th>QTY</th>
+              <th>QTY %</th>
+              <th>COST</th>
+              <th>IDLE</th>
+
+              <!-- NON-STOCK -->
+              <th>QTY</th>
+              <th>QTY %</th>
+              <th>COST</th>
+              <th>IDLE</th>
+
+              <!-- TOTAL -->
+              <th>QTY</th>
+              <th>QTY %</th>
+              <th>COST</th>
+              <th>IDLE</th>
+            </tr>
+          </thead>
+
+          <tbody [ngClass]="{'hidden': NoData == true ,}">
+
+
+            <ng-container *ngFor="let SalesInfo of IndividualPartsGross; let i=index">
+              <tr class="main-title" [ngClass]="{'title' : i % 2 == 0 , 'titleOdd' : i % 2 != 0 , 
+                'lightblue-bg': SalesInfo.Dealer === '-', 
+                'text-bold': SalesInfo.StoreName === 'REPORT TOTAL'}" [id]="'DV_'+i">
+
+                <td id="DataBody1" colspan="1" class="text-start">
+                  <span style="float: left; margin-right: .5rem;"
+                    (click)="expandorcollapse(i,$event,SalesInfo.Dealer,SalesInfo,'')" [id]="'D_'+i">&nbsp;</span>
+                  <span [id]="'D_'+i" title="{{SalesInfo.StoreName}}"
+                    (click)="expandorcollapse(i,$event,SalesInfo.Dealer,SalesInfo,'')">
+                    {{(SalesInfo.StoreName == undefined ? '--' :
+                    ( (SalesInfo.StoreName.toString() | slice:0:30) +
+                    (SalesInfo.StoreName.toString().length > 27 ? '...' : '') ))}}
+                  </span>
+                </td>
+
+
+
+                <!-- Stock -->
+                <td style="text-align: right;">{{ SalesInfo.Stock_Qty == 0 || SalesInfo.Stock_Qty ==
+                  null ? '-' : SalesInfo.Stock_Qty | number}}</td>
+                <!-- {{ SalesInfo.Stock_Qty == 0 || SalesInfo.Stock_Qty == null ? '-' : (calculateQtyPer(SalesInfo.Stock_Qty, SalesInfo.Total_Qty) | number:'1.2-2') + '%' }} -->
+                <td style="text-align: right;"></td>
+                <td style="text-align: right;">{{ SalesInfo.Stock_Cost == 0 || SalesInfo.Stock_Cost ==
+                  null ? '-' : SalesInfo.Stock_Cost | currency:'USD':'symbol':'1.0-0'}}</td>
+                <td style="text-align: right;">{{ SalesInfo.Stock_Idle == 0 || SalesInfo.Stock_Idle ==
+                  null ? '-' : SalesInfo.Stock_Idle | currency:'USD':'symbol':'1.0-0'}}</td>
+
+
+
+                <!-- NonStock -->
+                <td style="text-align: right;">{{ SalesInfo.NonStock_Qty == 0 || SalesInfo.NonStock_Qty
+                  == null ? '-' : SalesInfo.NonStock_Qty | number}}</td>
+                <!-- {{ SalesInfo.NonStock_Qty == 0 || SalesInfo.NonStock_Qty == null ? '-' : (calculateQtyPer(SalesInfo.NonStock_Qty, SalesInfo.Total_Qty) | number:'1.2-2') + '%' }} -->
+                <td style="text-align: right;"></td>
+                <td style="text-align: right;">{{ SalesInfo.NonStock_Cost == 0 ||
+                  SalesInfo.NonStock_Cost == null ? '-' : SalesInfo.NonStock_Cost |
+                  currency:'USD':'symbol':'1.0-0'}}</td>
+                <td style="text-align: right;">{{ SalesInfo.NonStock_Idle == 0 ||
+                  SalesInfo.NonStock_Idle == null ? '-' : SalesInfo.NonStock_Idle |
+                  currency:'USD':'symbol':'1.0-0'}}</td>
+
+
+                <!-- Total -->
+                <td style="text-align: right;">{{ SalesInfo.Total_Qty == 0 || SalesInfo.Total_Qty ==
+                  null ? '-' : SalesInfo.Total_Qty | number}}</td>
+                <!-- {{ SalesInfo.Total_Qty == 0 || SalesInfo.Total_Qty == null ? '-' : (calculateQtyPer(SalesInfo.Total_Qty, SalesInfo.Total_Qty) | number:'1.2-2') + '%' }} -->
+                <td style="text-align: right;"></td>
+                <td style="text-align: right;">{{ SalesInfo.Total_Cost == 0 || SalesInfo.Total_Cost ==
+                  null ? '-' : SalesInfo.Total_Cost | currency:'USD':'symbol':'1.0-0'}}</td>
+                <td style="text-align: right;">{{ SalesInfo.Total_Idle == 0 || SalesInfo.Total_Idle ==
+                  null ? '-' : SalesInfo.Total_Idle | currency:'USD':'symbol':'1.0-0'}}</td>
+
+              </tr>
+
+
+              <ng-container>
+                <tr class="subtitle" *ngFor="let dt3 of SalesInfo.AgeGroupData; let k=index" [ngClass]="{'title-l3' : k % 2 == 0 , 'titleOdd-l3' : k % 2 != 0 ,
+                'hidden': SalesInfo.Dealer === '+',
+                'text-bold': SalesInfo.StoreName === 'REPORT TOTAL'}">
+
+                  <td colspan="1" class="text-start">
+                    <span style="margin-right: 3.4rem;"></span>
+                    <span (click)="openDetails(dt3,SalesInfo,'2')" title="{{dt3.Never_sold}}" style="cursor: pointer;">
+                      {{ (dt3.Never_sold == undefined ? '--' :
+                      ( (dt3.Never_sold.toString() | slice:0:15) +
+                      (dt3.Never_sold.toString().length > 27 ? '...' : '') )) }}
+                    </span>
+                  </td>
+
+
+
+                  <!-- Stock -->
+                  <td style="text-align: right;">{{ dt3.Stock_Qty == 0 || dt3.Stock_Qty == null ? '-'
+                    : dt3.Stock_Qty | number}}</td>
+                  <td style="text-align: right;">{{ dt3.Stock_Qty == 0 || dt3.Stock_Qty == null ? '-'
+                    : (calculateQtyPer(dt3.Stock_Qty, SalesInfo.Stock_Qty) | number:'1.2-2') + '%'
+                    }}</td>
+                  <td style="text-align: right;">{{ dt3.Stock_Cost == 0 || dt3.Stock_Cost == null ?
+                    '-' : dt3.Stock_Cost | currency:'USD':'symbol':'1.0-0'}}</td>
+                  <td *ngIf="dt3.Never_sold !=''" style="text-align: right;">{{ dt3.Stock_Idle == 0 ||
+                    dt3.Stock_Idle == null ? '-' : dt3.Stock_Idle | currency:'USD':'symbol':'1.0-0'
+                    }}</td>
+                  <td *ngIf="dt3.Never_sold ==''" style="text-align: right;">{{
+                    calculatestock(SalesInfo) | number:'1.2-2' }}%</td>
+
+
+
+                  <!-- NonStock -->
+                  <td style="text-align: right;">{{ dt3.NonStock_Qty == 0 || dt3.NonStock_Qty == null
+                    ? '-' : dt3.NonStock_Qty | number}}</td>
+                  <td style="text-align: right;">{{ dt3.NonStock_Qty == 0 || dt3.NonStock_Qty == null
+                    ? '-' : (calculateQtyPer(dt3.NonStock_Qty, SalesInfo.NonStock_Qty) |
+                    number:'1.2-2') + '%' }}</td>
+                  <td style="text-align: right;">{{ dt3.NonStock_Cost == 0 || dt3.NonStock_Cost ==
+                    null ? '-' : dt3.NonStock_Cost | currency:'USD':'symbol':'1.0-0'}}</td>
+                  <td *ngIf="dt3.Never_sold !=''" style="text-align: right;">{{ dt3.NonStock_Idle == 0
+                    || dt3.NonStock_Idle == null ? '-' : dt3.NonStock_Idle |
+                    currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td *ngIf="dt3.Never_sold ==''" style="text-align: right;">{{
+                    calculatenonstock(SalesInfo) | number:'1.2-2' }}%</td>
+
+
+
+                  <!-- Total -->
+                  <td style="text-align: right;">{{ dt3.Total_Qty == 0 || dt3.Total_Qty == null ? '-'
+                    : dt3.Total_Qty | number}}</td>
+                  <td style="text-align: right;">{{ dt3.Total_Qty == 0 || dt3.Total_Qty == null ? '-'
+                    : (calculateQtyPer(dt3.Total_Qty, SalesInfo.Total_Qty) | number:'1.2-2') + '%'
+                    }}</td>
+                  <td style="text-align: right;">{{ dt3.Total_Cost == 0 || dt3.Total_Cost == null ?
+                    '-' : dt3.Total_Cost | currency:'USD':'symbol':'1.0-0'}}</td>
+                  <td *ngIf="dt3.Never_sold !=''" style="text-align: right;">{{ dt3.Total_Idle == 0 ||
+                    dt3.Total_Idle == null ? '-' : dt3.Total_Idle | currency:'USD':'symbol':'1.0-0'
+                    }}</td>
+                  <td *ngIf="dt3.Never_sold ==''" style="text-align: right;">{{
+                    calculatetotal(SalesInfo) | number:'1.2-2' }}%</td>
+
+                </tr>
+
+              </ng-container>
+            </ng-container>
+          </tbody>
+          <tbody *ngIf="NoData" style="pointer-events:none">
+            <tr>
+
+              <td colspan="14" style="color: black;text-align: center;">No Records Found</td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+
+      <!-- <button class="btn btn-primary btn-sm mb-0" (click)="closeGroupDetails()" *ngIf="partsDetails">
+        <i class="bi bi-arrow-left"></i>
+      </button> -->
+      <div class="totals-block mb-2 col-12" *ngIf="partsDetails == 'N'">
+        <div class="row">
+          <div class="col-4 d-flex align-items-center justify-content-start">
+            <button class="back-button" (click)="backtoWR()"><span><i class="fa fa-long-arrow-left"
+                  aria-hidden="true"></i> Back</span></button>
+            <img src="" alt="">
+          </div>
+
+        </div>
+      </div>
+      <div class="scorecard-multi-header partsagingdetails-tbl" id="scrollcent" #scrollcent
+        *ngIf="partsDetails =='N'">
+        <table class="table mb-0 w-100">
+          <thead>
+            <tr>
+              <th class="box-shadow">Manufacturer</th>
+              <th class="box-shadow">Part #</th>
+              <th colspan="1" >Description</th>
+              <th colspan="3" >Stock</th>
+              <th colspan="3" >Non Stock</th>
+              <th colspan="3" >Total</th>
+              <th colspan="7"></th>
+            </tr>
+            <tr>
+              <th></th>
+              <th></th>
+              <th ></th>
+              <th>Qty</th>
+              <th>Cost</th>
+              <th >Idle</th>
+              <th>Qty</th>
+              <th>Cost</th>
+              <th >Idle</th>
+              <th>Qty</th>
+              <th>Cost</th>
+              <th >Idle</th>
+              <th style="white-space: nowrap;">Last Receipt Date</th>
+              <th style="white-space: nowrap;">Last Sale Date</th>
+              <th style="white-space: nowrap;">Return Date</th>
+              <!-- <th>Mfr</th> -->
+              <th>Stock Group</th>
+              <th>Bin</th>
+              <th>Part Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let partsjson of PartsPersonDetails">
+              <td colspan="19" class="lightblue-bg text-start" >
+                {{ (daterange== 0 || daterange == null || daterange ==
+                undefined ? '-' :
+                daterange+' Months' ) }}
+              </td>
+              <tr *ngFor="let det of partsjson.PartsJsonDetails">
+                <td style="text-align: center;"> {{ (partsjson['Mfr']== 0 || partsjson['Mfr'] == null ||
+                  partsjson['Mfr'] ==
+                  undefined ? '-' :
+                  partsjson['Mfr'] ) }}</td>
+                <td class="text-start">
+                  {{ (det['Part#']== 0 || det['Part#'] == null || det['Part#'] ==
+                  undefined ? '-' :
+                  det['Part#'] ) }}
+                </td>
+                <td title="{{det.Description}}"
+                  style="cursor: default;text-align: left;white-space: nowrap;">
+                  {{(det.Description == undefined ||
+                  det.Description == null || det.Description == '' ? '--' : (
+                  (det.Description.toString() | slice:0:50) +
+                  (det.Description.toString().length > 50 ? '...' : '') ))}}</td>
+
+                <td> {{ (det.Stock_Qty == 0 || det.Stock_Qty == null || det.Stock_Qty == undefined
+                  ? '-' :
+                  det.Stock_Qty |number )}}</td>
+                <td> {{ (det.Stock_Cost == 0 || det.Stock_Cost == null || det.Stock_Cost
+                  == undefined
+                  ?'-' :
+                  det.Stock_Cost | currency:'USD':'symbol':'1.0-0' )}}</td>
+                <td > {{ (det.Stock_Idle == 0 || det.Stock_Idle
+                  == null || det.Stock_Idle == undefined ? '-'
+                  :
+                  det.Stock_Idle | currency:'USD':'symbol':'1.0-0' )}}</td>
+
+                <td> {{ (det.NonStock_Qty == 0 || det.NonStock_Qty == null || det.NonStock_Qty ==
+                  undefined
+                  ? '-' :
+                  det.NonStock_Qty |number )}}</td>
+                <td> {{ (det.NonStock_Cost == 0 || det.NonStock_Cost == null || det.NonStock_Cost ==
+                  undefined ? '-':
+                  det.NonStock_Cost | currency:'USD':'symbol':'1.0-0' )}}</td>
+
+                <td > {{ (det.NonStock_Idle == 0 ||
+                  det.NonStock_Idle == null || det.NonStock_Idle == undefined ?
+                  '-' :
+                  det.NonStock_Idle | currency:'USD':'symbol':'1.0-0')}}</td>
+                <td> {{ (det.Total_Qty == 0 || det.Total_Qty == null || det.Total_Qty ==
+                  undefined ?'-' :
+                  det.Total_Qty |number)}}</td>
+                <td> {{ (det.Total_Cost == 0 || det.Total_Cost == null || det.Total_Cost == undefined ?
+                  '-' :
+                  det.Total_Cost | currency:'USD':'symbol':'1.0-0' )}}</td>
+                <td > {{ (det.Total_Idle_Cost == 0 ||
+                  det.Total_Idle_Cost == null || det.Total_Idle_Cost == undefined ?
+                  '-' :
+                  det.Total_Idle_Cost |currency:'USD':'symbol':'1.0-0')}}</td>
+                <td style="white-space: nowrap;"> {{ (det.LastReceiptDate == 0 || det.LastReceiptDate ==
+                  null || det.LastReceiptDate ==
+                  undefined ? '-':
+                  det.LastReceiptDate | date:'MM.dd.yyyy' )}}</td>
+
+                <td style="white-space: nowrap;"> {{ (det.LastSaleDate == 0 || det.LastSaleDate == null
+                  || det.LastSaleDate ==
+                  undefined ? '-'
+                  :
+                  det.LastSaleDate | date:'MM.dd.yyyy' )}}</td>
+                <td style="white-space: nowrap;"> {{ (det.ReturnDate == 0 || det.ReturnDate == null ||
+                  det.ReturnDate ==
+                  undefined ?'-' :
+                  det.ReturnDate | date:'MM.dd.yyyy')}}</td>
+                <!-- <td> {{ (det.Mfr == 0 || det.Mfr == null || det.Mfr ==
+    undefined ? '-' :
+    det.Mfr  )}}</td> -->
+                <td> {{ (det.StockGroup == 0 || det.StockGroup == null || det.StockGroup ==
+                  undefined ? '-'
+                  :
+                  det.StockGroup )}}</td>
+                <td style="white-space: nowrap;"> {{ (det.Bin == 0 || det.Bin == null ||
+                  det.Bin ==
+                  undefined ? '-':
+                  det.Bin )}}</td>
+
+                <td> {{ (det.PartStatus == 0 || det.PartStatus == null || det.PartStatus ==
+                  undefined ? '-'
+                  :
+                  det.PartStatus )}}</td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>

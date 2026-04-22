@@ -1,0 +1,383 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div>
+        <div class="container-fluid">
+            <div class="reports-bar">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                                {{storecount}}
+                                {{storedisplayname}} )</span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(1)">
+                            Time Frame<span class="light-font"> {{ displaytime }}</span>
+                            <span class="arrow"></span></button>
+                        <div class="timeframe" *ngIf="activePopover === 1">
+                            <app-date-range-picker [Dates]="Dates"
+                                (updatedDates)="updatedDates($event)"></app-date-range-picker>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+                    </div>
+
+                </div>
+            </div>
+            <div class="scorecard-multi-header lendersummary-tbl">
+                <table class="table mb-0 w-100">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;"><span>{{DupFromDate |date:'MMMM'}} <span
+                                        *ngIf="(DupFromDate | date: 'MMMM') != (DupToDate | date: 'MMMM')">-
+                                        {{DupToDate
+                                        |date:'MMMM'}} </span> </span></th>
+                            <th colspan="5"></th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <span>{{DupFromDate | date:'MM.dd.yyyy'}} <span
+                                        *ngIf="(DupFromDate | date: 'yyyy') != (DupToDate | date: 'yyyy')">{{DupFromDate
+                                        | date:'MM.dd.yyyy'}}</span>
+                                    - {{DupToDate | date:'MM.dd.yyyy'}}<span
+                                        *ngIf="(DupFromDate | date: 'yyyy') != (DupToDate | date: 'yyyy')">{{DupToDate
+                                        |date:'MM.dd.yyyy'}}</span></span>
+                            </th>
+                            <th style="cursor: pointer;" class="bdr-rt" (click)="sort('DealCount')">Deal Count </th>
+                            <th style="cursor: pointer;" class="bdr-rt" (click)="sort('ContractValue')"> Contract
+                                Value
+                            </th>
+                            <th style="cursor: pointer;" class="bdr-rt" (click)="sort('ProfitonFinancing')"> Profit
+                                on Financing
+                            </th>
+                            <th style="cursor: pointer;" class="bdr-rt" (click)="sort('FrontGross')">
+                                Front Gross </th>
+                            <th style="cursor: pointer;" class="bdr-rt" (click)="sort('BackGross')">Back Gross
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody [ngClass]="{'hidden': NoData == true }">
+                        <ng-container *ngFor="let SalesInfo of LendersData; let i=index">
+                            <tr
+                                [ngClass]="{  'divBold': SalesInfo.Location == 'REPORT TOTAL' , 'lightblue-bg': SalesInfo.Location != 'REPORT TOTAL'}">
+                                <td style="pointer-events: none;">
+                                    <span [id]="'D_'+i" title="{{SalesInfo.Location}}">
+                                        {{(SalesInfo.Location == undefined ? '--' : ( (SalesInfo.Location.toString()
+                                        |
+                                        slice:0:22) +
+                                        (SalesInfo.Location.toString().length > 22 ? '...' : '') ))}} </span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(SalesInfo.DealCount)}">
+                                    <span class="d-flex justify-content-between px-4">
+                                        {{
+                                        (SalesInfo.DealCount == 0 || SalesInfo.DealCount == null ? '' :
+                                        '&nbsp;') }}
+                                        <span>
+                                            {{
+                                            (SalesInfo.DealCount == 0 || SalesInfo.DealCount == null ? '-' :
+                                            SalesInfo.DealCount |number:'1.0-0') }}</span></span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(SalesInfo.ContractValue)}"><span
+                                        class="d-flex justify-content-between">
+                                        {{
+                                        (SalesInfo.ContractValue == 0 || SalesInfo.ContractValue == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SalesInfo.ContractValue == 0 || SalesInfo.ContractValue == null ? '-' :
+                                            SalesInfo.ContractValue |number:'1.0-0') }}</span></span></td>
+                                <td [ngClass]="{ negative: !inTheGreen(SalesInfo.ProfitonFinancing)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{(SalesInfo.ProfitonFinancing == 0 || SalesInfo.ProfitonFinancing == null ?
+                                        '' : '$' )}}
+                                        <span>
+                                            {{(SalesInfo.ProfitonFinancing == 0 ||
+                                            SalesInfo.ProfitonFinancing == null ? '-' :SalesInfo.ProfitonFinancing |
+                                            number:'1.0-0' )}}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(SalesInfo.FrontGross)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{(SalesInfo.FrontGross == 0 || SalesInfo.FrontGross == null
+                                        ? '' :'$' )}}
+                                        <span> {{(SalesInfo.FrontGross == 0 ||
+                                            SalesInfo.FrontGross == null ? '' : SalesInfo.FrontGross |number
+                                            :'1.0-0' )}}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(SalesInfo.BackGross)}"><span
+                                        class="d-flex justify-content-between">
+                                        {{
+                                        (SalesInfo.BackGross == 0 || SalesInfo.BackGross == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SalesInfo.BackGross == 0 || SalesInfo.BackGross == null ? '-' :
+                                            SalesInfo.BackGross |number:'1.0-0') }}</span></span>
+                                </td>
+                            </tr>
+                            <!-- [ngClass]="{'hidden': SalesInfo.Dealer === '+'  }" -->
+                            <ng-container *ngFor="let data2 of SalesInfo.Data;let j=index">
+                                <tr class="sub-title" [id]="'DVN_'+i">
+                                    <td style="pointer-events: none;">
+                                        <span [id]="'DN_'+i" class="ps-1"
+                                            [ngClass]="{'disable': SalesInfo.Location === 'REPORT TOTAL' }">&nbsp;</span>
+                                        <span [id]="'DN_'+i" (click)="openDetails(data2,SalesInfo,'2')">
+                                            {{data2.SaleType
+                                            ==
+                                            undefined ? '-' : data2.SaleType}} </span>
+                                    </td>
+                                    <td colspan="5"></td>
+                                </tr>
+                                <tr class="sub-subtitle" *ngFor="let dt3 of data2.subData; let k=index"
+                                    [ngClass]="{'title-l3' : k % 2 == 0 , 'titleOdd-l3' : k % 2 != 0 ,'hidden': SalesInfo.Dealer === '+' || data2.data2sign === '+' }">
+                                    <td style="cursor: pointer;" (click)="lenderpopup(tmp,SalesInfo, dt3,'2')">
+                                        <span></span>
+                                        <span class="ps-4" title="{{dt3.FIN}}"
+                                            (click)="openDetails(dt3,SalesInfo,'3')">{{(dt3.FIN ==
+                                            undefined ?
+                                            '--' : (
+                                            (dt3.FIN.toString() | slice:0:40) +
+                                            (dt3.FIN.toString().length > 40 ? '...' : '') ))}}</span>
+                                    </td>
+                                    <td [ngClass]="{ negative: !inTheGreen(dt3.DealCount)}">
+                                        <span class="d-flex justify-content-between px-4">
+                                            {{
+                                            (dt3.DealCount == 0 || dt3.DealCount == null ? '' :
+                                            '&nbsp;') }} <span> {{
+                                                (dt3.DealCount == 0 || dt3.DealCount == null ? '-' :
+                                                dt3.DealCount |number:'1.0-0') }}</span></span>
+                                    </td>
+                                    <td [ngClass]="{ negative: !inTheGreen(dt3.ContractValue)}"> <span
+                                            class="d-flex justify-content-between"> {{
+                                            (dt3.ContractValue == 0 || dt3.ContractValue == null ? '' :
+                                            '$') }} <span> {{
+                                                (dt3.ContractValue == 0 || dt3.ContractValue == null ? '-' :
+                                                dt3.ContractValue |number:'1.0-0') }}</span></span></td>
+                                    <td [ngClass]="{ negative: !inTheGreen(dt3.ProfitonFinancing)}"> <span
+                                            class="d-flex justify-content-between"> {{
+                                            (dt3.ProfitonFinancing == 0 || dt3.ProfitonFinancing == null ? '' :
+                                            '$') }} <span> {{
+                                                (dt3.ProfitonFinancing == 0 || dt3.ProfitonFinancing == null ? '-' :
+                                                dt3.ProfitonFinancing |number:'1.0-0') }}</span></span>
+                                    </td>
+                                    <td [ngClass]="{ negative: !inTheGreen(dt3.FrontGross)}"> <span
+                                            class="d-flex justify-content-between"> {{
+                                            (dt3.FrontGross == 0 || dt3.FrontGross == null ? '' :
+                                            '$') }} <span> {{
+                                                (dt3.FrontGross == 0 || dt3.FrontGross == null ? '-' :
+                                                dt3.FrontGross | number:'1.0-0' )}} </span>
+                                        </span>
+                                    </td>
+                                    <td [ngClass]="{ negative: !inTheGreen(dt3.BackGross)}">
+                                        <span class="d-flex justify-content-between">
+                                            {{
+                                            (dt3.BackGross == 0 || dt3.BackGross == null ? '' :
+                                            '$' )}}
+                                            <span> {{
+                                                (dt3.BackGross == 0 || dt3.BackGross == null ? '-' :
+                                                dt3.BackGross | number:'1.0-0' )}} </span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <ng-template #tmp>
+            <div class="modal-content">
+                <div class="recap position-relative">
+
+                    <div class="row d-flex w-100 m-0">
+                        <div class="col-lg-12">
+
+                            <div class="row">
+                                <div class="col-lg-12 col-12">
+                                    <div class="m-2 p-2">
+                                        <div class="row align-items-center">
+                                            <div class="col-12 p-0 d-flex align-items-center">
+
+                                                <h2 class="m-0 p-0">
+                                                    <span>
+                                                        <span class="font-blue">
+                                                            // {{parentItem.Location}}
+                                                        </span>
+
+                                                        <span *ngIf="reference == '2'">
+                                                            <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                                                            {{childItem.SaleType}}
+                                                        </span>
+
+                                                        <span *ngIf="reference == '2'">
+                                                            <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                                                            {{childItem.FIN}}
+                                                        </span>
+                                                    </span>
+                                                </h2>
+
+                                                <a type="button" class="ms-auto px-3" style="cursor:pointer;"
+                                                    (click)="closePopup()">
+                                                    <button type="button" class="btn-close" aria-label="Close"></button>
+                                                </a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="scorecard-single-header mb-3"
+                                        style="overflow:auto; max-height: calc(100vh - 200px);">
+                                        <div *ngIf="loader"
+                                            class="graph-loader d-flex align-items-center justify-content-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+
+                                        <table class="table mb-0 w-100">
+
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-start">Date</th>
+                                                    <th class="text-start">SaleType</th>
+                                                    <th class="text-start">Finance Source</th>
+                                                    <th class="text-start">FIN</th>
+                                                    <th class="text-start">Total Deals</th>
+                                                    <th class="text-end">Contract Value</th>
+                                                    <th class="text-end">Profit on Financing</th>
+                                                    <th class="text-end">Front Gross</th>
+                                                    <th class="text-end">Back Gross</th>
+                                                </tr>
+                                            </thead>
+
+                                            <ng-container *ngIf="(LendersDataDetails) as result">
+                                                <tbody>
+
+                                                    <tr *ngFor="let ld of LendersDataDetails; let i=index">
+
+                                                        <td class="text-start">
+                                                            {{ ld['Date'] && ld['Date'] !== ''
+                                                            ? (ld['Date'] | date:'MM.dd.yyyy')
+                                                            : '-' }}
+                                                        </td>
+
+                                                        <td class="text-start">
+                                                            {{ ld['Saletype'] || '-' }}
+                                                        </td>
+
+                                                        <td class="text-start">
+                                                            {{ ld['Finance Source'] || '-' }}
+                                                        </td>
+
+                                                        <td class="text-start">
+                                                            {{ ld['FIN'] || '-' }}
+                                                        </td>
+
+                                                        <td class="text-start">
+                                                            {{ ld['Total # of Deals'] || '-' }}
+                                                        </td>
+
+                                                        <td class="text-end"
+                                                            [ngClass]="{ negative: !inTheGreen(ld['Contract Value'])}">
+                                                            <span class="d-flex justify-content-between">
+                                                                {{
+                                                                (ld['Contract Value'] == 0 || ld['Contract Value'] ==
+                                                                null ? '' : '$')
+                                                                }}
+                                                                <span>
+                                                                    {{
+                                                                    (ld['Contract Value'] == 0 || ld['Contract Value']
+                                                                    == null
+                                                                    ? '-'
+                                                                    : ld['Contract Value'] | number:'1.0-0')
+                                                                    }}
+                                                                </span>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-end"
+                                                            [ngClass]="{ negative: !inTheGreen(ld['Dealership profit on Financing'])}">
+                                                            <span class="d-flex justify-content-between">
+                                                                {{
+                                                                (ld['Dealership profit on Financing'] == 0 ||
+                                                                ld['Dealership profit on Financing'] == null ? '' : '$')
+                                                                }}
+                                                                <span>
+                                                                    {{
+                                                                    (ld['Dealership profit on Financing'] == 0 ||
+                                                                    ld['Dealership profit on Financing'] == null
+                                                                    ? '-'
+                                                                    : ld['Dealership profit on Financing'] |
+                                                                    number:'1.0-0')
+                                                                    }}
+                                                                </span>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-end"
+                                                            [ngClass]="{ negative: !inTheGreen(ld['FrontGross'])}">
+                                                            <span class="d-flex justify-content-between">
+                                                                {{
+                                                                (ld['FrontGross'] == 0 || ld['FrontGross'] == null ? ''
+                                                                : '$')
+                                                                }}
+                                                                <span>
+                                                                    {{
+                                                                    (ld['FrontGross'] == 0 || ld['FrontGross'] == null
+                                                                    ? '-'
+                                                                    : ld['FrontGross'] | number:'1.0-0')
+                                                                    }}
+                                                                </span>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-end"
+                                                            [ngClass]="{ negative: !inTheGreen(ld['BackGross'])}">
+                                                            <span class="d-flex justify-content-between">
+                                                                {{
+                                                                (ld['BackGross'] == 0 || ld['BackGross'] == null ? '' :
+                                                                '$')
+                                                                }}
+                                                                <span>
+                                                                    {{
+                                                                    (ld['BackGross'] == 0 || ld['BackGross'] == null
+                                                                    ? '-'
+                                                                    : ld['BackGross'] | number:'1.0-0')
+                                                                    }}
+                                                                </span>
+                                                            </span>
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr *ngIf="NoData==true || result.length == 0">
+                                                        <td colspan="9" class="text-center" *ngIf="loader">
+                                                            No Records Found!!!
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </ng-container>
+
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </ng-template>
+    </div>
+</main>

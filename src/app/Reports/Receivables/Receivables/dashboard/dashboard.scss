@@ -1,0 +1,863 @@
+//////////////////////////////////// REPORT BAR ////////////////////////////////////////
+.negative {
+  color: #D6003D;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.receivables-tbl {
+  height: calc(100vh - 250px);
+
+  .table {
+
+    thead,
+    tbody {
+
+      .boxshadow-none {
+        box-shadow: none !important;
+      }
+
+      th:nth-child(7),
+      th:nth-child(8),
+      th:nth-child(10),
+      th:nth-child(21),
+      th:nth-child(26),
+      th:nth-child(29),
+
+      td:nth-child(7),
+      td:nth-child(8),
+      td:nth-child(10),
+      td:nth-child(21),
+      td:nth-child(26),
+      td:nth-child(29) {
+        box-shadow:
+          inset 0 0.4px 0 0 #e0edff,
+          inset -3px 0 0 0 #e0edff,
+          inset 0 -0.4px 0 0 #e0edff,
+          inset 0.4px 0 0 0 #e0edff;
+      }
+
+      .box-shadow {
+        box-shadow:
+          inset 0 0.4px 0 0 #e0edff ,
+          inset -3px 0 0 0 #e0edff,
+          inset 0 -0.4px 0 0 #e0edff,
+          inset 0.4px 0 0 0 #e0edff;
+      }
+
+
+    }
+  }
+}
+
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 1cm;
+    /* Adjust the margin as needed */
+  }
+
+  .NavBarHide {
+    display: none;
+  }
+
+  #ServiceAdvisorRankings {
+
+    .performance-scorecard {
+      width: 100%;
+      height: auto;
+
+      table,
+      td,
+      th {
+        border-collapse: collapse;
+      }
+
+      tr:nth-child(1) th {
+        .HideItems {
+          display: none;
+        }
+      }
+
+      th {
+        padding: 2px 4px;
+        font-size: 0.75vw;
+      }
+
+      tr th:last-child {
+        padding-right: 6px;
+      }
+
+      td {
+        padding: 2px 4px;
+        font-size: 0.75vw;
+      }
+
+      .HideItems {
+        display: none;
+      }
+    }
+  }
+
+  #ServiceAdvisorRankings {
+
+    .cit-scorecard {
+      width: 100%;
+      height: auto;
+
+      table,
+      td,
+      th {
+        border-collapse: collapse;
+      }
+
+      tr:nth-child(1) th {
+        .HideItems {
+          display: none;
+        }
+      }
+
+      th {
+        padding: 2px 4px;
+        font-size: 0.75vw;
+      }
+
+      th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background-color: #337ab7;
+      }
+
+      tr th:last-child {
+        padding-right: 6px;
+      }
+
+      td {
+        padding: 2px 4px;
+        font-size: 0.75vw;
+      }
+
+      td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        // background-color: #337ab7;
+      }
+
+      .HideItems {
+        display: none;
+      }
+    }
+  }
+}
+
+.all-debits {
+  label {
+    font-size: .875rem;
+    color: #0554ef;
+    font-family: 'Roboto';
+    line-height: 1.25rem;
+  }
+}
+
+.history-scroll {
+  max-height: 250px;
+  overflow: auto;
+}
+
+.history-block {
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  font-family: "Roboto";
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.popup {
+  background: #fff;
+  font-size: 1rem;
+  font-family: 'Roboto';
+  padding: 20px 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  min-width: 350px;
+  animation: fadeIn 0.3s ease;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.editbtn {
+  background-color: #0444bd;
+  border: 2px solid #0444bd;
+  color: #c6dbff;
+  padding: 6px 24px;
+  font-family: "Roboto";
+  font-size: .875rem;
+  line-height: 1.25rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-radius: 50px;
+    cursor: pointer;
+  }
+}
+
+.cancelbtn {
+  background: none !important;
+  color: #0444bd;
+  border: 2px solid #0444bd;
+  padding: 6px 24px;
+  font-family: "Roboto";
+  font-size: .875rem;
+  line-height: 1.25rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-radius: 50px;
+    cursor: pointer;
+  }
+}
+
+/////////////////////////////////////DATE PICKER SCSS////////////////////////////////////
+::ng-deep bs-daterangepicker-container {
+  z-index: 1080;
+}
+
+::ng-deep .bs-datepicker {
+  display: flex;
+  align-items: stretch;
+  flex-flow: row wrap;
+  background: #fff;
+  box-shadow: 0 0 10px 0 #aaa;
+  position: relative;
+  z-index: 1;
+  border-radius: 12px;
+  top: 115px;
+  // right: 167px ;
+  left: 3.8rem;
+}
+
+::ng-deep .theme-green .bs-datepicker-head {
+  background-color: #fff !important;
+
+}
+
+::ng-deep .bs-datepicker-head {
+  min-width: 270px;
+  height: 30px;
+  padding: 10px;
+  border-radius: 3px 3px 0 0;
+  text-align: justify;
+  background-color: white !important;
+}
+
+::ng-deep .bs-datepicker-head button {
+  display: inline-block;
+  vertical-align: top;
+  font-family: 'Roboto';
+  padding: 0;
+  height: 30px;
+  line-height: 30px;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  cursor: pointer;
+  color: black;
+  transition: 0.3s;
+}
+
+::ng-deep .bs-datepicker-head button[disabled],
+.bs-datepicker-head button[disabled]:hover,
+.bs-datepicker-head button[disabled]:active {
+  background: #fff;
+  color: #000;
+  cursor: not-allowed;
+}
+
+::ng-deep .bs-datepicker-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  padding-top: 0px;
+  border-top: none;
+}
+
+::ng-deep .bs-datepicker-body {
+  padding: 10px;
+  border-radius: 0 0 3px 3px;
+  min-height: 190px;
+  min-width: 270px;
+  border: none;
+}
+
+::ng-deep .bs-datepicker-body table th {
+  font-size: 13px;
+  color: #000;
+  font-family: 'Roboto';
+  font-weight: 400;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+::ng-deep .bs-datepicker-body table td {
+  color: #000;
+  text-align: center;
+  font-family: 'Roboto';
+  position: relative;
+  padding: 0;
+}
+
+::ng-deep .bs-datepicker-body table.days span {
+  width: 24px;
+  height: 24px;
+  font-family: 'Roboto';
+  line-height: 24px;
+}
+
+::ng-deep .theme-green .bs-datepicker-body table td span.selected,
+.theme-green .bs-datepicker-body table td.selected span,
+.theme-green .bs-datepicker-body table td span[class*=select-]:after,
+.theme-green .bs-datepicker-body table td[class*=select-] span:after {
+  background-color: #0554ef;
+}
+
+::ng-deep .theme-green .bs-datepicker-body table td span[class*=select-]:before,
+.theme-green .bs-datepicker-body table td[class*=select-] span:before {
+  background: #e9edf0 !important;
+  height: 20px;
+  margin-top: -3px;
+  font-family: 'Roboto';
+}
+
+::ng-deep .bs-datepicker-body table.days td.active:not(.select-start):before,
+.bs-datepicker-body table.days td.in-range:not(.select-start):before,
+.bs-datepicker-body table.days span.active:not(.select-start):before,
+.bs-datepicker-body table.days span.in-range:not(.select-start):before {
+  background: none !important;
+}
+
+::ng-deep .bs-datepicker-body table.days td.active,
+.bs-datepicker-body table.days td.in-range,
+.bs-datepicker-body table.days span.active,
+.bs-datepicker-body table.days span.in-range,
+.bs-datepicker-body table.days span.select-start {
+  background: #e9edf0 !important;
+  height: 20px;
+  margin-top: -3px;
+  font-family: 'Roboto';
+}
+
+::ng-deep .is-other-month {
+  display: none !important;
+}
+
+::ng-deep .bs-datepicker-container {
+  padding: 10px;
+}
+
+.year-input::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+.totals-block {
+  background-color: #c6dbff;
+  color: #0554ef;
+  border: none;
+  border: none;
+  padding: 6px 24px;
+  font-family: "Roboto";
+  font-size: .954rem;
+  line-height: 1.25rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+
+}
+
+.search-icon {
+  position: relative;
+  left: -25px;
+  font-weight: 500;
+  font-size: 0.7rem;
+  color: #2b91f0;
+}
+
+// ::ng-deep .modal-content {
+//   max-width: 600px;
+//   margin: auto;
+//   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+// }
+
+.form-check-input:checked {
+  background-color: #0554ef;
+  border-color: #0554ef;
+}
+
+.form-check-input {
+  border: 1px solid #0554ef;
+}
+
+.form-check-input:checked {
+  background-color: #0554ef;
+  border-color: #0554ef;
+}
+
+.form-check-input:focus {
+  border-color: #0554ef;
+  box-shadow: 0 0 0 0.2rem rgba(5, 84, 239, 0.25);
+}
+
+.recap {
+
+  // overflow: auto;
+  border-radius: 15px;
+  background: #F3F6FF;
+  //border: 1px solid #363636;
+  border-right: none;
+
+  .store_logo {
+    img {
+      max-width: 80px;
+      max-height: 70px;
+      object-fit: contain;
+      margin-bottom: .2rem;
+    }
+
+    h1 {
+      font-size: 0.9rem;
+      font-family: "Roboto";
+      font-weight: 600;
+      color: #000;
+      // margin: 0 1rem;
+    }
+  }
+
+  .bdr-btm {
+    position: relative;
+    height: 20px;
+    /* Adjust height as needed */
+  }
+
+  .bdr-btm::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    transform: translateX(-50%);
+    width: 100%;
+    border-bottom: 2px solid #cdcdcd;
+    border-radius: 10px;
+  }
+
+  h6 {
+    font-size: 0.75rem;
+    font-family: "Roboto";
+    font-weight: 400;
+    text-transform: capitalize;
+    color: #0554ef;
+    align-items: center;
+    display: flex;
+    // justify-content: end;
+    text-align: right;
+
+    span {
+      font-size: 0.6rem;
+      font-family: "Roboto";
+      font-weight: 400;
+      text-transform: capitalize;
+      color: #000;
+      margin-left: 0.3rem !important;
+    }
+
+    h5 {
+      margin-left: 0.3rem !important;
+      text-align: left;
+    }
+
+    .mail {
+      text-transform: none !important;
+    }
+  }
+
+  h5 {
+    font-size: 0.875rem;
+    font-family: "Roboto";
+    font-weight: 400;
+
+    text-transform: capitalize;
+    color: #000;
+  }
+
+  h4 {
+    font-size: 0.8rem;
+    font-family: "Roboto";
+    font-weight: 700;
+
+    text-transform: capitalize;
+    color: #000;
+  }
+
+  h3 {
+    font-size: 0.75rem;
+    font-family: "Roboto";
+    font-weight: 400;
+
+    text-transform: capitalize;
+    color: #000;
+
+    span {
+      font-family: "Roboto";
+      font-weight: 600;
+
+    }
+  }
+
+  h2 {
+    font-size: 1rem;
+    font-family: "Roboto";
+    font-weight: 400;
+
+    text-transform: capitalize;
+    color: #000;
+
+    span {
+      font-family: "Roboto";
+      font-weight: 600;
+
+    }
+  }
+
+  .noteblock {
+    label {
+      font-size: 1rem;
+      font-family: "Roboto";
+      font-weight: 400;
+    }
+
+    textarea {
+      font-size: 1rem;
+      font-family: "Roboto";
+      border-radius: 12px;
+    }
+
+    textarea:focus {
+      outline: none;
+      box-shadow: none;
+      border-color: #ced4da;
+    }
+
+    textarea[type=number]::-webkit-inner-spin-button,
+    textarea[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    textarea[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .stagedropdown {
+      min-height: 2rem;
+      width: 21rem;
+      padding: 0.475rem;
+      border-radius: 12px;
+      background: #fff;
+      border: .5px solid #D9E7FF;
+      font-size: 0.875rem;
+      font-family: 'Roboto';
+      font-weight: 400;
+      color: #18181b;
+
+    }
+
+  }
+
+  .editbtn {
+    background-color: #0444bd;
+    border: 2px solid #0444bd;
+    color: #c6dbff;
+    padding: 6px 24px;
+    font-family: "RobotoMedium";
+    font-size: .875rem;
+    line-height: 1.25rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-radius: 50px;
+      cursor: pointer;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .cancelbtn {
+    // background-color: #c6dbff;
+    background: none !important;
+    color: #0444bd;
+    border: 2px solid #0444bd;
+    padding: 6px 24px;
+    font-family: "RobotoMedium";
+    font-size: .875rem;
+    line-height: 1.25rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-radius: 50px;
+      // background-color: #d2e3fc;
+      cursor: pointer;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .details {
+    background-color: #fff;
+    border-radius: 15px;
+    margin-bottom: 1rem;
+
+    .fsize {
+      font-size: 0.7rem !important;
+    }
+
+    .head {
+      background: #0554ef;
+      border-radius: 15px 15px 0 0;
+      color: #fff;
+      font-family: "Roboto";
+      font-weight: 400;
+
+      font-size: 0.9rem;
+      padding: .2rem 1rem;
+    }
+
+    span {
+      font-family: "Roboto";
+      font-weight: 400;
+      font-size: 0.75rem;
+      color: #000;
+    }
+  }
+
+  .recap-table {
+    border: transparent;
+
+    .h-15 {
+      height: 15px;
+    }
+
+    .font-blue {
+      color: #0554ef;
+    }
+
+    thead {
+
+      th:first-child {
+        padding-left: 20px;
+      }
+
+      tr th:nth-last-child(-n+3) {
+        text-align: end;
+      }
+
+      th {
+        font-size: 0.9rem;
+        font-family: "Roboto";
+        font-weight: 400;
+        // text-transform: uppercase;
+        padding: 8px 0px;
+        // margin: 0px;
+        color: #0554ef;
+      }
+    }
+
+    tbody {
+      td:first-child {
+        padding-left: 20px;
+      }
+
+      td:last-child {
+        padding-right: 20px;
+      }
+
+      td {
+        font-size: 0.75rem;
+        // font-family: "Roboto";
+        // font-weight: 400;
+        // text-transform: capitalize;
+        padding: 4px;
+        margin: 0px;
+        background: none !important;
+      }
+
+      tr td:nth-last-child(-n+3) {
+        text-align: end;
+      }
+
+      .bg-blue {
+        background: #F3F6FF;
+        margin: 5px 0;
+      }
+
+      .bg-blue {
+        td {
+          padding-top: 4px;
+          padding-bottom: 4px;
+        }
+
+        td:first-child {
+          padding-left: 20px;
+        }
+
+        td:last-child {
+          padding-right: 20px;
+        }
+      }
+
+      .rounded-corners td:first-child {
+        border-top-left-radius: 25px;
+        border-bottom-left-radius: 25px;
+        padding-left: 20px;
+      }
+
+      .rounded-corners td:last-child {
+        border-top-right-radius: 25px;
+        border-bottom-right-radius: 25px;
+        padding-right: 20px;
+      }
+
+      td:first-child {
+        padding-left: 20px;
+      }
+
+      td:last-child {
+        padding-right: 20px;
+      }
+
+      .bdr-btm {
+        position: relative;
+        height: 20px;
+        /* Adjust height as needed */
+      }
+
+      .bdr-btm::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 10px;
+        transform: translateX(-50%);
+        width: 100%;
+        border-bottom: 2px solid #cdcdcd;
+        border-radius: 10px;
+      }
+
+    }
+  }
+}
+
+.recap {
+  border-radius: 10px !important;
+  background: #F3F6FF;
+  font-family: "Roboto";
+}
+
+.recap h2 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #000;
+}
+
+.recap .noteblock p {
+  font-size: 1rem;
+  color: #000;
+  margin: 0;
+}
+
+.recap .editbtn {
+  background-color: #0444bd;
+  border: 2px solid #0444bd;
+  color: #c6dbff;
+  padding: 6px 24px;
+  font-family: "RobotoMedium";
+  font-size: 0.875rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.recap .editbtn:hover {
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.recap .cancelbtn {
+  background: none !important;
+  color: #0444bd;
+  border: 2px solid #0444bd;
+  padding: 6px 24px;
+  font-family: "RobotoMedium";
+  font-size: 0.875rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.recap .cancelbtn:hover {
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.btn {
+  border-radius: 8px;
+}
+
+h5 {
+  color: #0d6efd;
+}
+
+
+textarea::placeholder {
+  color: #a5a5a5;
+}
+
+.btn {
+  border-radius: 8px !important;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background-color: #bfbfbf;
+  border-radius: 4px;
+}

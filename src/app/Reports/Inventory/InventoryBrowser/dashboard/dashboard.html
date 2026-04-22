@@ -1,0 +1,274 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+  <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+
+<main>
+  <div class="container-fluid">
+    <div class="reports-bar">
+      <div class="filter-dropdowns">
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+              {{storecount}}
+              {{storedisplayname}} )</span>
+            <span class="arrow"></span></button>
+          <app-stores
+            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+        </div>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(1)">
+            Stock Type
+            <span class="light-font">
+              (
+              {{
+              StockType?.length === 0 ? 'Select' :
+              StockType?.length === 1 ? getStockLabel(StockType[0]) : 'Selected'
+              }}
+              <span *ngIf="StockType?.length > 1"> {{StockType.length}} </span>
+              )
+            </span>
+            <span class="arrow"></span>
+          </button>
+          <div class="timeframe mt-2" *ngIf="activePopover === 1">
+            <div class="date-filter-card">
+              <button class="outline-button" (click)="multipleorsingle('ST','N')"
+                [ngClass]="{'active':StockType.indexOf('N')>=0}">
+                New
+              </button>
+              <button class="outline-button" (click)="multipleorsingle('ST','U')"
+                [ngClass]="{'active':StockType.indexOf('U')>=0}">
+                Used
+              </button>
+              <button class="outline-button" (click)="multipleorsingle('ST','C')"
+                [ngClass]="{'active':StockType.indexOf('C')>=0}">
+                CPO
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(2)">
+            Age <span class="light-font">
+              ( <span *ngIf="AgeFrom != 0 || AgeTo != 0; else enterAgeTpl">
+                {{ AgeFrom || 0 }} - {{ AgeTo || 0 }}
+              </span>
+              <ng-template #enterAgeTpl>
+                Enter Age
+              </ng-template> )
+            </span>
+            <span class="arrow"></span>
+          </button>
+          <div class="timeframe my-2" *ngIf="activePopover === 2">
+            <div class="date-filter-card d-flex">
+              <div class="me-3">
+                <label class="mb-1 me-2" style="color: #000 !important;">From Age </label>
+                <input type="text" [(ngModel)]="AgeFrom" class="input-field " (keypress)="keyPressNumbers($event)" />
+              </div>
+              <div>
+                <label class="mb-1 me-2" style="color: #000 !important;">To Age </label>
+                <input type="text" [(ngModel)]="AgeTo" class="input-field" (keypress)="keyPressNumbers($event)" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+        </div>
+        <div class="search ms-auto me-2">
+          <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchText"
+            (ngModelChange)="currentPage = 1">
+          <img src="images/Magnifer.svg" alt="">
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="pagination-container d-flex align-items-center justify-content-end text-black mt-2">
+        <div class="page-size">
+          <label for="pageSize">Page Size:</label>
+          <select id="pageSize" [(ngModel)]="itemsPerPage" (change)="onPageSizeChange()" class="form-select">
+            <option [ngValue]="100">100</option>
+            <option [ngValue]="300">300</option>
+            <option [ngValue]="500">500</option>
+          </select>
+        </div>
+
+        <div class="page-info">
+          {{ getStartRecordIndex() + 1 }} - {{ getEndRecordIndex() }} of {{ filteredData.length }}
+        </div>
+
+        <div class="pagination-buttons">
+          <button (click)="goToFirstPage()" [disabled]="currentPage === 1"><img
+              src="images/Arrow_End_Left_Blk.svg" /></button>
+          <button (click)="prevPage()" [disabled]="currentPage === 1"><img
+              src="images/Alt_Arrow_Left_Blk.svg" /></button>
+          <span class="page-label">Page {{ currentPage }} of {{ getMaxPageNumber() }}</span>
+          <button (click)="nextPage()" [disabled]="currentPage === getMaxPageNumber()"><img
+              src="images/Alt_Arrow_Right_Blk.svg" /></button>
+          <button (click)="goToLastPage()" [disabled]="currentPage === getMaxPageNumber()"><img
+              src="images/Arrow_End_Right_Blk.svg" /></button>
+        </div>
+      </div>
+    </div>
+    <div class="scorecard-single-header inventorybrowser-tbl mt-2">
+      <table class="table mb-0 w-100">
+        <thead>
+          <tr>
+            <th>Notes&nbsp; <i alt="" class="fa fa-eye" *ngIf="!notesViewState" aria-hidden="true"
+                (click)="notesView()"></i>
+              <i alt="" class="fa-solid fa-eye-slash" *ngIf="notesViewState" (click)="notesView()"></i>
+            </th>
+            <th class="text-start" (click)="sortTable('Store')" style="cursor: pointer;">
+              Store
+            </th>
+            <th class="text-start" (click)="sortTable('StockNo')" style="cursor: pointer;">
+              Stock No</th>
+            <th (click)="sortTable('DealType')" style="cursor: pointer;">Stock
+              Type</th>
+            <th (click)="sortTable('Year')" style="cursor: pointer;">Year</th>
+            <th class="text-start" (click)="sortTable('Make')" style="cursor: pointer;">
+              Make
+            </th>
+            <th class="text-start" (click)="sortTable('Model')" style="cursor: pointer;">
+              Model
+            </th>
+            <th class="text-start" (click)="sortTable('Color')" style="cursor: pointer;">
+              Color
+            </th>
+            <th class="text-start" (click)="sortTable('Interior Color')" style="cursor: pointer;">
+              Interior Color
+            </th>
+            <th (click)="sortTable('Age')" style="cursor: pointer;">Age</th>
+            <th (click)="sortTable('ListPrice')" style="cursor: pointer;">List
+              Price</th>
+
+            <th (click)="sortTable('Internet')" style="cursor: pointer;">MSRP
+            </th>
+
+            <th (click)="sortTable('Miles')" style="cursor: pointer;">Miles</th>
+            <th class="text-start" (click)="sortTable('VIN')" style="cursor: pointer;">VIN
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="paginatedItems.length > 0; else NoARdata">
+            <ng-container *ngFor="let QI of paginatedItems; let i = index">
+              <tr [ngClass]="{ even: i % 2 === 0, odd: i % 2 !== 0 }">
+
+                <td class="text-center">
+                  <img *ngIf="QI.NotesStatus=='N'" src="images/Actionblack.png" (click)="addNotes(QI,notes)"
+                    style="cursor:pointer;">
+
+                  <img *ngIf="QI.NotesStatus=='Y'" src="images/notes_unread.png" (click)="addNotes(QI,notes)"
+                    style="cursor:pointer;">
+                </td>
+
+                <td class="text-start">{{QI.Store || '-'}}</td>
+                <td class="text-start">{{QI.StockNo || '-'}}</td>
+
+                <td class="text-center">
+                  {{QI.DealType == 'N' ? 'New' :
+                  QI.DealType == 'U' ? 'Used' :
+                  QI.DealType ? 'Certified Pre-Owned' : '-' }}
+                </td>
+
+                <td>{{QI.Year || '-'}}</td>
+                <td class="text-start">{{QI.Make || '-'}}</td>
+                <td class="text-start">{{QI.Model || '-'}}</td>
+                <td class="text-start">{{QI.Color || '-'}}</td>
+                <td class="text-start">{{QI['Interior Color'] || '-'}}</td>
+                <td>{{QI.Age || '-'}}</td>
+
+                <td class="text-end">
+                  <span class="d-flex justify-content-between">
+                    {{ QI.ListPrice || QI.ListPrice === 0 ? '$' : '' }}
+                    <span>
+                      {{ QI.ListPrice || QI.ListPrice === 0 ? (QI.ListPrice | number:'1.0-0') : '-' }}
+                    </span>
+                  </span>
+                </td>
+
+                <td class="text-end">
+                  <span class="d-flex justify-content-between">
+                    {{ QI.Internet || QI.Internet === 0 ? '$' : '' }}
+                    <span>
+                      {{ QI.Internet || QI.Internet === 0 ? (QI.Internet | number:'1.0-0') : '-' }}
+                    </span>
+                  </span>
+                </td>
+
+                <td class="text-end">{{QI.Miles ? (QI.Miles | number) : '-'}}</td>
+                <td class="text-start">{{QI.VIN || '-'}}</td>
+
+              </tr>
+
+              <tr *ngIf="notesViewState && QI.Notes?.length">
+
+                <td colspan="14" class="text-start ps-4">
+
+                  <h6 class="fw-bold font-blue small">Notes</h6>
+
+                  <div *ngFor="let notes of (QI.notesView == '+' ? QI.Notes.slice(0,2) : QI.Notes)" class="ps-4">
+
+                    {{
+                    notes?.N_Notes
+                    ? (notes.N_Notes | slice:0:250) + (notes.N_Notes.length > 250 ? '...' : '')
+                    : '-'
+                    }}
+
+                  </div>
+
+                  <div *ngIf="QI.Notes.length > 2" class="ps-4">
+                    <a class="font-blue cursor-pointer" (click)="toggleView(QI)">
+                      {{ QI.notesView == '+' ? 'View More' : 'View Less' }}
+                    </a>
+                  </div>
+
+                </td>
+
+              </tr>
+
+            </ng-container>
+
+
+            <!-- TOTAL ROW -->
+            <tr class="even divBold sticky-top" style="position: sticky; bottom:0; z-index:995; font-family:'Roboto'">
+              <td></td>
+              <td colspan="9" class="text-end">Totals</td>
+              <td class="text-end" [ngClass]="{ negative: !inTheGreen(TotalListPrice) }">
+                <span class="d-flex justify-content-between">
+                  <span *ngIf="TotalListPrice || TotalListPrice === 0">$</span>
+                  <span class="ms-1">
+                    {{ TotalListPrice || TotalListPrice === 0 ? (TotalListPrice | number:'1.0-0') : '-' }}
+                  </span>
+                </span>
+              </td>
+              <td class="text-end" [ngClass]="{ negative: !inTheGreen(TotalInternet) }">
+                <span class="d-flex justify-content-between">
+                  <span *ngIf="TotalInternet || TotalInternet === 0">$</span>
+                  <span class="ms-1">
+                    {{ TotalInternet || TotalInternet === 0 ? (TotalInternet | number:'1.0-0') : '-' }}
+                  </span>
+                </span>
+              </td>
+              <td class="text-end" [ngClass]="{ negative: !inTheGreen(TotalMiles) }">
+                <!-- {{ TotalMiles ? (TotalMiles | number:'1.0-0') : '-' }} -->
+              </td>
+              <td></td>
+            </tr>
+          </ng-container>
+          <ng-template #NoARdata>
+            <tr *ngIf="NoData">
+              <td colspan="14" class="text-center" style="font-size: 1rem; background: #fff; color: black;">
+                No Data Found
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<ng-template #notes>
+  <app-notes [notesData]="notesData" (onClose)="closeNotes($event)"></app-notes>
+</ng-template>

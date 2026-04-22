@@ -1,0 +1,243 @@
+.d-flex justify-content-center align-items-center p-5 m-5{
+  margin-top: 100px;
+  text-align: center;
+  font-size: larger;
+  color: #000;
+}
+
+
+.pointercursor {
+  cursor: pointer;
+}
+
+.pointernone {
+  pointer-events: none;
+}
+
+//////////////////////////////////// REPORT BAR ////////////////////////////////////////
+.divBold {
+  position: sticky;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9;
+  font-family: 'Roboto' !important;
+  td {
+    img {
+      display: none;
+    }
+  }
+}
+
+.backgrossbtn {
+  float: right;
+  background-color: #000;
+  text-transform: capitalize;
+  color: #fff;
+  padding: 2px 16px;
+  font-family: "Roboto";
+  font-weight: 700;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-radius: 50px;
+    background-color: #000;
+    cursor: pointer;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+::ng-deep .SalesDetails .modal-dialog {
+  max-width: 95% !important;
+  /* adjust width */
+  left: 20px;
+  z-index: 9999;
+}
+.salesgross-tbl {
+  height: calc(100vh - 145px);
+
+  .table {
+
+    thead,
+    tbody {
+
+      th:nth-child(1),
+      th:nth-child(6),
+      th:nth-child(11),
+      th:nth-child(16),
+
+      td:nth-child(1),
+      td:nth-child(6),
+      td:nth-child(11),
+      td:nth-child(16) {
+        box-shadow:
+          inset 0 0.4px 0 0 #e0edff,
+          inset -3px 0 0 0 #e0edff,
+          inset 0 -0.4px 0 0 #e0edff,
+          inset 0.4px 0 0 0 #e0edff;
+      }
+
+    }
+  }
+}
+
+.backgross-tbl {
+  .table {
+
+    thead,
+    tbody {
+
+      th:nth-child(1),
+      th:nth-child(2),
+      th:nth-child(7),
+      th:nth-child(11),
+
+      td:nth-child(1),
+      td:nth-child(2),
+      td:nth-child(7),
+      td:nth-child(11) {
+        box-shadow:
+          inset 0 0.4px 0 0 #e0edff,
+          inset -3px 0 0 0 #e0edff,
+          inset 0 -0.4px 0 0 #e0edff,
+          inset 0.4px 0 0 0 #e0edff;
+      }
+
+    }
+  }
+}
+
+/////////////////////////////////////SALES KPI GRID////////////////////////////////////
+
+
+.negative {
+  color: #D6003D;
+}
+
+
+.Up-arrow-circle {
+  background-color: #28a745;
+  color: white;
+  border-radius: 50%;
+  padding: 4px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.Down-arrow-circle {
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  padding: 4px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+
+@media print {
+  @page {
+    size: A4 landscape;
+    /* Force landscape */
+    margin: 10mm;
+  }
+
+  #print-section {
+    transform: scale(0.8);
+    transform-origin: top left;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #print-section,
+  #print-section * {
+    visibility: visible;
+  }
+
+  #print-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .sidebar {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    /* Reduce font size for wide tables */
+  }
+
+  th,
+  td {
+    padding: 4px;
+    border: 1px solid #000;
+    text-align: center;
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  thead {
+    tr:nth-child(1) {
+      background-color: #0554ef !important;
+      color: #fff;
+
+      th {
+        background-color: #004080 !important;
+        color: #fff !important;
+      }
+    }
+
+    tr:nth-child(2) {
+      background-color: #dbe7ff !important;
+      color: #000;
+
+      th {
+        background-color: #dbe7ff !important;
+        color: #000;
+      }
+    }
+  }
+
+  tbody {
+    tr td {
+      background-color: #fff;
+      color: #000;
+    }
+  }
+
+
+  .backgrossbtn {
+    display: none;
+  }
+
+  .report-table th {
+    background-color: #004080 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+
+
+/////////////////////////////////////DATE PICKER SCSS////////////////////////////////////

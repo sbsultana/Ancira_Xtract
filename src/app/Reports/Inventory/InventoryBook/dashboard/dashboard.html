@@ -1,0 +1,722 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div>
+        <div class="container-fluid">
+            <div class="reports-bar" *ngIf="MainGrid == 'Y'">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                                {{storecount}}
+                                {{storedisplayname}} )</span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(2)">Stock Type <span class="light-font">(
+                                {{stockType.length ==
+                                3 ? 'All Types':
+                                (stockType.length==1 ? stockType : 'Selected' )}} {{stockType.length == 3 ? '':
+                                (stockType.length==1 ? '' : stockType.length)}} )</span>
+                            <span class="arrow"></span></button>
+                        <div class="reportstores-card my-2" *ngIf="activePopover === 2">
+                            <div class="row h-100">
+                                <div class="stores d-flex flex-column border-0">
+                                    <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                        <div class="store-columns flex-grow-1"
+                                            style="grid-template-rows: repeat(3, auto);">
+                                            <ng-container>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':stockType.indexOf('New')>=0,'inactive':stockType.indexOf('New')<0}"
+                                                    (click)="multipleorsingle('ST','New')">New</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':stockType.indexOf('Used')>=0,'inactive':stockType.indexOf('Used')<0}"
+                                                    (click)="multipleorsingle('ST','Used')">Used</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':stockType.indexOf('Fleet')>=0,'inactive':stockType.indexOf('Fleet')<0}"
+                                                    (click)="multipleorsingle('ST','Fleet')">Fleet</button>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(3)">
+                            Units
+                            <span class="light-font">
+                                (
+                                {{
+                                status.includes('Stock_Transit')
+                                ? 'Stock & Transit'
+                                : (status.length == 6
+                                ? 'All'
+                                : (status.length == 1 ? status : 'Selected'))
+                                }}
+                                {{
+                                status.includes('Stock_Transit')
+                                ? ''
+                                : (status.length == 6
+                                ? ''
+                                : (status.length == 1 ? '' : status.length))
+                                }}
+                                )
+                            </span>
+                            <span class="arrow"></span>
+                        </button>
+                        <div class="reportstores-card my-2" *ngIf="activePopover === 3">
+                            <div class="row h-100">
+                                <div class="stores d-flex flex-column border-0">
+                                    <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                        <div class="store-columns flex-grow-1"
+                                            style="grid-template-rows: repeat(6, auto);">
+                                            <ng-container>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    *ngIf="stockType.indexOf('New')>=0"
+                                                    [ngClass]="{'active':status.indexOf('Stock_Transit')>=0,'inactive':status.indexOf('Stock_Transit')<0}"
+                                                    (click)="multipleorsingle('S','Stock_Transit')">Stock &
+                                                    Transit</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    *ngIf="stockType.indexOf('New')<0"
+                                                    [ngClass]="{'active':status.indexOf('Stock')>=0,'inactive':status.indexOf('Stock')<0}"
+                                                    (click)="multipleorsingle('S','Stock')">Stock</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    *ngIf="stockType.indexOf('New')<0"
+                                                    [ngClass]="{'active':status.indexOf('Transit')>=0,'inactive':status.indexOf('Transit')<0}"
+                                                    (click)="multipleorsingle('S','Transit')">Transit</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':status.indexOf('Hold')>=0,'inactive':status.indexOf('Hold')<0}"
+                                                    (click)="multipleorsingle('S','Hold')">Hold</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':status.indexOf('Production')>=0,'inactive':status.indexOf('Production')<0}"
+                                                    (click)="multipleorsingle('S','Production')">Production</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':status.indexOf('Retired')>=0,'inactive':status.indexOf('Retired')<0}"
+                                                    (click)="multipleorsingle('S','Retired')">Retired</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':status.indexOf('Ordered')>=0,'inactive':status.indexOf('Ordered')<0}"
+                                                    (click)="multipleorsingle('S','Ordered')">Ordered</button>
+
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(4)">Wholesale <span class="light-font">(
+                                {{wholesale=='Y' ?
+                                'YES' : 'NO'}} )</span>
+                            <span class="arrow"></span></button>
+                        <div class="reportstores-card my-2" *ngIf="activePopover === 4">
+                            <div class="row h-100">
+                                <div class="stores d-flex flex-column border-0">
+                                    <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                        <div class="store-columns flex-grow-1"
+                                            style="grid-template-rows: repeat(2, auto);">
+                                            <ng-container>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':wholesale.indexOf('Y')>=0,'inactive':wholesale.indexOf('Y')<0}"
+                                                    (click)="multipleorsingle('W','Y')">Yes</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':wholesale.indexOf('N')>=0,'inactive':wholesale.indexOf('N')<0}"
+                                                    (click)="multipleorsingle('W','N')">No</button>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(5)">View <span class="light-font">
+                                ( {{aged =='AUY' ? 'Aged
+                                By Year' : (aged == 'MNM' ? 'Make By Model' : (aged == 'ANM' ? 'Aged By Model' :'')) }}
+                                )
+                            </span>
+                            <span class="arrow"></span></button>
+                        <div class="reportstores-card my-2" *ngIf="activePopover === 5">
+                            <div class="row h-100">
+                                <div class="stores d-flex flex-column border-0">
+                                    <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                        <div class="store-columns flex-grow-1"
+                                            style="grid-template-rows: repeat(3, auto);">
+                                            <ng-container>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':aged.indexOf('MNM')>=0,'inactive':aged.indexOf('MNM')<0}"
+                                                    (click)="multipleorsingle('A','MNM')">Make By Model</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':aged.indexOf('ANM')>=0,'inactive':aged.indexOf('ANM')<0}"
+                                                    (click)="multipleorsingle('A','ANM')">Aged By Model</button>
+                                                <button class="btn btn-outline-primary store-button"
+                                                    [ngClass]="{'active':aged.indexOf('AUY')>=0,'inactive':aged.indexOf('AUY')<0}"
+                                                    (click)="multipleorsingle('A','AUY')">Aged By Year</button>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="scorecard-multi-header inventory-book-tbl w-75" id="scrollcent" #scrollcent
+                *ngIf="MainGrid =='Y'">
+                <table class="table mb-0 w-100">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>{{stockType}}</th>
+                            <!-- <th class="bdr-rt" (click)="openComments()" style="cursor:pointer;">
+                                <i class="fa fa-eye" *ngIf="!commentsVisibility"></i>
+                                <i class="fa-solid fa-eye-slash" *ngIf="commentsVisibility"></i>
+                            </th> -->
+
+                            <th class="bdr-rt"
+                                *ngIf="DupStatus.indexOf('Hold')>=0 || DupStatus.indexOf('Production')>=0 || DupStatus.indexOf('Retired')>=0 || DupStatus.indexOf('Ordered')>=0">
+                                In {{DupStatus}}
+                            </th>
+
+                            <th class="bdr-rt" (click)="sort('InStock',order)"
+                                *ngIf="DupStatus.indexOf('Stock')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                                In Stock
+                            </th>
+
+                            <th class="bdr-rt" (click)="sort('InTransit',order)"
+                                *ngIf="DupStatus.indexOf('Transit')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                                In Transit
+                            </th>
+
+                            <th class="bdr-rt pointer">
+                                <span> <span (click)="sort('Target',order)">Target</span>
+                                    <span
+                                        *ngIf="DupStatus.indexOf('Stock')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                                        &nbsp;&nbsp;<img src="images/Edit-Icon.png" class="ms-auto"
+                                            style="cursor: pointer;width:15px" (click)="getNewdetails(target)"></span>
+                                </span>
+                            </th>
+
+                            <th class="bdr-rt pointer" (click)="sort('OUValue',order)">
+                                Over / Under
+                            </th>
+                            <th class="bdr-rt pointer" (click)="sort('AvgMonth',order)">
+                                Mo. Average (3 Months)
+                            </th>
+
+                            <th class="bdr-rt pointer" (click)="sort('DaysSupply',order)">
+                                Days Supply
+                            </th>
+                            <th class="bdr-rt boxshadow-none" colspan="2">
+                                Age (In days)
+                            </th>
+
+                        </tr>
+
+                        <tr class="bdr-btm">
+
+                            <th></th>
+                            <!-- <th class="bdr-rt"></th> -->
+
+                            <th class="bdr-rt"
+                                *ngIf="DupStatus.indexOf('Hold')>=0 || DupStatus.indexOf('Production')>=0 || DupStatus.indexOf('Retired')>=0 || DupStatus.indexOf('Ordered')>=0">
+                            </th>
+
+                            <th class="bdr-rt"
+                                *ngIf="DupStatus.indexOf('Stock')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                            </th>
+
+                            <th class="bdr-rt"
+                                *ngIf="DupStatus.indexOf('Transit')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                            </th>
+
+                            <th class="bdr-rt"></th>
+
+                            <th class="bdr-rt"></th>
+
+                            <th class="bdr-rt pointer" (click)="sort('AvgMonth',order)">
+                                Sales
+                            </th>
+
+                            <th></th>
+
+                            <th class="bdr-rt pointer" (click)="sort('Oldest',order)">
+                                Oldest Units
+                            </th>
+
+                            <th class="bdr-rt pointer boxshadow-none" (click)="sort('Newest',order)">
+                                Newest Units
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody [ngClass]="{'hidden': NoData}">
+
+                        <ng-container *ngFor="let data1 of InventorySummaryData.slice(0,1); let i=index">
+
+                            <ng-container *ngFor="let dt2 of data1.data2; let j=index">
+
+                                <tr class="lightblue-bg">
+
+                                    <td class="fw-bold">{{dt2.data2 || '-'}}</td>
+
+                                    <!-- <td></td> -->
+
+                                    <td class="bdr-rt"
+                                        *ngIf="DupStatus.indexOf('Hold')>=0 || DupStatus.indexOf('Production')>=0 || DupStatus.indexOf('Retired')>=0 || DupStatus.indexOf('Ordered')>=0">
+                                    </td>
+
+                                    <td class="bdr-rt"
+                                        *ngIf="DupStatus.indexOf('Stock')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                                    </td>
+
+                                    <td class="bdr-rt"
+                                        *ngIf="DupStatus.indexOf('Transit')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                                    </td>
+
+                                    <td></td>
+
+                                    <td></td>
+
+                                    <td></td>
+
+                                    <td></td>
+
+                                    <td></td>
+
+                                    <td></td>
+
+                                </tr>
+
+
+                                <ng-container *ngFor="let dt3 of dt2.SubData; let k=index">
+
+                                    <tr class="member-row" [ngClass]="{'hidden': dt2.Dealer === '+'}">
+
+                                        <td class="DataBody1">
+                                            <span style="margin-left:1rem;">
+                                                {{dt3.data3 ? (dt3.data3 | slice:0:22) + (dt3.data3.length>22 ? '...' :
+                                                '') : '--'}}
+                                            </span>
+                                        </td>
+
+                                        <!-- <td class="text-center px-3">
+                                            <img *ngIf="dt3.CommentsStatus=='Y'" src="images/unread-comments.png"
+                                                width="17" (click)="commentopen(dt3,i,j,k,'sub')">
+
+                                            <img *ngIf="dt3.CommentsStatus=='N'" src="images/no-comments.png" width="17"
+                                                (click)="commentopen(dt3,i,j,k,'sub')">
+
+                                        </td> -->
+
+                                        <td
+                                            *ngIf="DupStatus.indexOf('Hold')>=0 || DupStatus.indexOf('Production')>=0 || DupStatus.indexOf('Retired')>=0 || DupStatus.indexOf('Ordered')>=0">
+                                            {{dt3.Unit}}
+                                        </td>
+
+                                        <td *ngIf="DupStatus.indexOf('Stock')>=0 || DupStatus.indexOf('Stock_Transit')>=0"
+                                            (click)="openDetails(dt2.data2,dt3.data3,dt3.StoreID,'N',dt3.NewAgeCategory,dt3.UsedAgeCategory)"
+                                            class="deal-link">
+                                            {{dt3.InStock}}
+                                        </td>
+
+                                        <td
+                                            *ngIf="DupStatus.indexOf('Transit')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                                            {{dt3.InTransit}}
+                                        </td>
+
+                                        <td>
+                                            {{DupStatus.indexOf('Stock')>=0 || DupStatus.indexOf('Stock_Transit')>=0 ?
+                                            dt3.Target : '-'}}
+                                        </td>
+
+                                        <td [style.background-color]="getBackgroundColor(dt3.OUValue)"
+                                            style="text-align:right">
+                                            {{DupStatus.indexOf('Stock')>=0 || DupStatus.indexOf('Stock_Transit')>=0 ?
+                                            dt3.OUValue : '-'}}
+                                        </td>
+
+                                        <td class="deal-link"
+                                            (click)="cardeals(dt2.data2,dt3.data3,dt3.StoreID,'N',dt3.NewAgeCategory,dt3.UsedAgeCategory,dt3.data3)">
+                                            {{dt3.AvgMonth}}
+                                        </td>
+
+                                        <td>{{dt3.DaysSupply}}</td>
+
+                                        <td>{{dt3.Oldest ? (dt3.Oldest | number:'1.0-0') : '-'}}</td>
+
+                                        <td>{{dt3.Newest ? (dt3.Newest | number:'1.0-0') : '-'}}</td>
+
+                                    </tr>
+                                    <!-- COMMENTS -->
+                                    <!-- <ng-container *ngIf="commentsVisibility && dt3.CommentsStatus=='Y'">
+                                        <tr>
+                                            <td></td>
+
+                                            <td colspan="12" class="text-start p-3">
+
+                                                <div *ngFor="let comment of dt3.Comments" class="comment mb-2">
+
+                                                    <div
+                                                        class="comment-text d-flex justify-content-between align-items-start">
+                                                        <span class="white-space-normal">
+                                                            {{comment.WC_Comments ? (comment.WC_Comments | slice:0:50) :
+                                                            '--'}}
+                                                        </span>
+                                                        <i class="fa fa-times"></i>
+                                                    </div>
+                                                    <div class="comment-footer">
+                                                        <span class="comment-user">
+                                                            {{comment.WC_From_UserName}}
+                                                        </span>
+                                                        <span class="comment-date">
+                                                            {{comment.WC_TS | date:'MM.dd.yy'}} {{comment.WC_TS |
+                                                            date:'HH:mm'}}
+                                                        </span>
+                                                        <span class="comment-delete" data-bs-toggle="modal"
+                                                            data-bs-target="#delete"
+                                                            (click)="deleteCommentAlert(comment.WC_Id)">
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container> -->
+                                </ng-container>
+                                <tr class="divBold sticky-bottom-row" *ngIf="data1.data2.length-1 == j">
+
+                                    <td>Total</td>
+
+                                    <!-- <td></td> -->
+
+                                    <td
+                                        *ngIf="DupStatus.indexOf('Hold')>=0 || DupStatus.indexOf('Production')>=0 || DupStatus.indexOf('Retired')>=0 || DupStatus.indexOf('Ordered')>=0">
+                                        {{getTotal('Unit') | number:'1.0-0'}}
+                                    </td>
+
+                                    <td *ngIf="DupStatus.indexOf('Stock')>=0 || DupStatus.indexOf('Stock_Transit')>=0">
+                                        {{getTotal('InStock') | number:'1.0-0'}}
+                                    </td>
+
+                                    <td>
+                                        {{getTotal('InTransit') | number:'1.0-0'}}
+                                    </td>
+
+                                    <td>
+                                        {{getTotal('Target') | number:'1.0-0'}}
+                                    </td>
+
+                                    <td>
+                                        {{getTotal('OUValue') | number:'1.0-0'}}
+                                    </td>
+
+                                    <td>{{getTotal('AvgMonth','AVG') | number:'1.1-1'}}</td>
+
+                                    <td>{{getTotal('DaysSupply','AVG') | number:'1.0-0'}}</td>
+
+
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+
+                            </ng-container>
+
+                        </ng-container>
+
+                    </tbody>
+
+
+                    <tbody *ngIf="NoData">
+
+                        <tr>
+                            <td colspan="13" style="text-align:center">
+                                No Records Found
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="totals-block mb-2 col-12" *ngIf="MainGrid == 'N'">
+                <div class="row">
+                    <div class="col-12 d-flex align-items-center justify-content-start">
+                        <button class="back-button" (click)="backtoWR()"><span><i class="fa fa-long-arrow-left"
+                                    aria-hidden="true"></i> Back</span></button>
+                        <h5 class="divBold m-0 ms-3">
+                            <img src="" alt=""> <span class="slash"><span class="divNormal">// </span> {{var2}}</span> -
+                            <span>
+                                {{var3}}</span>
+                        </h5>
+                        <div class="ms-auto me-3">
+                            <span class="divNormal slash ps-3">Count: </span> <span class="divBold ps-2">
+                                {{inventoryBookDetails.length}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scorecard-single-header inventory-book-tbl-details" id="scrollcent" #scrollcent
+                *ngIf="MainGrid =='N'">
+                <table class="table mb-0 w-100">
+                    <thead>
+                        <tr>
+                            <th class="bdr-rt pointer" style="width: 10%;">Notes&nbsp;
+                                <i alt="" class="fa fa-eye" *ngIf="!notesViewState" aria-hidden="true"
+                                    (click)="notesView()"></i>
+                                <i alt="" class="fa-solid fa-eye-slash" *ngIf="notesViewState"
+                                    (click)="notesView()"></i>
+                            </th>
+                            <th (click)="Detailsort('StockNo')" class="bdr-rt pointer">Stock #</th>
+                            <th (click)="Detailsort('Year')" class="bdr-rt pointer">Year</th>
+                            <th (click)="Detailsort('Make')" class="bdr-rt pointer" class="">Make</th>
+                            <th (click)="Detailsort('Model')" class="bdr-rt pointer" class="">Model</th>
+                            <th (click)="Detailsort('Color')" class="bdr-rt pointer">Color</th>
+                            <th (click)="Detailsort('Age')" class="bdr-rt pointer">Age</th>
+                            <th (click)="Detailsort('MSRP')" class="bdr-rt pointer" class="">MSRP</th>
+                            <th (click)="Detailsort('VIN')" class="bdr-rt pointer">VIN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let Ad of inventoryBookDetails;  let i=index">
+                            <tr>
+                                <td class="text-center">
+                                    <img *ngIf="Ad.NotesStatus=='N'" src="images/Actionblack.png "
+                                        (click)="addNotes(Ad,notes)" class="pointer">
+
+                                    <img *ngIf="Ad.NotesStatus=='Y'" src="images/notes_unread.png "
+                                        (click)="addNotes(Ad,notes)" class="pointer">
+                                </td>
+                                <td class="text-start">
+                                    {{(Ad.StockNo == undefined || Ad.StockNo == null || Ad.StockNo ==
+                                    '' ? '-' :
+                                    Ad.StockNo)}}
+                                </td>
+                                <td class="text-center">
+                                    {{ (Ad.Year == '' || Ad.Year == null || Ad.Year ==
+                                    undefined ? '-' :
+                                    Ad.Year )}}
+                                </td>
+                                <td class="text-start">{{ (Ad.Make == ''|| Ad.Make == null
+                                    || Ad.Make ==
+                                    undefined || Ad.Make == 0? '-' :
+                                    Ad.Make ) }}
+                                </td>
+                                <td class="text-start">{{ (Ad.Model == '' || Ad.Model == null ||
+                                    Ad.Model
+                                    == undefined ? '-' :
+                                    Ad.Model ) }}</td>
+
+                                <td class="text-start"> {{ (Ad.Color == '' ||
+                                    Ad.Color == null || Ad.Color == undefined
+                                    ? '-' :
+                                    Ad.Color ) }}
+                                </td>
+                                <td class="text-end"> {{ (Ad.Age == '' ||
+                                    Ad.Age == null ||
+                                    Ad.Age == undefined ? '-' : Ad.Age ) }}
+                                </td>
+                                <td>
+                                    <span class="d-flex justify-content-between"
+                                        [ngClass]="{ negative: !inTheGreen(getTotal(Ad,'MSRP'))}">
+                                        <span>
+                                            {{ (Ad.MSRP == 0 || Ad.MSRP ==
+                                            null ||
+                                            Ad.MSRP == undefined ? '' : '$' ) }}
+                                        </span>
+                                        {{ (Ad.MSRP == 0 || Ad.MSRP ==
+                                        null ||
+                                        Ad.MSRP == undefined ? '-' : Ad.MSRP | number :'1.0-0' ) }}
+                                    </span>
+
+                                </td>
+
+                                <td class="text-start"> {{ (Ad.VIN == 0 ||
+                                    Ad.VIN == null || Ad.VIN == undefined ? '-' :
+                                    Ad.VIN ) }}
+                                </td>
+
+
+                            </tr>
+                            <ng-container *ngIf="Ad.Notes && notesViewState && Ad.NotesStatus === 'Y'">
+
+                                <tr class="notes-row">
+                                    <td colspan="9" class="ps-5 py-2">
+
+                                        <h6 class="fw-bold font-blue small">Notes</h6>
+                                        <div class="notes ps-3"
+                                            *ngFor="let notes of (Ad.notesView === '+' ? Ad.Notes.slice(0,2) : Ad.Notes)">
+
+                                            <div class="d-flex mt-1">
+
+                                                <div class="notes-text">
+                                                    {{ notes.N_Notes ? notes.N_Notes : '-' }}
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+                                </tr>
+
+                                <tr *ngIf="Ad.Notes.length > 2">
+                                    <td colspan="9" class="view-toggle">
+
+                                        <span *ngIf="Ad.notesView === '+'" (click)="toggleView(Ad)">
+                                            View More
+                                        </span>
+
+                                        <span *ngIf="Ad.notesView === '-'" (click)="toggleView(Ad)">
+                                            View Less
+                                        </span>
+
+                                    </td>
+                                </tr>
+
+                            </ng-container>
+                        </ng-container>
+                    </tbody>
+                    <tbody *ngIf="NoData">
+                        <tr>
+                            <td colspan="10" style="color: black;pointer-events:none ; text-align: center !important;">
+                                No
+                                Records Found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<ng-template #target>
+    <div class="modal-content">
+        <div class="recap position-relative">
+
+            <div class="row d-flex w-100 m-0">
+                <div class="col-lg-12">
+
+                    <div class="row">
+                        <div class="col-lg-12 col-12">
+                            <div class="m-2 p-2 px-3">
+                                <div class="row align-items-center">
+                                    <div class="col-12 p-0 d-flex align-items-center">
+
+                                        <h2 class="m-0 p-0">
+                                            <span>
+                                                <span class="font-blue">
+                                                    // Target
+                                                </span>
+
+
+                                            </span>
+                                        </h2>
+                                        <a id="CloseMenu" type="button" class="close-btn ms-auto me-2"
+                                            (click)="closeTarget()"><i class="fa-solid fa-xmark"></i> </a>
+                                        <!-- <a type="button" class="ms-auto" style="cursor:pointer;"
+                                            (click)="closeTarget()">
+                                            <button type="button" class="btn-close" aria-label="Close"></button>
+                                        </a> -->
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container-fluid data">
+                                <div class="col-12 menu-list ">
+                                    <div class="row align-items-center justify-content-center">
+                                        <div class="col-12 ">
+                                            <div class="scroll" style="height: 60vh;overflow-y: auto;">
+                                                <ng-container
+                                                    *ngFor="let data1 of newValuesToEdit.slice(0, 1); let i=index">
+                                                    <div class="scorecard-single-header my-2"
+                                                        style="height: auto !important;"
+                                                        *ngFor="let dt2 of data1.data2; let i=index">
+
+                                                        <table class="table mb-0 w-100">
+
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 30%;"> {{dt2.data2 == '' ||
+                                                                        dt2.data2
+                                                                        ==
+                                                                        undefined ? '-' : dt2.data2}}</th>
+                                                                    <th style="width: 30%;">Target</th>
+
+                                                                    <th style="width: 20%;">60 Days Avg</th>
+                                                                    <th style="width: 20%;">90 Days Avg</th>
+                                                                </tr>
+                                                            </thead>
+
+                                                            <tbody>
+                                                                <tr *ngFor="let dt3 of dt2.gridData; let i=index">
+                                                                    <td>{{dt3.data3}} -</td>
+                                                                    <td>
+                                                                        <input type="text" [(ngModel)]="dt3.TargetValue"
+                                                                            class="form-control input-field text-end"
+                                                                            *ngIf="groupPreference == 30">
+                                                                        <div style="text-align: center !important;"
+                                                                            *ngIf="dt3.TargetByModel_UpdatedTS!= undefined &&  dt3.TargetByModel_UpdatedTS != ''">
+                                                                            <span style="font-size: .6rem;">Last
+                                                                                Updated:{{dt3.TargetByModel_UpdatedTS}}</span>
+                                                                        </div>
+                                                                    </td>
+
+                                                                    <td style="text-align: center;">
+                                                                        {{dt2.SubData[i].AvgMonth_60}}
+                                                                    </td>
+                                                                    <td style="text-align: center;">
+                                                                        {{dt2.SubData[i].AvgMonth_90}}
+                                                                    </td>
+
+                                                                </tr>
+                                                            </tbody>
+
+                                                        </table>
+
+                                                    </div>
+                                                </ng-container>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <div class="row">
+                                    <div class="text-center d-flex justify-content-end align-items-center p-3">
+                                        <button type="button" class="editbtn mx-1" (click)="save()">Save</button>
+                                        <div class="cancelbtn mx-1" (click)="closeTarget()" id="close">
+                                            <a>Cancel</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</ng-template>
+
+<ng-template #notes>
+    <app-notes [notesData]="notesData" (onClose)="closeNotes($event)"></app-notes>
+</ng-template>

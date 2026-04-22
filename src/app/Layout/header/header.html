@@ -1,0 +1,271 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white navbar-custom fixed-top px-4">
+    <div class="container-fluid">
+        <button class="navbar-toggler me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu"
+            aria-controls="mobileMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-brand d-flex align-items-center">
+            <div (click)="dashbardRoute()" style="cursor: pointer;">
+                <img src="images/DealerLogos/Ancira_logo.png" class="img-fluid" alt="Ancira Group" />
+            </div>
+            <div class="line d-none d-lg-block"></div>
+            <p class="d-lg-block mb-0 text-uppercase">
+                {{ componentData?.title }}
+            </p>
+        </div>
+
+
+        <!-- Right: Axel Logo (always visible) -->
+        <img src="images/Axel One_dark.svg" alt="AXEL ONE" class="axel-logo ms-auto d-none">
+
+        <div class="collapse navbar-collapse d-none d-lg-flex justify-content-end align-items-center">
+            <div class="nav-icons d-flex align-items-center">
+                <div class="d-flex justify-content-center align-items-center gap-4">
+                    <app-riv-icon *ngIf="!notificationService?.nCount"
+                        style="cursor: none !important; pointer-events: none;opacity: 0.4;" src="images/riv/bell.riv"
+                        alt="">
+                    </app-riv-icon>
+                    <app-riv-icon *ngIf="notificationService?.nCount" src="images/riv/bell_unread.riv" class="img-fluid"
+                        alt="" (click)="onNotificationIconClick()"></app-riv-icon>
+                    <app-riv-icon *ngIf="userNetworkInfo.networkStatus" src="images/riv/vpn.riv"
+                        stateMachine="State Machine 1" [width]="26" [height]="26"
+                        (click)="onNetworkClick()"></app-riv-icon>
+                    <app-riv-icon *ngIf="!userNetworkInfo.networkStatus" src="images/riv/vpn_disconnected.riv"
+                        stateMachine="State Machine 1" [width]="26" [height]="26" class="network"
+                        [style.cursor]="'default'" (click)="onNetworkClick()"></app-riv-icon>
+                    <!-- <img src="images/pdf_img.png" class="img-fluid me-0" alt="" (click)="onPDFClick()"> -->
+                    <div class="position-relative d-inline-block" *ngIf="isDownload">
+                        <img src="images/Download_icon.svg" class="img-fluid cursor-pointer me-0 export-toggle export-btn"
+                            (click)="toggleExport($event)" alt="Export">
+                        <div class="export-card export-card-btn" *ngIf="showExport" (click)="$event.stopPropagation()">
+                            <div class="export-title">Export File Type</div>
+                            <!-- <button class="export-button" [disabled]="isExporting" (click)="export('csv', $event)">
+                                <span *ngIf="!isExporting">CSV</span>
+                                <span *ngIf="isExporting" class="btn-loader"></span>
+                            </button> -->
+                            <button class="export-button" [disabled]="isExporting" (click)="export('xlsx', $event)"
+                                *ngIf="isActionVisible('excel')">
+                                <span *ngIf="!isExporting">XLSX</span>
+                                <span *ngIf="isExporting" class="btn-loader"></span>
+                            </button>
+
+                            <button class="export-button" [disabled]="isExporting" (click)="export('pdf', $event)"
+                                *ngIf="isActionVisible('pdf')">
+                                <span *ngIf="!isExporting">PDF</span>
+                                <span *ngIf="isExporting" class="btn-loader"></span>
+                            </button>
+                            <button class="export-button" [disabled]="isExporting" (click)="export('print', $event)"
+                                *ngIf="isActionVisible('print')">
+                                <span *ngIf="!isExporting">Print</span>
+                                <span *ngIf="isExporting" class="btn-loader"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="position-relative d-inline-block"  *ngIf="isActionVisible('emailToPdf')" >
+                        <img src="images/Mail_icon.svg" class="img-fluid me-0 export-toggle export-mail"
+                            style="height: 19px; cursor: pointer;" (click)="mailBlock()" />
+
+                        <div class="export-card export-card-mail" style="width: 440px;" *ngIf="mailtooltip"
+                            (click)="$event.stopPropagation()">
+
+                            <div class="export-title">Email Sending</div>
+                            <div class="d-flex align-items-center gap-2 position-relative">
+                                <div class="search w-100 position-relative">
+                                    <input type="text" class="form-control" placeholder="Search Name or Enter Email"
+                                        [(ngModel)]="mailuser" style="width: 19.7rem;" (input)="onSearchChange()"
+                                        (focus)="dropdownopen()" autocomplete="off" />
+                                    <img src="images/Magnifer.svg" style="height: 16px;" class="search-icon" alt="">
+                                    <ul *ngIf="showusersAutofill && filteredUsers.length"
+                                        class="autofillcls list-unstyled m-0 p-0">
+                                        <li *ngFor="let option of filteredUsers" class="px-2 py-1 cursor-pointer"
+                                            (click)="selectItem(option)">
+                                            {{ option.FullName }} ({{ option.MailID }})
+                                        </li>
+                                    </ul>
+                                </div>
+                                <button type="button" class="editbtn" (click)="addEmails()">
+                                    Add
+                                </button>
+                            </div>
+                            <div *ngIf="UsersList.length" class="Brand_tags">
+                                <div *ngFor="let item of UsersList; let i = index"
+                                    class="brandtags d-flex align-items-center">
+                                    <span class="me-2">{{ item.MailID }}</span>
+                                    <i class="fa fa-times close-icon" (click)="removeBrandTag(item, i)"></i>
+                                </div>
+                            </div>
+                            <textarea class="form-control input-field mt-2" style="width: 25rem;"
+                                placeholder="Enter Notes" rows="2" [(ngModel)]="notes"></textarea>
+                            <div class="d-flex justify-content-end gap-2 mt-2 px-1 ms-auto">
+                                <button class="cancelbtn" (click)="mailBlock()">Cancel</button>
+                                <button class="editbtn" (click)="sendMail()">Send Mail</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="Tooltip" *ngIf="isActionVisible('emailToPdf')">
+                        <img src="images/EmailToPdf.png" class="img-fluid printHideIcons" title="Email" alt=""
+                            (click)="mailBlock('A')">
+
+                        <span class="Tooltip_chat" *ngIf="mailtooltip">
+                            <div style="margin: .5rem;" class="scrl_tooltip_chat">
+
+                                <div class="gross-popup">
+                                    <div class="col-12 d-flex" (click)="dropdownclose()">
+                                        <h5><span class="slash">//</span>
+                                            EMAIL SENDING</h5>
+                                        <a type="button" class="close-btn ms-auto me-2" (click)="mailBlock('C')"><i
+                                                class="fa-solid fa-xmark"></i> </a>
+                                    </div>
+                                    <div class="row" style="width:100%">
+                                        <div class="col-12">
+
+                                            <div class="row" style="margin-top:20px">
+                                                <div class="col-lg-10">
+                                                    <div class="d-flex">
+                                                        <input type="text" class="form-control NR_search"
+                                                            style="width: 100%;"
+                                                            placeholder="Select Name or Enter Email"
+                                                            [(ngModel)]="mailuser" autofocus
+                                                            (keyup)="OnChangeEvent($event)" (click)="dropdownopen()"
+                                                            #brand>
+                                                        <i class="fa-solid fa-chevron-down fa-magnifying-glass m-auto"
+                                                            (click)="dropdowntoggle()"></i>
+                                                      
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2" [ngClass]="{'disabled': mailuser == ''}">
+                                                    <button type="submit" class="savebutton"
+                                                        (click)="addEmails()">Add</button>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2" *ngIf="selectedUser != undefined">
+                                                <div *ngIf="showusersAutofill && selectedUser.length>0"
+                                                    class="autofillcls" #brandmenu>
+                                                    <div *ngFor="let option of selectedUser ; let i=index"
+                                                        (mouseover)="highlightRow(option)"
+                                                        [ngClass]="{'highlight' : option.FullName == selectedItem}">
+                                                        <li style="list-style: none;padding: 8px;cursor: pointer;"
+                                                            (click)="selectItem($event, option,i)">{{option.FullName}}
+                                                        </li>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="UsersList!=''" class="Brand_tags">
+                                                    <div *ngFor="let item of UsersList;let i=index" class="brandtags">
+                                                        <div style="float: left;">{{item.MailID}}</div>
+                                                        <img src="../../../assets/images/x.png " class="closecls"
+                                                            (click)="removeBrandTag(item,i)">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:5px" (click)="dropdownclose()">
+                                                <div class="col-md-12">
+                                                    <span class="ml-3"><textarea type="text" class="form-control"
+                                                            placeholder="Enter Notes" cols="10" rows="2"
+                                                            [(ngModel)]="notes">   </textarea>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mt-1" (click)="dropdownclose()">
+                                                <div class="col-md-12 justify-content-center align-items-center d-flex">
+                                                    <div class="col-md-4 text-center">
+                                                        <button type="submit" class="savebutton float-right"
+                                                            (click)="sendMail()">
+                                                            Send Mail
+                                                        </button>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+                    </div> -->
+                    <img src="images/Logout.svg" class="img-fluid" alt="" (click)="logoutSession()" title="Logout">
+                </div>
+            </div>
+            <div class="user-info">
+                <h4>Welcome</h4>
+                <p>{{userInfo?.fullName}}, <span class="dropdown">
+                        <a routerLink="#" class="dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            {{userData?.user_Info?.title || userInfo?.user_Info?.title}}
+                            <span class="arrow-icon">
+                                <img src="images/ArrowDown.svg" alt="">
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <b>{{userInfo?.user_Info?.email}}</b> <br>
+                                    <span>{{userData?.user_Info?.title || userInfo?.user_Info?.title}}</span></a>
+                            </li>
+                            <hr *ngIf="userInfo?.user_Info?.roleid === 100 ">
+                            <li *ngIf="userInfo?.user_Info?.roleid === 100 "><a class="dropdown-item">Edit Profile</a>
+                            </li>
+                            <li *ngIf="userInfo?.user_Info?.roleid === 100 "><a class="dropdown-item"
+                                    (click)="onSettingsClick()">Edit Widgets</a></li>
+                            <hr *ngIf="userInfo?.user_Info?.roleid === 100 ">
+                            <li>
+                                <div class="d-flex align-items-center justify-content-center gap-5 py-2">
+                                    <a (click)="logoutSession()">Signout</a> <a>Privacy Policy</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </span></p>
+            </div>
+
+            <img src="images/Axel One_dark.svg" alt="AXEL ONE" class="axel-logo d-none d-lg-block">
+        </div>
+
+        <div class="offcanvas offcanvas-start d-block d-lg-none" tabindex="-1" id="mobileMenu">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">AXEL ONE DASHBOARD</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body h-100">
+                <div class="nav-icons d-flex mb-4">
+                    <img src="images/Notif_icon.svg" class="img-fluid me-2" alt="">
+                    <img src="images/setting.svg" class="img-fluid me-2" alt="">
+                    <img src="images/Logout.svg" class="img-fluid me-2" alt="" (click)="logoutSession()" title="Logout">
+                </div>
+                <div class="user-info">
+                    <h4>Welcome</h4>
+                    <p>{{userInfo?.fullName}},
+                        <span class="dropdown">
+                            <a routerLink="#" class="dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                {{userInfo?.user_Info?.title}}
+                            </a>
+                        </span>
+                    </p>
+                </div>
+                <img src="images/Axel One_dark.svg" alt="AXEL ONE" class="axel-logo mt-3">
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- <div class="col">
+    <div class="export-card">
+        <div class="export-title">Export File Type</div>
+        <button class="export-button" (click)="export('csv')">CSV</button>
+        <button class="export-button" (click)="export('xlsx')">XLSX</button>
+        <button class="export-button" (click)="export('pdf')">PDF</button>
+    </div>
+</div> -->
+
+
+<div *ngIf="loading" class="loading-overlay">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>

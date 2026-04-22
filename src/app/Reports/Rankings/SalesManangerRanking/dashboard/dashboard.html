@@ -1,0 +1,358 @@
+<ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="white" type="ball-clip-rotate">
+  <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+<main>
+  <div class="container-fluid" id="FandIManagerRankings">
+    <div class="reports-bar mx-0 d-flex">
+      <div class="filter-dropdowns" (scroll)="getScrollPosition($event)">
+
+        <!-- Store Dropdown -->
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+              {{storecount}}
+              {{storedisplayname}} )</span>
+            <span class="arrow"></span></button>
+          <app-stores
+            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+        </div>
+
+        <!-- Time Frame Dropdown -->
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(1)">
+            Time Frame <span class="light-font"> {{ displaytime }}</span>
+            <span class="arrow"></span></button>
+          <div class="timeframe" *ngIf="activePopover === 1">
+            <app-date-range-picker [Dates]="Dates" (updatedDates)="updatedDates($event)"></app-date-range-picker>
+          </div>
+        </div>
+        <!-- Rank By Dropdown -->
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(3)">
+            Rank by <span class="light-font">( {{storeorgroup== 'S' ? 'Store' : 'Group'}} )</span>
+            <span class="arrow"></span>
+          </button>
+          <div class="timeframe my-2" *ngIf="activePopover === 3">
+            <div class="date-filter-card">
+              <button class="outline-button" (click)="storeorgroups('S','S')"
+                [ngClass]="{'active':storeorgroup.indexOf('S')>=0}">
+                Store
+              </button>
+              <button class="outline-button" (click)="storeorgroups('G','G')"
+                [ngClass]="{'active':storeorgroup.indexOf('G')>=0}">
+                Group
+              </button>
+            </div>
+          </div>
+        </div>
+        <!--New,Used-->
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(4)">
+            New/Used <span class="light-font">( {{neworused.length ==
+              1 ? neworused :
+              'Selected' }}
+              {{neworused.length == 1 ? '':
+              neworused.length }} )</span>
+
+          </button>
+          <div class="timeframe my-2" *ngIf="activePopover === 4">
+            <div class="date-filter-card">
+              <button type="button" class="outline-button" [ngClass]="{'active': neworused.indexOf('New') >= 0}"
+                (click)="multipleorsingle('NU','New')">New</button>
+              <button type="button" class="outline-button" [ngClass]="{'active': neworused.indexOf('Used') >= 0}"
+                (click)="multipleorsingle('NU','Used')">Used</button>
+            </div>
+          </div>
+        </div>
+        <!-- Deal Type Dropdown -->
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(5)">
+            Deal Type <span class="light-font">( {{retailorlease.length == 0 ? 'Select' :
+              (retailorlease.length == 1 ? retailorlease : 'Selected')}} {{retailorlease.length > 1 ?
+              retailorlease.length: ''}} )</span>
+
+          </button>
+          <div class="timeframe my-2" *ngIf="activePopover === 5">
+            <div class="date-filter-card btn-dealtype">
+              <button class="outline-button"
+                *ngFor="let type of ['Retail','Lease','Wholesale','Misc','Fleet','Demo','Special Order','Rental','Dealer Trade']"
+                (click)="multipleorsingle('RL', type)" [ngClass]="{'active': retailorlease.indexOf(type) >= 0}">
+                {{type}}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(6)"> Finance Type <span class="light-font">(
+              {{financetype.length ==
+              1 ? financetype :
+              'Selected' }}
+              {{financetype.length == 1 ? '':
+              financetype.length }} )</span>
+          </button>
+          <div class="timeframe my-2" *ngIf="activePopover === 6">
+            <div class="date-filter-card">
+              <button class="outline-button" (click)="multipleorsingle('DS','Finance')"
+                [ngClass]="{'active': financetype.indexOf('Finance') >= 0}">Finance</button>
+              <button class="outline-button" (click)="multipleorsingle('DS','Cash')"
+                [ngClass]="{'active': financetype.indexOf('Cash') >= 0}">Cash</button>
+              <button type="button" class="outline-button" (click)="multipleorsingle('DS','Lease')"
+                [ngClass]="{'active': financetype.indexOf('Lease') >= 0}">Lease</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dropdown ">
+          <button class="dropdown-toggle" (click)="togglePopover(7)">Gross Type
+            <span class="light-font">( {{GrossType.length == 1 ? GrossType : 'Selected '}}
+              <span *ngIf="GrossType.length > 1"> {{GrossType.length}} </span>)</span>
+            <span class="arrow"></span>
+          </button>
+          <div class="timeframe my-2" *ngIf="activePopover === 7">
+            <div class="date-filter-card">
+              <button class="outline-button" (click)="multipleorsingle('GT','Front Gross')"
+                [ngClass]="{'active':GrossType.indexOf('Front Gross')>=0}">Front Gross</button>
+              <button class="outline-button" (click)="multipleorsingle('GT','Back Gross')"
+                [ngClass]="{'active':GrossType.indexOf('Back Gross')>=0}">Back Gross</button>
+
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+      <!-- Apply Button -->
+      &nbsp;&nbsp;
+      <div class="dropdown">
+        <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+      </div>
+
+
+    </div>
+    <div class="scorecard-triple-header smrankings-tbl">
+      <table class="table mb-0 w-100">
+        <thead style="text-transform: uppercase;">
+          <tr>
+            <!-- <th></th> -->
+            <th class="text-center bg-white" colspan="4" *ngIf="DupDateType==''">
+              {{DupFromDate
+              |date:'MMMM'}} ({{DupFromDate |date:'dd'}}-{{DupToDate |date:'dd'}},
+              {{DupFromDate | date:'yyyy'}})</th>
+            <th colspan="3" *ngIf="DupDateType!=''">
+              {{DupDateType=="MTD" ? "MTD" : DupDateType=="YTD" ? "YTD" : DupDateType=="QTD" ? "QTD" :
+              DupDateType=="LM" ? "LAST MONTH" : DupDateType=="LY" ? "LAST YEAR" : DupFromDate +" to "+
+              DupToDate}}</th>
+            <th colspan="5">
+              Unit Count</th>
+            <th colspan="3" *ngIf="DupGrossType.indexOf('Front Gross')>=0">Front Gross</th>
+            <th colspan="4" *ngIf="DupGrossType.indexOf('Back Gross')>=0">Back Gross</th>
+            <th colspan="3" *ngIf="DupGrossType.length >1">Total Gross</th>
+          </tr>
+
+          <tr>
+            <th class="bdr-rt" (click)="tabClick('Rank')" style="
+                            white-space: nowrap;cursor: pointer;">Rank</th>
+            <th class="bdr-rt" (click)="tabClick('SalesManager')" style="cursor: pointer;">Sales Manager</th>
+            <th class="bdr-rt" (click)="tabClick('StoreName')" style="cursor: pointer">
+              Store Name</th>
+
+            <th (click)="tabClick('New')" style="cursor: pointer;">New</th>
+            <th (click)="tabClick('Used')" style="cursor: pointer;">Used</th>
+            <th (click)="tabClick('Total')" style="cursor: pointer;">Total</th>
+            <th (click)="tabClick('Pace')" style="cursor: pointer;">Pace </th>
+            <th (click)="tabClick('UnitsDayAvg')" style="cursor: pointer;">
+              90 Day Avg </th>
+            <ng-container *ngIf="DupGrossType.indexOf('Front Gross')>=0">
+              <th class="bdr-rt cursor-pointer" (click)="tabClick('Gross')">Gross</th>
+              <th class="bdr-rt cursor-pointer" (click)="tabClick('GrossPace')">Pace</th>
+              <th class="bdr-rt cursor-pointer" (click)="tabClick('PVR')" [ngClass]="{'boxshadow' : DupGrossType.length >1 }">PVR</th>
+            </ng-container>
+            <ng-container *ngIf="DupGrossType.indexOf('Back Gross')>=0">
+              <th (click)="tabClick('BackGross')" style="cursor: pointer">Gross</th>
+              <th (click)="tabClick('BackGrossPace')" style="cursor: pointer">Pace</th>
+              <th (click)="tabClick('BackGrossPvr')" style="cursor: pointer">PVR</th>
+              <th (click)="tabClick('GrossDayAvg')" style="cursor: pointer" [ngClass]="{'boxshadow' : DupGrossType.length >1 }">90 Day Avg</th>
+            </ng-container>
+
+            <ng-container *ngIf="DupGrossType.length >1">
+              <th class="bdr-rt cursor-pointer" (click)="tabClick('TotalGross')">Gross</th>
+              <th class="bdr-rt cursor-pointer" (click)="tabClick('TotalGross_Pace')">Pace</th>
+              <th class="bdr-rt cursor-pointer" (click)="tabClick('TotalGross_PVR')">PVR</th>
+              <!-- <th class="bdr-rt cursor-pointer" (click)="tabClick('GrossDayAvg')">90 Day Avg</th> -->
+            </ng-container>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let spdata of FIManagerData; let i=index">
+            <tr
+              [ngClass]="{'title' : i % 2 == 0 , 'titleOdd' : i % 2 != 0 , 'Selectedrow': spdata.Dealerx === '-' , 'divBold': spdata.data1 === 'Reports Total'}"
+              [id]="'DV_'+i">
+              <td id="DataBody1" *ngIf="spdata.data1 !== 'Reports Total'" class="text-center">
+                <span>{{spdata.Rank}}</span>
+              </td>
+              <td id="DataBody2" *ngIf="spdata.data1 !== 'Reports Total'" style="width: 10%;text-align: left;">
+                <span>{{spdata.SalesManager}}</span>
+              </td>
+              <td id="DataBody3" *ngIf="spdata.data1 !== 'Reports Total'" style="width: 15%;text-align: left;">
+                {{(spdata.StoreName ==undefined ? '-' :spdata.StoreName)}}
+              </td>
+
+              <td id="DataBody4" style="text-align: right;">{{(spdata.New ===null || spdata.New ===0)? '-' :spdata.New |
+                number:'1.0'}}
+              </td>
+              <td id="DataBody5" style="text-align: right;">{{(spdata.Used ===null || spdata.Used ===0)? '-'
+                :spdata.Used
+                |
+                number:'1.0'
+                }}</td>
+              <td id="DataBody6" style="text-align: right;">{{(spdata.Total ===null || spdata.Total ===0)? '-'
+                :spdata.Total | number:'1.0' }}</td>
+              <td id="DataBody7" style="text-align: right;">{{(spdata.Pace ===null || spdata.Pace ===0)? '-'
+                :spdata.Pace
+                |
+                number:'1.0'
+                }}</td>
+              <td id="DataBody7" style="text-align: right;">{{(spdata.UnitsDayAvg ===null || spdata.UnitsDayAvg ===0)?
+                '-'
+                :spdata.UnitsDayAvg |
+                number:'1.0'
+                }}</td>
+              <ng-container *ngIf="DupGrossType.indexOf('Front Gross')>=0">
+                <td class="text-end" [ngClass]="{ negative: !inTheGreen(spdata.FrontGross)}">
+                  <span class="d-flex justify-content-between">
+                    {{ spdata.FrontGross !== null && spdata.FrontGross !== undefined ? '$' : '' }}
+                    <span>
+                      {{ spdata.FrontGross !== null && spdata.FrontGross !== undefined ? (spdata.FrontGross | number:'1.0-0') : '-'
+                      }}
+                    </span>
+                  </span>
+                </td>
+
+                <td class="text-end" [ngClass]="{ negative: !inTheGreen(spdata.FrontGrossPace)}">
+                  <span class="d-flex justify-content-between">
+                    {{ spdata.FrontGrossPace !== null && spdata.FrontGrossPace !== undefined ? '$' : '' }}
+                    <span>
+                      {{ spdata.FrontGrossPace !== null && spdata.FrontGrossPace !== undefined ? (spdata.FrontGrossPace |
+                      number:'1.0-0')
+                      :
+                      '-' }}
+                    </span>
+                  </span>
+                </td>
+
+                <td class="text-end" [ngClass]="{ negative: !inTheGreen(spdata.FrontGrossPvr),  'boxshadow' : DupGrossType.length >1}">
+                  <span class="d-flex justify-content-between">
+                    {{ spdata.FrontGrossPvr !== null && spdata.FrontGrossPvr !== undefined ? '$' : '' }}
+                    <span>
+                      {{ spdata.FrontGrossPvr !== null && spdata.FrontGrossPvr !== undefined ? (spdata.FrontGrossPvr | number:'1.0-0') : '-' }}
+                    </span>
+                  </span>
+                </td>
+
+                <!-- <td class="text-end" [ngClass]="{ negative: !inTheGreen(spdata.GrossDayAvg) , 'boxshadow' : DupGrossType.length >1}">
+                    <span class="d-flex justify-content-between">
+                      {{ spdata.GrossDayAvg !== null && spdata.GrossDayAvg !== undefined ? '$' : '' }}
+                      <span>
+                        {{ spdata.GrossDayAvg !== null && spdata.GrossDayAvg !== undefined ? (spdata.GrossDayAvg |
+                        number:'1.0-0') : '-' }}
+                      </span>
+                    </span>
+                  </td> -->
+              </ng-container>
+              <ng-container *ngIf="DupGrossType.indexOf('Back Gross')>=0">
+                <td id="DataBody8" style="text-align: right;" [ngClass]="{ negative: !inTheGreen(spdata['BackGross'])}">
+                  <span class="d-flex justify-content-between"> {{
+                    (spdata['BackGross'] == 0 || spdata['BackGross'] == null ? '' :
+                    '$') }} <span> {{
+                      (spdata['BackGross'] == 0 ||spdata['BackGross']== null ? '-' :
+                      spdata['BackGross'] |number:'1.0-0') }}</span></span>
+                </td>
+                <td id="DataBody9" style="text-align: right;"
+                  [ngClass]="{ negative: !inTheGreen(spdata.BackGrossPace)}">
+                  <span class="d-flex justify-content-between"> {{
+                    (spdata.BackGrossPace == 0 || spdata.BackGrossPace == null ? '' :
+                    '$') }} <span> {{
+                      (spdata.BackGrossPace == 0 ||spdata.BackGrossPace== null ? '-' :
+                      spdata.BackGrossPace |number:'1.0-0') }}</span></span>
+                </td>
+                <td id="DataBody10" style="text-align: right;"
+                  [ngClass]="{ negative: !inTheGreen(spdata.BackGrossPvr)}">
+                  <span class="d-flex justify-content-between"> {{
+                    (spdata.BackGrossPvr == 0 || spdata.BackGrossPvr == null ? '' :
+                    '$') }} <span> {{
+                      (spdata.BackGrossPvr == 0 ||spdata.BackGrossPvr== null ? '-' :
+                      spdata.BackGrossPvr |number:'1.0-0') }}</span></span>
+                </td>
+
+                <td id="DataBody9" style="text-align: right;" [ngClass]="{ negative: !inTheGreen(spdata.GrossDayAvg), 'boxshadow' : DupGrossType.length >1}">
+
+                  <span class="d-flex justify-content-between"> {{
+                    (spdata.GrossDayAvg == 0 || spdata.GrossDayAvg == null ? '' :
+                    '$') }} <span> {{
+                      (spdata.GrossDayAvg == 0 ||spdata.GrossDayAvg== null ? '-' :
+                      spdata.GrossDayAvg |number:'1.0-0') }}</span></span>
+                </td>
+              </ng-container>
+              <ng-container *ngIf="DupGrossType.length >1">
+                <td class="text-end" [ngClass]="{ negative: !inTheGreen(spdata.TotalGross)}">
+                  <span class="d-flex justify-content-between">
+                    {{ spdata.TotalGross !== null && spdata.TotalGross !== undefined ? '$' : '' }}
+                    <span>
+                      {{ spdata.TotalGross !== null && spdata.TotalGross !== undefined ? (spdata.TotalGross |
+                      number:'1.0-0') : '-'
+                      }}
+                    </span>
+                  </span>
+                </td>
+
+                <td class="text-end" [ngClass]="{ negative: !inTheGreen(spdata.TotalGrossPace)}">
+                  <span class="d-flex justify-content-between">
+                    {{ spdata.TotalGrossPace !== null && spdata.TotalGrossPace !== undefined ? '$' : '' }}
+                    <span>
+                      {{ spdata.TotalGrossPace !== null && spdata.TotalGrossPace !== undefined ?
+                      (spdata.TotalGrossPace |
+                      number:'1.0-0')
+                      :
+                      '-' }}
+                    </span>
+                  </span>
+                </td>
+
+                <td class="text-end" [ngClass]="{ negative: !inTheGreen(spdata.TotalGrossPvr)}">
+                  <span class="d-flex justify-content-between">
+                    {{ spdata.TotalGrossPvr !== null && spdata.TotalGrossPvr !== undefined ? '$' : '' }}
+                    <span>
+                      {{ spdata.TotalGrossPvr !== null && spdata.TotalGrossPvr !== undefined ? (spdata.TotalGrossPvr
+                      | number:'1.0-0') : '-' }}
+                    </span>
+                  </span>
+                </td>
+
+                <!-- <td class="text-end" [ngClass]="{ negative: !inTheGreen(spdata.GrossDayAvg)}">
+                    <span class="d-flex justify-content-between">
+                      {{ spdata.GrossDayAvg !== null && spdata.GrossDayAvg !== undefined ? '$' : '' }}
+                      <span>
+                        {{ spdata.GrossDayAvg !== null && spdata.GrossDayAvg !== undefined ? (spdata.GrossDayAvg |
+                        number:'1.0-0') : '-' }}
+                      </span>
+                    </span>
+                  </td> -->
+              </ng-container>
+            </tr>
+          </ng-container>
+
+        </tbody>
+        <tbody *ngIf="NoData" style="pointer-events:none">
+          <tr>
+            <td colspan="7" style="text-align: center;">No Records Found!!!</td>
+            <td colspan="4" *ngIf="DupGrossType.indexOf('Front Gross')>=0"></td>
+            <td colspan="3" *ngIf="DupGrossType.indexOf('Back Gross')>=0"></td>
+            <td colspan="3" *ngIf="DupGrossType.length >1"></td>
+
+          </tr>
+        </tbody>
+      </table>
+      <!-- </div> -->
+    </div>
+  </div>
+</main>

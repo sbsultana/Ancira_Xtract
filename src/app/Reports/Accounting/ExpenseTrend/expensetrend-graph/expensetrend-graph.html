@@ -1,0 +1,20 @@
+<div class="container-fluid d-flex justify-content-center align-items-center popup-container m-0 p-0">
+    <div class="gross-popup rounded">
+        <div class="header d-flex align-items-center">
+            <h5 class="title m-0 ms-2">
+                <span class="slash text-white">// {{ ETgraphdetails.NAME }}</span>
+            </h5>
+
+            <a type="button" class="close-btn" (click)="close()"><i class="fa-solid fa-xmark"></i> </a>
+        </div>
+        <div class="content m-5 mt-0 rounded">
+            <div class="chart-wrapper">
+                <canvas #mychart id="myChart" style="display: block;
+        width: 1050px;
+        height: 381px;
+        padding: 0.5rem 3rem;"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>

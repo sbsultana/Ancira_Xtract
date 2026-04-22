@@ -1,0 +1,12 @@
+.lendersummary-tbl {
+    th:nth-child(1),
+
+    td:nth-child(1) {
+        box-shadow:
+            inset 0 0.4px 0 0 #e0edff,
+            inset -3px 0 0 0 #e0edff,
+            inset 0 -0.4px 0 0 #e0edff,
+            inset 0.4px 0 0 0 #e0edff;
+    }
+}
+

@@ -1,0 +1,270 @@
+<div class="container-fluid d-flex justify-content-center align-items-center recap"
+    *ngIf="DetailsET.REFERENCE === 'LayerOneDetails'" [ngStyle]="{'opacity': Opacity == 'Y' ? '.8' : '1' }"
+    style="padding-top: 2vh;">
+    <div class="gross-popup">
+        <div class="header d-flex align-items-center">
+            <h5 class="title m-0 ms-1">
+                <span class="slash">Title # : </span> {{this.DetailsET.LAYERONE.DISPLAY_LABLE}}<br>
+                <span class="slash">Store : </span>{{DetailsET.STORENAME}}&nbsp;&nbsp;&nbsp;&nbsp;
+            </h5>
+
+            <div class="search ms-auto pe-3">
+                <input type="text" class="form-control" [(ngModel)]="DetailsSearchName" placeholder="Search"
+                    type="text">
+                <img src="images/Magnifer.svg" alt="">
+            </div>
+            <img src="images/Download.svg" (click)="exportToExcel()" class="img-fluid pe-3" alt=""
+                style="cursor: pointer;">
+            <a type="button" class="close-btn" (click)="close()"><i class="fa-solid fa-xmark"></i> </a>
+        </div>
+        <div class="content">
+            <!-- <div class="loading" *ngIf="spinnerLoader">
+                <div class="loader"></div>
+            </div> -->
+            <div *ngIf="spinnerLoader" class="graph-loader d-flex align-items-center justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <div class="d-flex" id="FsDetails" #TABLE #table style="width: 100%;">
+
+                <div class="performance-scorecard" style="height: 60vh;" (scroll)="updateVerticalScroll($event)">
+                    <table class="table table-borderless mb-0">
+                        <thead>
+                            <tr>
+                                <th style="border-radius: 10px 0 0 0;">Acct. Details</th>
+                                <th>Reference</th>
+                                <th class="text-center">Entry Desc.</th>
+                                <th class="text-center">Amount</th>
+                                <th style="border-radius:0 10px  0 0;border: none;">Acct. Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let LayerZero of DetailsETData[0]?.detailsdata; let i = index ">
+                                <ng-container *ngFor="let LayerOne of LayerZero.Level0; let j = index ">
+                                    <ng-container *ngFor="let LayerTwo of LayerOne.Level1; let k = index ">
+                                        <tr class="lightblue-bg text-bold">
+                                            <td class="text-start ps-2">
+                                                <span>{{
+                                                    (LayerTwo['AcctDesc'] == 0 || LayerTwo['AcctDesc'] == null ||
+                                                    LayerTwo['AcctDesc'] ==
+                                                    undefined ? '-' : LayerTwo['AcctDesc'] ) }}</span>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr class="text-bold">
+                                            <td class="text-start" style="padding-left: 3rem;">
+                                                {{ (LayerTwo['accountnumber'] == 0 || LayerTwo['accountnumber'] ==
+                                                null || LayerTwo['accountnumber'] ==
+                                                undefined ? '-' : LayerTwo['accountnumber'] ) }}
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <ng-container *ngFor="let LayerThree of LayerTwo.Level2; let l = index ">
+                                            <tr>
+                                                <td class="text-start" style="padding-left: 5rem;">
+                                                    {{ (LayerThree['Control'] == 0 || LayerThree['Control'] == null ||
+                                                    LayerThree['Control'] == undefined
+                                                    ? '-' :
+                                                    LayerThree['Control'] ) }}
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr *ngIf="LayerThree['Control2'] && LayerThree['Control2'] !== 0">
+                                                <td class="text-start" style="padding-left: 7rem;">
+                                                    {{ (LayerThree['Control2'] == 0 || LayerThree['Control2'] == null ||
+                                                    LayerThree['Control2'] == undefined
+                                                    ? '-' :
+                                                    LayerThree['Control2'] ) }}
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr *ngFor="let LayerFour of LayerThree.Level3; let m = index ">
+                                                <td></td>
+                                                <td class="text-start">
+                                                    {{ (LayerFour['Refer'] == 0 || LayerFour['Refer'] == null ||
+                                                    LayerFour['Refer'] ==
+                                                    undefined ? '-' : LayerFour['Refer'] ) }}
+                                                </td>
+                                                <td class="text-start">
+                                                    <span style="white-space: normal; display: block;">
+                                                        {{ (LayerFour['EntryDesc'] == 0 || LayerFour['EntryDesc'] ==
+                                                        null ||
+                                                        LayerFour['EntryDesc'] ==
+                                                        undefined ? '-' :
+                                                        LayerFour['EntryDesc']) }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span class="d-flex justify-content-between">$<span>
+                                                            {{ LayerFour['Amount'] !== null && LayerFour['Amount'] !==
+                                                            undefined ? (LayerFour['Amount'] | number:'1.2-2') : '-' }}
+                                                        </span></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ (LayerFour['Date'] == 0 || LayerFour['Date'] == null ||
+                                                    LayerFour['Date'] ==
+                                                    undefined ? '-' :
+                                                    LayerFour['Date'] | date : 'MM.dd.yyyy') }}
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+                        </tbody>
+                        <tfoot *ngIf="DetailsETData?.length > 0 && DetailsETData[0]?.detailsdata?.length > 0">
+                            <tr>
+                                <td colspan="3" class="sticky-footer text-end pe-3 py-1"
+                                    style="border-radius:0 0 0 10px;border: none;">Total:</td>
+                                <td class="sticky-footer px-2 py-1 text-end"
+                                    [ngClass]="{ negative: !inTheGreen(layerFourAmountTotal) }">
+                                    <span class="d-flex justify-content-between">
+                                        $<span>{{ layerFourAmountTotal | number:'1.2-2' }}</span>
+                                    </span>
+                                </td>
+                                <td class="sticky-footer px-2 py-1" style="border-radius:0 0 10px 0;border: none;"></td>
+                            </tr>
+                        </tfoot>
+                        <ng-template #ifNotShow>
+                            <tr *ngIf="NoData">
+                                <td colspan="5"
+                                    style="text-align: center;font-size: 1rem;font-family: 'Roboto'; height: 30px;">No
+                                    Data Found!!!</td>
+                            </tr>
+                        </ng-template>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid d-flex justify-content-center align-items-center recap"
+    *ngIf="DetailsET.REFERENCE === 'LayerThreeDetails'" [ngStyle]="{'opacity': Opacity == 'Y' ? '.8' : '1' }"
+    style="padding-top: 2vh;">
+    <div class="gross-popup">
+        <div class="header d-flex align-items-center">
+            <h5 class="title m-0 ms-1">
+                <span class="slash">Control # : </span> {{DetailsET.LAYERTHREE.Desc}}<br>
+                <span class="slash">Store : </span>{{DetailsET.STORENAME}}&nbsp;&nbsp;&nbsp;&nbsp;
+            </h5>
+            <h5 class="title m-0 ms-1">
+                <span class="slash">&nbsp;</span><br>
+                <img src="" alt=""> <span class="slash">Account : </span> {{DetailsET.LAYERTHREE.AcctNum}}
+            </h5>
+            <div class="search ms-auto pe-3">
+                <input type="text" class="form-control" [(ngModel)]="DetailsSearchName" placeholder="Search"
+                    type="text">
+                <img src="images/Magnifer.svg" alt="">
+            </div>
+            <img src="images/Download.svg" (click)="exportToSubExcel()" class="img-fluid pe-3" alt=""
+                style="cursor: pointer;">
+            <a type="button" class="close-btn" (click)="close()"><i class="fa-solid fa-xmark"></i> </a>
+        </div>
+        <div class="content">
+            <!-- <div class="loading" *ngIf="spinnerLoader">
+                <div class="loader"></div>
+            </div> -->
+            <div *ngIf="spinnerLoader" class="graph-loader d-flex align-items-center justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <div class="d-flex" id="FsDetails" #TABLE #table style="width: 100%;">
+                <div class="performance-scorecard" style="height: 60vh;" (scroll)="updateVerticalScroll($event)">
+                    <table class="table table-borderless mb-0">
+                        <thead>
+                            <tr>
+                                <th style="border-radius: 10px 0 0 0;">Acct. Date</th>
+                                <th>Control 2</th>
+                                <th class="text-center">Reference</th>
+                                <th class="text-center">Entry Desc.</th>
+                                <th style="cursor: pointer;" (click)="sort('Amount', DetailsETData)">Amount <i
+                                        class="fa" [ngClass]="{'fa-sort-up': column === 'Amount' && isDesc, 
+                                                'fa-sort-down': column === 'Amount' && !isDesc, 
+                                                'fa-sort': column !== 'Amount'}">
+                                    </i></th>
+                                <th>Post Desc.</th>
+                                <th style="border-radius:0 10px  0 0;border: none;">Journal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let ETD of DetailsETData; let i = index "
+                                [ngClass]="{ 'odd-row': i % 2 !== 0, 'even-row': i % 2 === 0 }">
+                                <td class="text-center">
+                                    {{ (ETD['Acct. Date'] == 0 || ETD['Acct. Date'] == null || ETD['Acct. Date'] ==
+                                    undefined ? '-' :
+                                    ETD['Acct. Date'] | date : 'yyyy.MM.dd') }}
+                                </td>
+                                <td class="text-start">
+                                    {{ (ETD['control2'] == 0 || ETD['control2'] == null || ETD['control2'] == undefined
+                                    ? '-' :
+                                    ETD['control2'] ) }}
+                                </td>
+                                <td>
+                                    {{ (ETD['Reference'] == 0 || ETD['Reference'] == null || ETD['Reference'] ==
+                                    undefined ? '-' : ETD['Reference'] ) }}
+                                </td>
+                                <td class="text-start">
+                                    {{ (ETD['Entry Desc'] == 0 || ETD['Entry Desc'] == null || ETD['Entry Desc'] ==
+                                    undefined ? '-' :
+                                    ETD['Entry Desc']) }}
+                                </td>
+                                <td class="text-end">
+                                    <span class="d-flex justify-content-between"> $<span>
+                                            {{ ETD['Amount'] !== null && ETD['Amount'] !== undefined ? (ETD['Amount'] |
+                                            number:'1.2-2') : '-' }}
+                                        </span></span>
+                                </td>
+
+                                <td class="text-start">
+                                    {{ (ETD['Post Desc'] == 0 || ETD['Post Desc'] == null || ETD['Post Desc'] ==
+                                    undefined ? '-' : ETD['Post Desc'] ) }}
+                                </td>
+
+                                <td class="text-center" [ngClass]="{ negative:!inTheGreen(ETD.Journal)}">
+                                    {{ ETD.Journal == 0 || ETD.Journal == null || ETD.Journal == undefined ? '-' :
+                                    ETD.Journal }}
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot *ngIf="DetailsETData.length > 0">
+                            <tr>
+                                <td colspan="4" class="sticky-footer text-end pe-3 py-1"
+                                    style="border-radius:0 0 0 10px;border: none;">Total:</td>
+                                <td class="sticky-footer px-2 py-1"
+                                    [ngClass]="{ negative: !inTheGreen(postingAmountTotal) }">
+                                    <span class="d-flex justify-content-between">
+                                        $<span>{{ postingAmountTotal | number }}</span>
+                                    </span>
+                                </td>
+                                <td colspan="2" class="sticky-footer text-end pe-3 py-1"
+                                    style="border-radius:0 0 10px 0;border: none;"></td>
+                            </tr>
+                        </tfoot>
+                        <ng-template #ifNotShow>
+                            <tr *ngIf="NoData">
+                                <td colspan="7"
+                                    style="text-align: center;font-size: 1rem;font-family: 'Roboto'; height: 30px;">No
+                                    Data Found!!!</td>
+                            </tr>
+                        </ng-template>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

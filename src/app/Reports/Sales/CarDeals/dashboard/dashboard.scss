@@ -1,0 +1,197 @@
+//////////////////////////////////// REPORT BAR ////////////////////////////////////////
+
+:host .negative {
+  color: #d32f2f;
+}
+
+.popuppointer {
+  cursor: pointer;
+  color: #026df3;
+  text-decoration: underline;
+
+  //  pointer-events: none;
+  //   color: #000;
+}
+
+.popupdisable {
+  pointer-events: none;
+  color: #000;
+  // text-decoration: underline;
+}
+
+.list-group {
+  .trade-title {
+    font-size: .875rem;
+    font-family: 'Roboto';
+    color: #000;
+    font-weight: 700;
+    line-height: 1.25rem;
+  }
+
+  li {
+    font-size: 1rem;
+    font-family: 'Roboto';
+
+    color: #000;
+    line-height: 1.25rem;
+  }
+}
+
+.details{
+  height: 240px;
+}
+
+.notes {
+  width: fit-content;
+  padding: 0.2rem 0.5rem;
+  margin-left: 2rem;
+  font-size: .7rem;
+  // float: inline-end;
+}
+
+.totals-block {
+  background-color: #8db4ff;
+  color: #000;
+  border: none;
+  border: none;
+  padding: 8px 12px;
+  font-family: "Roboto";
+  font-size: 1rem;
+  line-height: 1.25rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+
+  .divNormal {
+    font-family: 'Roboto' !important;
+  }
+
+  .divBold {
+    font-family: 'Roboto' !important;
+    font-weight: 700;
+  }
+}
+
+::ng-deep .modal-content {
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  top: 30px
+}
+
+
+
+.cardeals-tbl {
+  height: calc(100vh - 175px);
+}
+
+.notes-block {
+  .title {
+    color: #0554ef;
+    font-size: .8rem;
+    line-height: 1rem;
+  }
+
+  .notes {
+    color: #000;
+    font-size: 1rem;
+    line-height: 1rem;
+  }
+}
+
+
+.bg-white {
+  background: #ffffff !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.disable {
+  pointer-events: none !important;
+  // display: none;
+  color: #363b4f;
+}
+
+.Selectedrow {
+  background-color: #363b4f !important;
+  color: white !important;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 1cm;
+    /* Adjust the margin as needed */
+  }
+
+  .NavBarHide {
+    display: none;
+  }
+
+  #ServiceAdvisorRankings {
+    .performance-scorecard {
+      width: 100%;
+      height: auto;
+
+      table,
+      td,
+      th {
+        border-collapse: collapse;
+      }
+
+      tr:nth-child(1) th {
+        .HideItems {
+          display: none;
+        }
+      }
+
+      th {
+        padding: 2px 4px;
+        font-size: 0.75vw;
+      }
+
+      tr th:last-child {
+        padding-right: 6px;
+      }
+
+      td {
+        padding: 2px 4px;
+        font-size: 0.75vw;
+      }
+
+      .HideItems {
+        display: none;
+      }
+    }
+  }
+}
+
+
+
+.loader {
+  border: 5px solid #c8bdbd;
+  border-radius: 50%;
+  border-top: 5px solid #2d91f1;
+  width: 50px;
+  height: 50px;
+  animation: spin .7s linear infinite;
+  top: 5rem;
+  position: absolute;
+  z-index: 999;
+  left: 11rem;
+}
+
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

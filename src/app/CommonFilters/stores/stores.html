@@ -1,0 +1,82 @@
+<div class="reportstores-card my-2" style="max-height: 77vh;
+    overflow-y: auto;overflow-x: hidden;">
+    <div class="row h-100">
+        <div class="groups pe-2 d-flex flex-column">
+            <div class="groups-wrapper flex-grow-1">
+                <div class="group-columns"
+                    [ngStyle]="{'grid-template-rows': 'repeat(' + dynamicGroupRowCount + ', auto)'}">
+                    <ng-container *ngFor="let g of groupsArray">
+                        <button class="btn group-button w-100 text-start"
+                            [ngClass]="{'active':groupId==g.sg_id,'inactive':groupId != g.sg_id}"
+                            (click)="individualgroups(g)">
+                            <span ngbTooltip="{{g.sg_name}}"> {{g.sg_name}}</span>
+                        </button>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <div class="stores d-flex flex-column ps-0">
+            <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                <div class="allstores text-start" *ngIf="type=='M'">
+                    <a class="text-primary text-decoration-none cursor-pointer me-2" (click)="allstores('Y')">Select
+                        All</a> |
+                    <a class="text-primary text-decoration-none cursor-pointer ms-2" (click)="allstores('N')">Clear
+                        All</a>
+                </div>
+                <div class="store-columns flex-grow-1"
+                    [ngStyle]="{'grid-template-rows': 'repeat(' + dynamicStoreCount + ', auto)'}">
+                    <ng-container *ngFor="let s of stores">
+                        <button class="btn btn-outline-primary store-button" (click)="individualStores(s)"
+                            [ngClass]="{'active':storeIds.indexOf(s.ID)>=0,'inactive':storeIds.indexOf(s.ID)<0}">
+                            <span ngbTooltip="{{s.storename}}"> {{s.storename}}</span>
+                        </button>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="my-3 border-secondary" *ngIf="others == 'Y' && otherstoresArray && otherstoresArray.length > 0 ">
+    <div class="row h-100" *ngIf="others == 'Y' && otherstoresArray && otherstoresArray.length > 0 ">
+        <div class="other-groups pe-2 d-flex flex-column">
+            <div class="other-groups-wrapper flex-grow-1">
+                <div class="other-group-columns">
+
+                    <button *ngIf="groupsArray?.length >= 1" class="btn other-group-button w-100 text-start active">
+                        <span>Other Stores</span>
+                    </button>
+
+                    <button *ngIf="groupsArray?.length > 9" class="btn other-group-button w-100 text-start active"
+                        style="background-color: transparent; color: transparent; pointer-events: none;">
+                        <span>Other Stores</span>
+                    </button>
+
+                    <button *ngIf="groupsArray?.length > 18" class="btn other-group-button w-100 text-start active"
+                        style="background-color: transparent; color: transparent; pointer-events: none;">
+                        <span>Other Stores</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+        <div class="other-stores d-flex flex-column ps-0">
+            <div class="other-stores-wrapper flex-grow-1 d-flex flex-column">
+                <div class="allstores text-start" *ngIf="type=='M'">
+                    <a class="text-primary text-decoration-none cursor-pointer me-2"
+                        (click)="allotherstores('Y')">Select
+                        All</a> |
+                    <a class="text-primary text-decoration-none cursor-pointer ms-2" (click)="allotherstores('N')">Clear
+                        All</a>
+                </div>
+                <div class="other-store-columns flex-grow-1"
+                    [ngStyle]="{'grid-template-rows': 'repeat(' + dynamicOtherStoreCount + ', auto)'}">
+                    <ng-container *ngFor="let s of otherstoresArray">
+                        <button class="btn btn-outline-primary other-store-button" (click)="individualotherStores(s)"
+                            [ngClass]="{'active':otherStoreIds.indexOf(s.ID)>=0,'inactive':otherStoreIds.indexOf(s.ID)<0}">
+                            <span ngbTooltip="{{s.storename}}"> {{s.storename}}</span>
+                        </button>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

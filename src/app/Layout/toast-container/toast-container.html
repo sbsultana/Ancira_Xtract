@@ -1,0 +1,27 @@
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080">
+    <div *ngFor="let t of toastSvc.queue()" class="toast-box d-flex align-items-start position-relative"
+        [ngClass]="t.variant" role="alert">
+        <!-- Icon -->
+        <div class="toast-icon me-2">
+            <ng-container *ngIf="t.iconType === 'emoji'; else imageIcon">
+                {{ t.icon || getIcon(t.variant) }}
+            </ng-container>
+            <ng-template #imageIcon>
+                <img [src]="t.icon || getDefaultIcon(t.variant)" alt="icon" class="toast-icon-img" width="24"
+                    height="24" />
+            </ng-template>
+        </div>
+
+        <!-- Content -->
+        <div class="toast-text flex-grow-1">
+            <div *ngIf="t.title" class="toast-title">{{ t.title }}</div>
+            <div class="toast-message">{{ t.text }}</div>
+        </div>
+
+        <!-- Close icon -->
+        <button type="button" class="toast-close position-absolute" (click)="dismiss(t.id); $event.stopPropagation()"
+            aria-label="Close" style="cursor: pointer;">
+            ×
+        </button>
+    </div>
+</div>

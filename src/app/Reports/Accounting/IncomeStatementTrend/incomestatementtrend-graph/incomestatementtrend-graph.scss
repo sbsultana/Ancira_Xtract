@@ -1,0 +1,197 @@
+.gross-popup {
+    background: #001D57;
+    width: 100%;
+    border-radius: 10px;
+
+    //  border-bottom: 2px solid ;
+    .header {
+        // background: #2b326e;
+        // border-radius: 20px 20px 0px 0px;
+        // border-bottom: 2px solid #edf1f4;
+        position: relative;
+        padding: 1.5rem 3rem;
+
+        .close-btn {
+            color: #d4d4d4;
+            font-size: 1.2rem;
+            position: absolute;
+            right: 30px;
+        }
+
+        .title {
+            font-family: 'Roboto';
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #ffffff;
+            text-transform: capitalize;
+            line-height: 2rem;
+
+            .slash {
+                color: #dbe7ff;
+                padding-right: 5px;
+            }
+        }
+    }
+
+    .content {
+        background-color: #152a56;
+        // border-radius: 0px 0px 20px 20px;
+        // padding-bottom: 1rem;
+
+
+        ////////////////////// COMMON TABLE SCSS /////////////////////
+
+        table {
+            text-align: center;
+            margin: 0;
+
+            thead {
+                box-shadow: inset 0 -5px 0 #449df8;
+                height: 60px;
+                vertical-align: middle;
+                font-size: 0.9vw;
+                color: black;
+                font-family: 'RobotoBold';
+                white-space: nowrap;
+
+                th {
+                    width: 20%;
+
+                    .product {
+                        color: rgb(182, 182, 182);
+                        font-size: 0.6vw;
+                        font-family: 'Roboto';
+
+                        span {
+                            padding: 0px 10px;
+                        }
+                    }
+                }
+
+                th:first-child {
+                    padding-left: 0rem;
+                }
+
+            }
+
+            tbody {
+                td {
+                    width: 20%;
+                    font-size: 0.8vw;
+                    color: black;
+                    font-family: 'Roboto';
+                    padding: 0.2rem 0.5rem;
+                }
+
+                tr:first-child {
+                    td {
+                        padding-top: 1rem !important;
+                    }
+                }
+
+                tr:last-child {
+                    td {
+                        padding-bottom: 1rem !important;
+                    }
+                }
+
+                th:nth-child(3) {
+                    text-align: left;
+                }
+
+            }
+        }
+
+        ////////////////////// COMMON TABLE SCSS /////////////////////
+
+        .deal-tbl {
+            width: 100%;
+            white-space: nowrap;
+            box-shadow: 10px 0 20px -10px #888;
+            max-height: 300px;
+            overflow: auto;
+
+            thead {
+                position: sticky;
+                top: 0;
+                background-color: #f5f9f7;
+                z-index: 2;
+
+                th:nth-child(1) {
+                    border-right: 2px solid #edf1f4;
+                    position: relative;
+                }
+
+                th:nth-child(2) {
+                    border-right: 2px solid #edf1f4;
+                    position: relative;
+                }
+
+                th:nth-child(3) {
+                    border-right: 2px solid #edf1f4;
+                    position: relative;
+                }
+
+                th:nth-child(4) {
+                    border-right: 2px solid #edf1f4;
+                    position: relative;
+                }
+
+                .alignleft {
+                    text-align: left;
+                    padding-left: 3rem;
+                }
+
+                .alignright {
+                    text-align: right;
+                    padding-right: 3rem;
+                }
+            }
+
+            tbody {
+                td:nth-child(1) {
+                    border-right: 2px solid #edf1f4;
+                    position: relative;
+                }
+
+                td:nth-child(2) {
+                    border-right: 2px solid #edf1f4;
+                    position: relative;
+                }
+
+                td:nth-child(3) {
+                    border-right: 2px solid #edf1f4;
+                    position: relative;
+                }
+
+                td:nth-child(4) {
+                    border-right: 2px solid #edf1f4;
+                    position: relative;
+                }
+
+                td {
+                    text-align: center;
+                    // padding-left: 3rem;
+                }
+
+                .alignleft {
+                    text-align: left;
+                    padding-left: 3rem;
+                }
+
+                .alignright {
+                    text-align: right;
+                    padding-right: 3rem;
+                }
+
+            }
+
+        }
+
+    }
+}
+.popup-container{
+    border-radius: 15px;
+}
+
+

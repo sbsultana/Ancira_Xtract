@@ -1,0 +1,792 @@
+<ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="white" type="ball-clip-rotate">
+    <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+
+<!-- <div class="NavBarHide mt-4">
+    <app-fandipp-report [header]="header"></app-fandipp-report>
+</div> -->
+
+<main style="background-color: #fff;">
+    <div class="container-fluid">
+        <div class="reports-bar">
+            <div class="filter-dropdowns">
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                            {{storecount}}
+                            {{storedisplayname}} )</span>
+                        <span class="arrow"></span></button>
+                    <app-stores
+                        [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                        [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                </div>
+
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(2)">Groupings <span class="light-font">
+                            ( {{selectedDataGrouping.length ==
+                            1 ? selectedDataGrouping[0].ARG_LABEL:'Selected' }} {{selectedDataGrouping.length == 1 ? ''
+                            :
+                            selectedDataGrouping.length
+                            }} )
+                        </span>
+                        <span> </span>
+                        <span class="arrow"></span></button>
+                    <div class="reportstores-card my-2" *ngIf="activePopover === 2">
+                        <div class="row h-100">
+                            <div class="stores d-flex flex-column border-0">
+                                <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                    <div class="store-columns flex-grow-1" style="grid-template-rows: repeat(3, auto);">
+                                        <ng-container>
+                                            <button class="btn btn-outline-primary store-button"
+                                                *ngFor="let grp of dataGrouping;let i=index" (click)='SelectedData(grp)'
+                                                [ngClass]="{'disabled':grp.Active=='N'}"
+                                                [ngClass]="{'active':selectedDataGrouping.indexOf(grp)>=0,'inactive':selectedDataGrouping.indexOf(grp)<0,'disabled':grp.Active=='N'}">
+                                                {{grp.ARG_LABEL}}
+                                                <span *ngIf="selectedDataGrouping.indexOf(grp)>=0" style="float:right">
+                                                    {{selectedDataGrouping.indexOf(grp)+1}}
+                                                </span>
+                                            </button>
+
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(1)">
+                        Time Frame <span class="light-font"> {{displaytime}}</span>
+                        <span class="arrow"></span></button>
+                    <div class="timeframe" *ngIf="activePopover === 1">
+                        <app-date-range-picker [Dates]="Dates"
+                            (updatedDates)="updatedDates($event)"></app-date-range-picker>
+                    </div>
+                </div>
+
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(4)">
+                        <div *ngIf="spinnerLoaderPeople"
+                            class="graph-loader d-flex align-items-center justify-content-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        People <span class="light-font">
+                            ({{ financeManagerId.length == 1 ? fiManagersname : 'Selected' }}
+                            <span *ngIf="financeManagerId.length > 1"> {{ financeManagerId.length }}
+                            </span>)
+                        </span>
+
+                        <span class="arrow"></span>
+                    </button>
+                    <div class="reportstores-card my-2" *ngIf="activePopover ===4">
+                        <div class="row h-100">
+                            <div class="groups pe-2 d-flex flex-column">
+                                <div class="groups-wrapper flex-grow-1">
+                                    <div class="group-columns">
+
+                                        <button class="btn group-button w-100 text-start active">
+                                            <span>F&I Managers</span>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stores d-flex flex-column ps-0">
+                                <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+
+                                    <div class="allstores text-start">
+                                        <a class="text-primary text-decoration-none cursor-pointer me-2"
+                                            (click)="employees('AllFM',0)">Select
+                                            All</a> |
+                                        <a class="text-primary text-decoration-none cursor-pointer ms-2"
+                                            (click)="employees('AllFM',1)">Clear
+                                            All</a>
+                                    </div>
+                                    <div class="store-columns flex-grow-1">
+
+                                        <!-- <ng-container *ngIf="storeIds.length > 0">                               
+                                    <div class="allstores text-start" *ngIf="salesPersons.length == 0">
+                                        <a class="text-primary text-decoration-none cursor-pointer me-2"
+                                            style="pointer-events: none;">No Sales Persons
+                                        </a>
+                                    </div>
+                                </ng-container> -->
+
+
+                                        <ng-container *ngIf="activePopover==4">
+                                            <ng-container *ngFor="let fm of financeManager;let i=index">
+                                                <button class="btn btn-outline-primary store-button"
+                                                    (click)="employees('FM',fm.FiId)"
+                                                    [ngClass]="{'active':financeManagerId.indexOf(fm.FiId)>=0,'inactive':financeManagerId.indexOf(fm.FiId)<0}">
+                                                    <span> {{fm.FiName}}</span>
+                                                </button>
+                                            </ng-container>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(5)">Product Type <span class="light-font">(
+                            {{selectedProductType.length == 1 ? selectedProductType[0].TNAME :
+                            (selectedProductType.length
+                            == producttype.length ? 'All' : 'Selected')}}
+                            {{selectedProductType.length == 1 ? '' : (selectedProductType.length == producttype.length ?
+                            ''
+                            : selectedProductType.length )
+                            }} )</span>
+
+                        <span class="arrow"></span></button>
+                    <div class="reportstores-card my-2" *ngIf="activePopover === 5">
+                        <div class="row h-100">
+                            <div class="stores d-flex flex-column border-0">
+                                <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                    <div class="store-columns flex-grow-1" [ngStyle]="{
+                                        'display': 'grid',
+                                        'grid-template-rows': 'repeat(' + producttype.length + ', auto)'
+                                        }">
+                                        <ng-container>
+                                            <button class="btn btn-outline-primary store-button"
+                                                *ngFor="let pt of producttype;let i=index"
+                                                (click)='SelectedPTorPC(pt,"PT")'
+                                                [ngClass]="{'active':selectedProductType.indexOf(pt)>=0,'inactive':selectedProductType.indexOf(pt)<0}">{{pt.TNAME}}</button>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(6)">Product Category <span
+                            class="light-font">
+                            ( {{selectedProductCategory.length == 1 ? selectedProductCategory[0].CNAME :
+                            (selectedProductCategory.length == productcategory.length ? 'All' : 'Selected')}}
+                            {{selectedProductCategory.length == 1 ? '' : (selectedProductCategory.length ==
+                            productcategory.length ? '' : selectedProductCategory.length )
+                            }} )
+                        </span>
+                        <span class="arrow"></span></button>
+                    <div class="reportstores-card my-2" *ngIf="activePopover === 6">
+                        <div class="row h-100">
+                            <div class="stores d-flex flex-column border-0">
+                                <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                    <div class="store-columns flex-grow-1" [ngStyle]="{
+                                        'display': 'grid',
+                                        'grid-template-rows': 'repeat(' + productcategory.length + ', auto)'
+                                        }">
+                                        <ng-container>
+                                            <button class="btn btn-outline-primary store-button"
+                                                *ngFor="let pc of productcategory;let i=index"
+                                                (click)='SelectedPTorPC(pc,"PC")'
+                                                [ngClass]="{'active':selectedProductCategory.indexOf(pc)>=0,'inactive':selectedProductCategory.indexOf(pc)<0}">{{pc.CNAME}}</button>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(7)">Report Totals <span class="light-font">
+                            ( {{TotalReport== 'T' ? 'Top' :
+                            'Bottom'}} )
+                        </span>
+                        <span class="arrow"></span></button>
+                    <div class="reportstores-card my-2" *ngIf="activePopover === 7">
+                        <div class="row h-100">
+                            <div class="stores d-flex flex-column border-0">
+                                <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                    <div class="store-columns flex-grow-1" style="grid-template-rows: repeat(2, auto);">
+                                        <ng-container>
+                                            <button class="btn btn-outline-primary store-button"
+                                                [ngClass]="{'active':TotalReport == 'T','inactive':TotalReport != 'T'}"
+                                                (click)="multipleorsingle('RT','T')"> Top
+                                            </button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                [ngClass]="{'active':TotalReport == 'B','inactive':TotalReport != 'B'}"
+                                                (click)="multipleorsingle('RT','B')">Bottom
+                                            </button>
+
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="dropdown">
+                    <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+                </div>
+
+            </div>
+        </div>
+        <div class="scorecard-multi-header fandipenetration-tbl" id="scrollcent" #scrollcent>
+            <table class="table mb-0 w-100">
+                <thead>
+                    <tr>
+                        <th class="text-center bdr-rt">
+                            {{FromDate |date:'MMMM'}} <label
+                                *ngIf="(FromDate | date: 'MMMM') != (ToDate | date: 'MMMM')">-
+                                {{ToDate
+                                |date:'MMMM'}} </label>
+                        </th>
+                        <!-- <th class="text-start bdr-rt">
+                            <span> Date </span>: {{FromDate |date:'MMMM'}} <label
+                                *ngIf="(FromDate | date: 'MMMM') != (ToDate | date: 'MMMM')">-
+                                {{ToDate
+                                |date:'MMMM'}} </label> <label>{{FromDate |date:'dd'}} <label
+                                    *ngIf="(FromDate | date: 'yyyy') != (ToDate | date: 'yyyy')">{{FromDate
+                                    |date:'yyyy'}}</label>
+                                - {{ToDate |date:'dd'}}<label
+                                    *ngIf="(FromDate | date: 'yyyy') != (ToDate | date: 'yyyy')">{{ToDate
+                                    |date:'yyyy'}}</label><label
+                                    *ngIf="(FromDate | date: 'yyyy') == (ToDate | date: 'yyyy')">,
+                                    {{FromDate |
+                                    date:'yyyy'}}</label></label>
+
+                        </th> -->
+                        <!-- <th>{{FromDate |date:'MMMM'}}</th> -->
+
+                        <th colspan="6">Totals</th>
+                        <th colspan="5">Finance Income</th>
+                        <ng-container *ngFor="let heads of Headings;let i=index">
+
+                            <th colspan="5">{{heads}}</th>
+                        </ng-container>
+
+
+                    </tr>
+                    <tr class="bdr-btm">
+                        <!-- <th>
+                            <span>{{FromDate |date:'dd'}} <span
+                                    *ngIf="(FromDate | date: 'yyyy') != (ToDate | date: 'yyyy')">{{FromDate
+                                    |date:'yyyy'}}</span>
+                                - {{ToDate |date:'dd'}}<span
+                                    *ngIf="(FromDate | date: 'yyyy') != (ToDate | date: 'yyyy')">{{ToDate
+                                    |date:'yyyy'}}</span><span
+                                    *ngIf="(FromDate | date: 'yyyy') == (ToDate | date: 'yyyy')">,
+                                    {{FromDate |
+                                    date:'yyyy'}}</span></span>
+                        </th> -->
+                        <th class="text-center">{{ FromDate | date:'MM.dd.yyyy' }} - {{ ToDate | date:'MM.dd.yyyy'
+                            }}</th>
+                        <th (click)="sort('toatlBG')" style="cursor: pointer;">Gross</th>
+                        <th (click)="sort('TotalPVR')" style="cursor: pointer;">PVR</th>
+                        <th (click)="sort('TotalProduct')" style="cursor: pointer;">Products</th>
+                        <th (click)="sort('Retailcount')" style="cursor: pointer;">Units</th>
+                        <!-- <th  (click)="sort('totProductPen')" style="cursor: pointer;">Pen %</th> -->
+                        <th (click)="sort('totproductpertrans')" style="cursor: pointer;">Per Trans
+                        </th>
+                        <th (click)="sort('ProfitPerSale')" style="cursor: pointer;">PPS</th>
+
+                        <th (click)="sort('fin_DealCount')" style="cursor: pointer;">Finance</th>
+                        <th (click)="sort('fin_income')" style="cursor: pointer;">Income</th>
+                        <th (click)="sort('Finance_pen')" style="cursor: pointer;">Pen %</th>
+                        <th (click)="sort('perFD')" style="cursor: pointer;">PFD</th>
+                        <th (click)="sort('perRU')" style="cursor: pointer;" class="bdr-rt">PPU</th>
+
+
+                        <ng-container *ngFor="let heads of Headings;let i=index">
+
+                            <th (click)="nestedsort('PrdocuctCatcount',i)" style="cursor: pointer;">
+                                Products</th>
+                            <th (click)="nestedsort('ProductcatPersale',i)" style="cursor: pointer;">
+                                PEN %</th>
+                            <th (click)="nestedsort('ProductcatBG',i)" style="cursor: pointer;">Gross
+                            </th>
+                            <th (click)="nestedsort('ProductcatPVR',i)" style="cursor: pointer;">PVR
+                            </th>
+                            <th (click)="nestedsort('ProfitPerSale',i)" style="cursor: pointer;" class="bdr-rt">PPS
+                            </th>
+
+                        </ng-container>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <ng-container *ngIf="FandIPPData.length > 0; else NoFIPPdata">
+                        <ng-container *ngFor="let FIPP of FandIPPData;let i=index;'index' as z">
+                            <tr [ngClass]="{'maintitle': FIPP.data1 == 'Total','white-bg': FIPP.Dealer !== '-' || path2 == '','lightblue-bg': isApplyClicked && FIPP?.data2?.length && FIPP.data1 !== 'REPORT TOTALS', 'divBold': FIPP.data1 == 'REPORT TOTALS'}"
+                                [id]="'D_'+i">
+                                <td
+                                    [ngStyle]="{ 'cursor': path2 != '' ? 'pointer' : 'default','pointer-events': selectedDataGrouping && selectedDataGrouping.length > 1 ? 'visible' : 'none' }">
+                                    <span title="{{FIPP.data1}}" [id]="'D_'+i"
+                                        (click)="expandorcollapse(i,$event,FIPP.Dealer,FIPP,'')">{{FIPP.data1
+                                        == 0 ||
+                                        FIPP.data1 == null ? '-' : FIPP.data1}}</span>
+                                </td>
+
+
+
+                                <td id="DataBody5" [ngClass]="{ negative: !inTheGreen(FIPP.toatlBG)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{ FIPP.toatlBG == 0 || FIPP.toatlBG == null ? '' : '$'}}
+                                        <span>
+                                            {{ FIPP.toatlBG == 0 || FIPP.toatlBG == null ? '-' :
+                                            FIPP.toatlBG | number:'1.0-0'}}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(FIPP.TotalPVR)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (FIPP.TotalPVR == 0 || FIPP.TotalPVR == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (FIPP.TotalPVR == 0 || FIPP.TotalPVR == null ? '-' :
+                                            FIPP.TotalPVR | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td>{{FIPP.TotalProduct == 0 || FIPP.TotalProduct == null ? '-' :
+                                    FIPP.TotalProduct | number}}</td>
+                                <td>{{FIPP.Retailcount == 0 || FIPP.Retailcount == null ? '-' :
+                                    FIPP.Retailcount | number}}</td>
+                                <!-- <td>{{FIPP.totProductPen == 0 || FIPP.totProductPen == null ? '-' :
+                                        (FIPP.totProductPen | number)+'%'}}
+                                      
+                                    </td> -->
+                                <td>{{FIPP.totproductpertrans == 0 || FIPP.totproductpertrans == null ?
+                                    '-' :
+                                    FIPP.totproductpertrans | number:'1.2-2'}}</td>
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(FIPP.ProfitPerSale)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (FIPP.ProfitPerSale == 0 || FIPP.ProfitPerSale == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (FIPP.ProfitPerSale == 0 || FIPP.ProfitPerSale == null ? '-' :
+                                            FIPP.ProfitPerSale | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+
+                                <td>{{FIPP.fin_DealCount == 0 || FIPP.fin_DealCount == null ? '-' :
+                                    FIPP.fin_DealCount | number}}</td>
+
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(FIPP.fin_income)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (FIPP.fin_income == 0 || FIPP.fin_income == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (FIPP.fin_income == 0 || FIPP.fin_income == null ? '-' :
+                                            FIPP.fin_income | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td>{{FIPP.Finance_pen == 0 || FIPP.Finance_pen == null ? '-' :
+                                    (FIPP.Finance_pen | number)+'%'}}</td>
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(FIPP.perFD)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (FIPP.perFD == 0 || FIPP.perFD == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (FIPP.perFD == 0 || FIPP.perFD == null ? '-' :
+                                            FIPP.perFD | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(FIPP.perRU)}" class="bdr-rt">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (FIPP.perRU == 0 || FIPP.perRU == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (FIPP.perRU == 0 || FIPP.perRU == null ? '-' :
+                                            FIPP.perRU | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+
+
+                                <ng-container *ngFor="let sub of FIPP.productdata;let h=index">
+                                    <ng-container *ngFor="let pd of sub.Products;let j=index ">
+
+
+                                        <td (click)="opendetails(FIPP,sub,pd,'','1','')" data-bs-toggle="modal"
+                                            style="cursor: pointer;" data-bs-target="#warningmessage"
+                                            [ngClass]="{'pointer' : pd.PrdocuctCatcount != '0' && pd.PrdocuctCatcount != '' && pd.PrdocuctCatcount != null && pd.PrdocuctCatcount != undefined &&  FIPP.data1!='REPORT TOTALS'  , 'disabled' :  pd.PrdocuctCatcount == '0' || pd.PrdocuctCatcount == '' || pd.PrdocuctCatcount == null || pd.PrdocuctCatcount == undefined }">
+                                            {{pd.PrdocuctCatcount == 0 || pd.PrdocuctCatcount == null ?
+                                            '-' :
+                                            pd.PrdocuctCatcount | number}}</td>
+                                        <td>
+                                            {{pd.ProductcatPersale == 0 || pd.ProductcatPersale == null
+                                            ? '-' :
+                                            (pd.ProductcatPersale| number:'1.0-0')+'%' }}
+                                            <!-- {{pd.ProductcatPersale == 0 || pd.ProductcatPersale == null
+                                            ? '' :
+                                            '%' }} -->
+                                        </td>
+                                        <td id="DataBody10" [ngClass]="{ negative: !inTheGreen(pd.ProductcatBG)}">
+                                            <span class="d-flex justify-content-between">
+                                                {{pd.ProductcatBG == 0 || pd.ProductcatBG == null ? '' : '$' }}
+                                                <span>
+                                                    {{pd.ProductcatBG == 0 || pd.ProductcatBG == null ? '-' :
+                                                    pd.ProductcatBG | number:'1.0-0' }}
+                                                </span>
+                                            </span>
+                                        </td>
+
+                                        <td id="DataBody14" [ngClass]="{ negative: !inTheGreen(pd.ProductcatPVR)}">
+                                            <span class="d-flex justify-content-between">
+                                                {{
+                                                (pd.ProductcatPVR == 0 || pd.ProductcatPVR == null ? '' : '$' ) }}
+                                                <span>
+                                                    {{
+                                                    (pd.ProductcatPVR == 0 || pd.ProductcatPVR == null ? '-' :
+                                                    pd.ProductcatPVR | number:'1.0-0' ) }}
+                                                </span>
+                                            </span>
+
+                                        </td>
+                                        <td id="DataBody14" [ngClass]="{ negative: !inTheGreen(pd.ProfitPerSale)}"
+                                            class="bdr-rt">
+                                            <span class="d-flex justify-content-between">
+                                                {{
+                                                (pd.ProfitPerSale == 0 || pd.ProfitPerSale == null ? '' : '$' ) }}
+                                                <span>
+                                                    {{
+                                                    (pd.ProfitPerSale == 0 || pd.ProfitPerSale == null ? '-' :
+                                                    pd.ProfitPerSale | number:'1.0-0' ) }}
+                                                </span>
+                                            </span>
+
+                                        </td>
+
+
+                                    </ng-container>
+                                </ng-container>
+                            </tr>
+
+                            <tr class="sub-title" *ngFor="let dt2 of FIPP.data2;let k=index;'index' as j"
+                                [ngClass]="{'hidden': FIPP.Dealer === '+', 'title-l3' : k % 2 == 0 , 'titleOdd-l3' : k % 2 != 0}">
+                                <td><span title="{{dt2.data1}}" style="margin-left: 1rem;">{{dt2.data1
+                                        == 0 ||
+                                        dt2.data1 == null ? '-' : dt2.data1}}</span></td>
+
+                                <td id="DataBody5" [ngClass]="{ negative: !inTheGreen(dt2.toatlBG)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{ dt2.toatlBG == 0 || dt2.toatlBG == null ? '' : '$'}}
+                                        <span>
+                                            {{ dt2.toatlBG == 0 || dt2.toatlBG == null ? '-' :
+                                            dt2.toatlBG | number:'1.0-0'}}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(dt2.TotalPVR)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (dt2.TotalPVR == 0 || dt2.TotalPVR == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (dt2.TotalPVR == 0 || dt2.TotalPVR == null ? '-' :
+                                            dt2.TotalPVR | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td>{{dt2.TotalProduct == 0 || dt2.TotalProduct == null ? '-' :
+                                    dt2.TotalProduct | number}}</td>
+                                <td>{{dt2.Retailcount == 0 || dt2.Retailcount == null ? '-' :
+                                    dt2.Retailcount | number}}</td>
+                                <!-- <td>{{dt2.totProductPen == 0 || dt2.totProductPen == null ? '-' :
+                                        (dt2.totProductPen | number)+'%'}}
+                                       
+                                    </td> -->
+                                <td>{{dt2.totproductpertrans == 0 || dt2.totproductpertrans == null ?
+                                    '-' :
+                                    dt2.totproductpertrans | number:'1.2-2'}}</td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(dt2.ProfitPerSale)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (dt2.ProfitPerSale == 0 || dt2.ProfitPerSale == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (dt2.ProfitPerSale == 0 || dt2.ProfitPerSale == null ? '-' :
+                                            dt2.ProfitPerSale | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+
+                                <td>{{dt2.fin_DealCount == 0 || dt2.fin_DealCount == null ? '-' :
+                                    dt2.fin_DealCount | number}}</td>
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(dt2.fin_income)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (dt2.fin_income == 0 || dt2.fin_income == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (dt2.fin_income == 0 || dt2.fin_income == null ? '-' :
+                                            dt2.fin_income | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+
+                                <td>{{dt2.Finance_pen == 0 || dt2.Finance_pen == null ? '-' :
+                                    dt2.Finance_pen | number}}</td>
+
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(dt2.perFD)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (dt2.perFD == 0 || dt2.perFD == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (dt2.perFD == 0 || dt2.perFD == null ? '-' :
+                                            dt2.perFD | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(dt2.perRU)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (dt2.perRU == 0 || dt2.perRU == null ? '' : '$') }}
+                                        <span>
+                                            {{
+                                            (dt2.perRU == 0 || dt2.perRU == null ? '-' :
+                                            dt2.perRU | number:'1.0-0') }}
+                                        </span>
+                                    </span>
+                                </td>
+
+                                <ng-container *ngFor="let sub of dt2.productdata;let h=index">
+                                    <ng-container *ngFor="let pd of sub.Products;let j=index ">
+
+                                        <td (click)="opendetails(FIPP,sub,pd,dt2,'2',k)"
+                                            [ngClass]="{'pointer' : pd.PrdocuctCatcount != '0' && pd.PrdocuctCatcount != '' && pd.PrdocuctCatcount != null && pd.PrdocuctCatcount != undefined &&  FIPP.data1!='REPORT TOTALS'  , 'disabled' :  pd.PrdocuctCatcount == '0' || pd.PrdocuctCatcount == '' || pd.PrdocuctCatcount == null || pd.PrdocuctCatcount == undefined }">
+                                            <span data-bs-toggle="modal" style="cursor: pointer;"
+                                                data-bs-target="#warningmessage">
+                                                {{pd.PrdocuctCatcount == 0 || pd.PrdocuctCatcount == null ?
+                                                '-' :
+                                                pd.PrdocuctCatcount | number}} </span>
+                                        </td>
+                                        <td>
+                                            {{pd.ProductcatPersale == 0 || pd.ProductcatPersale == null
+                                            ? '-' :
+                                            (pd.ProductcatPersale | number:'1.0-0')+'%' }}
+                                            <!-- {{pd.ProductcatPersale == 0 || pd.ProductcatPersale == null
+                                            ? '' :
+                                            '%' }} -->
+                                        </td>
+                                        <td id="DataBody10" [ngClass]="{ negative: !inTheGreen(pd.ProductcatBG)}">
+                                            <span class="d-flex justify-content-between">
+                                                {{pd.ProductcatBG == 0 || pd.ProductcatBG == null ? '' : '$' }}
+                                                <span>
+                                                    {{pd.ProductcatBG == 0 || pd.ProductcatBG == null ? '-' :
+                                                    pd.ProductcatBG | number:'1.0-0' }}
+                                                </span>
+                                            </span>
+                                        </td>
+
+                                        <td id="DataBody14" [ngClass]="{ negative: !inTheGreen(pd.ProductcatPVR)}">
+                                            <span class="d-flex justify-content-between">
+                                                {{
+                                                (pd.ProductcatPVR == 0 || pd.ProductcatPVR == null ? '' : '$' ) }}
+                                                <span>
+                                                    {{
+                                                    (pd.ProductcatPVR == 0 || pd.ProductcatPVR == null ? '-' :
+                                                    pd.ProductcatPVR | number:'1.0-0' ) }}
+                                                </span>
+                                            </span>
+
+                                        </td>
+                                        <td id="DataBody14" [ngClass]="{ negative: !inTheGreen(pd.ProfitPerSale)}">
+                                            <span class="d-flex justify-content-between">
+                                                {{
+                                                (pd.ProfitPerSale == 0 || pd.ProfitPerSale == null ? '' : '$' ) }}
+                                                <span>
+                                                    {{
+                                                    (pd.ProfitPerSale == 0 || pd.ProfitPerSale == null ? '-' :
+                                                    pd.ProfitPerSale | number:'1.0-0' ) }}
+                                                </span>
+                                            </span>
+
+                                        </td>
+
+
+                                    </ng-container>
+                                </ng-container>
+                            </tr>
+
+
+                        </ng-container>
+                    </ng-container>
+                    <!-- <div class="loader" style="margin-top: 5%;margin-left: 30%;" *ngIf="spinnerLoader"></div> -->
+                    <ng-template #NoFIPPdata>
+                        <tr *ngIf="NoData">
+                            <td [attr.colspan]="3 * Headings.length + 4"
+                                style="text-align: center;font-size: 1rem;background: #fff !important;color: black; display: revert;box-shadow: none;">
+                                <label>No Data Found</label>
+                            </td>
+                            <td [attr.colspan]="2 * Headings.length + 4"
+                                style="text-align: center;font-size: 1rem;background: #fff !important;color: black; display: revert;box-shadow: none;">
+                                <label>No Data Found</label>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+                <!-- <tbody *ngIf="NoData">
+                        <tr>
+                            <td colspan="1"></td>
+                            <td class="spacer"></td>
+                            <td colspan="26" style="color: black;pointer-events:none ; text-align: center !important;">
+                                No
+                                Records Found</td>
+
+                        </tr>
+                    </tbody> -->
+            </table>
+        </div>
+
+
+    </div>
+
+    <div class="modal fade bd-example-modal-xl" id="warningmessage" tabindex="-1" aria-labelledby="contModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content " style="margin-top: 7vh;">
+                <div class="modal-body" style="padding: inherit;border-radius: 20px;">
+                    <!-- *ngFor="let det of DealAcctDetails; let i = index" -->
+                    <div class="container-fluid d-flex justify-content-center align-items-center"
+                        style="padding: inherit;">
+                        <div style="width: 100%;">
+                            <div class="header d-flex align-items-center"
+                                style="background-color: #c6dbff;padding: 1rem;border-radius: 7px;">
+                                <!-- <div *ngIf='fandippcategories' class="loader" style="margin-top: 5%;margin-left: 32%;">
+                            </div> -->
+                                <h5 class="title m-0 ms-2" *ngIf="fandippdetails != undefined">
+                                    <img src="" alt="">
+                                    <span class="slash">// <span class="slash_header"></span> <span
+                                            class="pt-0">{{fandippdetails.LAYER1.data1}}
+                                        </span>
+                                    </span>
+                                    <span class="slash" *ngIf='fandippdetails.LAYER4 !=""'>// <span
+                                            class="slash_header"></span> <span
+                                            class="pt-0">{{fandippdetails.LAYER4.data1}}
+                                        </span>
+                                    </span>
+                                    <span class="slash">//<span class="slash_header"></span>
+                                        {{fandippdetails.LAYER2.ProductCategory}}</span>
+                                </h5>
+                                <img src="images/Download.svg" class="img-fluid ms-auto me-2" alt=""
+                                    style="cursor: pointer;" (click)="exportAsXLSX()">
+                                <h6 type="button" class="close-btn me-0 mt-2" data-bs-dismiss="modal"
+                                    aria-label="Close">
+                                    X</h6>
+                            </div>
+                            <div class="content p-1">
+                                <div class="Benchmark-tbl mt-3">
+                                    <table class="table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="align-left">Stock #</th>
+                                                <th class="align-left">Deal #</th>
+                                                <th class="align-left">Product Name</th>
+                                                <th class="align-left">Customer name</th>
+                                                <th class="align-left">F&I Manager</th>
+                                                <th>Date</th>
+
+                                                <th class="align-right">Sale</th>
+                                                <th class="align-right">Cost</th>
+                                                <th class="align-right">Total Gross</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container>
+                                                <tr *ngFor="let Ad of fandippcategories;  let i=index">
+                                                    <td class="align-left">
+                                                        {{(Ad.Stock == undefined || Ad.Stock == null ? '-' :
+                                                        Ad.Stock)}}
+                                                    </td>
+                                                    <td class="align-left"
+                                                        (click)="openSalesModal(Ad.dealno,Ad.VIN,Ad.StoreID,Ad.Stock,Ad?.source,Ad?.customernumber)"
+                                                        [ngClass]="[Ad.dealno != 0 && Ad.dealno != null && Ad.dealno != undefined && Ad.dealno != '' && Ad.dealno != '-' ? 'popuppointer' : 'popupdisable']">
+                                                        {{ (Ad.dealno == ''|| Ad.dealno == null || Ad.dealno ==
+                                                        undefined ||
+                                                        Ad.dealno == 0? '-' :
+                                                        Ad.dealno ) }}
+                                                    </td>
+                                                    <td class="align-left">
+                                                        {{ (Ad.AP_NAME == '' || Ad.AP_NAME == null || Ad.AP_NAME ==
+                                                        undefined ? '-' :
+                                                        Ad.AP_NAME )}}
+                                                    </td>
+                                                    <td class="align-left">{{ (Ad.Customer == '' || Ad.Customer == null
+                                                        ||
+                                                        Ad.Customer == undefined ? '-' :
+                                                        Ad.Customer ) }}</td>
+
+                                                    <td class="align-left"> {{ (Ad.FIManager == '' || Ad.FIManager ==
+                                                        null
+                                                        || Ad.FIManager == undefined ? '-' :
+                                                        Ad.FIManager ) }}
+                                                    </td>
+                                                    <td> {{ (Ad.Date == 0 || Ad.Date == null || Ad.Date == undefined ?
+                                                        '-' :
+                                                        Ad.Date ) }}
+                                                    </td>
+
+                                                    <td class="align-right"
+                                                        [ngClass]="{ negative: !inTheGreen(Ad.frontgross)}">
+                                                        <span class="d-flex justify-content-between"> {{
+                                                            (Ad.frontgross == 0 || Ad.frontgross == null ? '' :
+                                                            '$') }} <span> {{
+                                                                (Ad.frontgross == 0 || Ad.frontgross == null ? '-' :
+                                                                Ad.frontgross |number:'1.0-0') }}</span></span>
+
+                                                    </td>
+                                                    <td class="align-right"
+                                                        [ngClass]="{ negative: !inTheGreen(Ad.backgross)}">
+                                                        <span class="d-flex justify-content-between"> {{
+                                                            (Ad.backgross == 0 || Ad.backgross == null ? '' :
+                                                            '$') }} <span> {{
+                                                                (Ad.backgross == 0 || Ad.backgross == null ? '-' :
+                                                                Ad.backgross |number:'1.0-0') }}</span></span>
+
+                                                    </td>
+                                                    <td class="align-right"
+                                                        [ngClass]="{ negative: !inTheGreen(Ad.Cost)}">
+                                                        <span class="d-flex justify-content-between"> {{
+                                                            (Ad.Cost == 0 || Ad.Cost == null ? '' :
+                                                            '$') }} <span> {{
+                                                                (Ad.Cost == 0 || Ad.Cost == null ? '-' :
+                                                                Ad.Cost |number:'1.0-0') }}</span></span>
+
+
+                                                    </td>
+                                                </tr>
+
+                                                <tr *ngIf="NoDatacategories">
+                                                    <td colspan="9" style="text-align: center;">No Data Found!!!</td>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

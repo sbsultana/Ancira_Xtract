@@ -1,0 +1,448 @@
+<div>
+    <div class="recap position-relative">
+        <div class="row d-flex w-100 m-0">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-12 col-12">
+                        <div class="m-2 p-2">
+                            <div class="row align-items-center">
+                                <div class="col-12 p-0 d-flex align-items-center">
+                                    <h2 class="m-0 p-0">
+                                        <span>
+                                            <span class="font-blue">
+                                                // {{ Salesdetails?.[0]?.var1Value }}
+                                            </span>
+                                            <span *ngIf="Salesdetails?.[0]?.var2Value">
+                                                <i class="fa fa-long-arrow-right"></i>
+                                                {{ Salesdetails?.[0]?.var2Value }}
+                                            </span>
+                                            <span
+                                                *ngIf="Salesdetails?.[0]?.var3Value && Salesdetails?.[0]?.var3Value !== ''">
+                                                <i class="fa fa-long-arrow-right"></i>
+                                                {{ Salesdetails?.[0]?.var3Value }}
+                                            </span>
+                                        </span>
+                                    </h2>
+                                    <img src="images/Download.svg" alt="Download" class="ms-auto px-3"
+                                        style="cursor: pointer;" (click)="exportAsXLSX()" />
+                                    <!-- <i class="fa fa-minus-circle text-hover pt-1 me-2" aria-hidden="true"
+                                        [class.unclickable]="!zoomOutPossible || isMinZoom"
+                                        style="cursor: pointer; font-size: 1.1rem; color: #878e98;"
+                                        (click)="changeFontSize('decrease')"></i>
+                                    <i class="fa fa-plus-circle text-hover pt-1 me-3" aria-hidden="true"
+                                        [class.unclickable]="!zoomInPossible || isMaxZoom"
+                                        style="cursor: pointer; font-size: 1.1rem; color: #878e98;"
+                                        (click)="changeFontSize('increase')"></i> -->
+
+                                    <!-- <a class="close-btn" role="button" (click)="close()">
+                                        <img src="images/x.png" alt="Close" />
+                                    </a> -->
+                                    <button type="button" class="btn-close" (click)="close()" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="scorecard-single-header mb-3"
+                            style="overflow: auto;max-height: calc(100vh - 200px);"
+                            (scroll)="updateVerticalScroll($event)" #scrollOne>
+                            <div *ngIf="spinnerLoader"
+                                class="graph-loader d-flex align-items-center justify-content-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <table class="table mb-0 w-100">
+                                <thead>
+                                    <tr>
+                                        <th style="cursor: pointer;" (click)="sortColumn('dealid')">Deal #
+                                            <span class="sort-icon" [ngClass]="getSortIcon('dealid')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('Stock')">Stock #
+                                            <span class="sort-icon" [ngClass]="getSortIcon('Stock')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('contractdate')">Date
+                                            <span class="sort-icon" [ngClass]="getSortIcon('contractdate')"></span>
+                                        </th>
+                                        <th style="width: 20%; " style="cursor: pointer;"
+                                            (click)="sortColumn('customername')">Customer
+                                            <span class="sort-icon" [ngClass]="getSortIcon('customername')"></span>
+                                        </th>
+                                        <!-- <th style="width: 20%; " style="cursor: pointer;"
+                                            (click)="sortColumn('ad_Year')">Year
+                                            <span class="sort-icon" [ngClass]="getSortIcon('ad_make')"></span>
+                                        </th>
+                                        <th style="width: 20%; " style="cursor: pointer;"
+                                            (click)="sortColumn('ad_make')">Make
+                                            <span class="sort-icon" [ngClass]="getSortIcon('ad_make')"></span>
+                                        </th>
+                                        <th style="width: 20%; " style="cursor: pointer;"
+                                            (click)="sortColumn('ad_model')">Model
+                                            <span class="sort-icon" [ngClass]="getSortIcon('ad_model')"></span>
+                                        </th> 
+                                        <th style="cursor: pointer;" (click)="sortColumn('ad_dealtype')">
+                                            New/Used
+                                            <span class="sort-icon" [ngClass]="getSortIcon('ad_dealtype')"></span>
+                                        </th> -->
+                                        <th style="cursor: pointer;" (click)="sortColumn('ad_dealtype')">
+                                            Deal Type
+                                            <span class="sort-icon" [ngClass]="getSortIcon('ad_dealtype')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('vin')">VIN
+                                            <span class="sort-icon" [ngClass]="getSortIcon('vin')"></span>
+                                        </th>
+                                        <th style="text-align:right !important " style="cursor: pointer;"
+                                            (click)="sortColumn('TradeAcv')">Trade
+                                            <span class="sort-icon" [ngClass]="getSortIcon('TradeAcv')"></span>
+                                        </th>
+
+                                        <th style="cursor: pointer;" (click)="sortColumn('SalePrice')">Sale Price
+                                            <span class="sort-icon"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('frontgross_decimal')">Front
+                                            Gross
+                                            <span class="sort-icon"
+                                                [ngClass]="getSortIcon('frontgross_decimal')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('backgross_decimal')">Back
+                                            Gross
+                                            <span class="sort-icon" [ngClass]="getSortIcon('backgross_decimal')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('totalgross_decimal')">Total
+                                            Gross
+                                            <span class="sort-icon"
+                                                [ngClass]="getSortIcon('totalgross_decimal')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('salesperson1')">SP 1
+                                            <span class="sort-icon" [ngClass]="getSortIcon('salesperson1')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('salesperson2')">SP 2
+                                            <span class="sort-icon" [ngClass]="getSortIcon('salesperson2')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('fimanager')">F&I Mgr.
+                                            <span class="sort-icon" [ngClass]="getSortIcon('fimanager')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('salesmanager')">Desk Mgr.
+                                            <span class="sort-icon" [ngClass]="getSortIcon('salesmanager')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('FinReserve')">FIN.Reserve
+                                            <span class="sort-icon" [ngClass]="getSortIcon('FinReserve')"></span>
+                                        </th>
+                                        <th style="cursor: pointer;" (click)="sortColumn('productcount')">Product Count
+                                            <span class="sort-icon" [ngClass]="getSortIcon('productcount')"></span>
+                                        </th>
+
+                                        <ng-container *ngIf="SalesPersonDetails != undefined && spinnerLoader==false">
+                                            <ng-container *ngIf="SalesPersonDetails[0].products != undefined">
+                                                <th *ngFor="let pdct of SalesPersonDetails[0].products">&nbsp;
+                                                    {{pdct.PCName}}</th>
+                                            </ng-container>
+                                        </ng-container>
+                                        <ng-container *ngIf="spinnerLoader == true ">
+                                            <th>Service Contract </th>
+                                            <th> Gap </th>
+                                            <th> Prepaid Maintenance </th>
+                                            <th> VTR </th>
+                                            <th> Insurance </th>
+                                            <th>Chemical </th>
+                                            <th> Other</th>
+
+                                        </ng-container>
+
+                                    </tr>
+
+                                </thead>
+
+                                <!-- data-bs-toggle="modal" data-bs-target="#warningmessage" | filter : SGDSearchName -->
+                                <tbody>
+                                    <ng-container *ngIf="(SalesPersonDetails ).length >0; else ifNotShow">
+                                        <ng-container *ngIf="SalesPersonDetails.length > 0; else ifNotShow">
+                                            <tr *ngFor="let det of SalesPersonDetails ; let i=index">
+                                                <td (click)="openSalesModal(det.dealid,det.vin,det.dealerid,det.Stock,det.source,det?.customernumber)"
+                                                    [ngClass]="[det.dealid != 0 && det.dealid != null && det.dealid != undefined && det.dealid != '' && det.dealid != '-' ? 'popuppointer' : 'popupdisable']">
+                                                    {{ (det.dealid == 0 || det.dealid == null || det.dealid == undefined
+                                                    ?
+                                                    '-' :
+                                                    det.dealid ) }}
+                                                </td>
+                                                <td style="text-align: left !important;">
+                                                    {{ (det.Stock == 0 || det.Stock == null || det.Stock == undefined ?
+                                                    ' -
+                                                    ' :
+                                                    det.Stock ) }}
+                                                </td>
+                                                <td>
+                                                    {{ (det.contractdate == 0 || det.contractdate == null ||
+                                                    det.contractdate ==
+                                                    undefined ? '-' :
+                                                    det.contractdate | date:'MM.dd.yyyy' ) }}
+                                                </td>
+                                                <td title="{{det.customername}}"
+                                                    style="cursor: default; text-align: left; white-space: nowrap;">
+                                                    {{(det.customername == undefined ||
+                                                    det.customername == null || det.customername == '' ? '-' : (
+                                                    (det.customername.toString() | slice:0:20) +
+                                                    (det.customername.toString().length > 20 ? '..' : '') ))}}</td>
+
+
+                                                <!-- <td style="text-align: left !important;">
+                                                    {{ (det.ad_Year == 0 || det.ad_Year == null || det.ad_Year ==
+                                                    undefined
+                                                    ? '
+                                                    - '
+                                                    :
+                                                    det.ad_Year ) }}
+                                                </td>
+
+                                                <td style="text-align: left !important;">
+                                                    {{ (det.ad_make == 0 || det.ad_make == null || det.ad_make ==
+                                                    undefined
+                                                    ? '
+                                                    - '
+                                                    :
+                                                    det.ad_make ) }}
+                                                </td>
+                                                <td style="text-align: left !important;">
+                                                    {{ (det.ad_model == 0 || det.ad_model == null || det.ad_model ==
+                                                    undefined ?
+                                                    ' -
+                                                    ' :
+                                                    det.ad_model ) }}
+                                                </td> -->
+                                                <td class="text-center">
+                                                    {{ ( det.ad_dealtype == null || det.ad_dealtype == undefined ? '-' :
+                                                    det.ad_dealtype
+                                                    ) }}
+                                                </td>
+                                                <td style="padding-right: .8rem !important;">
+                                                    {{ (det.vin == 0 || det.vin == null || det.vin == undefined ? '-' :
+                                                    det.vin
+                                                    ) }}
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.TradeAcv == 0 || det.TradeAcv == null || det.TradeAcv ==
+                                                        undefined ?
+                                                        '' :
+                                                        '$' ) }}
+                                                        <span>
+                                                            {{ (det.TradeAcv == 0 || det.TradeAcv == null ||
+                                                            det.TradeAcv ==
+                                                            undefined ?
+                                                            '-' :
+                                                            det.TradeAcv | number:'1.0-0' ) }}
+                                                        </span>
+                                                    </span>
+
+                                                </td>
+                                                <td style="text-align: right;"
+                                                    [id]="'SD_'+i">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.SalePrice == 0 || det.SalePrice == null || det.SalePrice
+                                                        == undefined ?
+                                                        '' :
+                                                        '$' ) }}
+                                                        <span>
+                                                            {{ (det.SalePrice == 0 || det.SalePrice == null ||
+                                                            det.SalePrice ==
+                                                            undefined ?
+                                                            '-' :
+                                                            det.SalePrice | number:'1.0-0' ) }}
+                                                        </span>
+                                                    </span>
+
+                                                </td>
+                                                <td style="text-align: right !important;"
+                                                    [ngClass]="{ negative: !inTheGreen(det.frontgross)}">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.frontgross == 0 || det.frontgross == null ||
+                                                        det.frontgross ==
+                                                        undefined ?
+                                                        '' :'$' ) }}
+                                                        <span>
+                                                            {{ (det.frontgross == 0 || det.frontgross == null ||
+                                                            det.frontgross ==
+                                                            undefined ?
+                                                            '-' :
+                                                            det.frontgross | number:'1.0-0' ) }}
+                                                        </span>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align: right !important;"
+                                                    [ngClass]="{ negative: !inTheGreen(det.backgross)}">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.backgross == 0 || det.backgross == null || det.backgross
+                                                        ==
+                                                        undefined ? ''
+                                                        : '$' ) }}
+                                                        <span>
+                                                            {{ (det.backgross == 0 || det.backgross == null ||
+                                                            det.backgross ==
+                                                            undefined ? '-'
+                                                            : det.backgross |
+                                                            number:'1.0-0' ) }}
+                                                        </span>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align: right !important;"
+                                                    [ngClass]="{ negative: !inTheGreen(det.totalgross)}">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.totalgross == 0 || det.totalgross == null ||
+                                                        det.totalgross ==
+                                                        undefined ?
+                                                        '-' :'$' ) }}
+                                                        <span>
+                                                            {{ (det.totalgross == 0 || det.totalgross == null ||
+                                                            det.totalgross ==
+                                                            undefined ?
+                                                            '-' :
+                                                            det.totalgross | number:'1.0-0' ) }}
+                                                        </span>
+                                                    </span>
+                                                </td>
+                                                <!-- <td style="text-align: right !important;"
+                                                    [ngClass]="{ negative: !inTheGreen(det.frontgross_decimal)}">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.frontgross_decimal == 0 || det.frontgross_decimal ==
+                                                        null ||
+                                                        det.frontgross_decimal ==
+                                                        undefined ?
+                                                        '' :'$' ) }}
+                                                        <span>
+                                                            {{ (det.frontgross_decimal == 0 || det.frontgross_decimal ==
+                                                            null ||
+                                                            det.frontgross_decimal ==
+                                                            undefined ?
+                                                            '-' :
+                                                            det.frontgross_decimal | number:'1.2-2' ) }}
+                                                        </span>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align: right !important;"
+                                                    [ngClass]="{ negative: !inTheGreen(det.backgross_decimal)}">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.backgross_decimal == 0 || det.backgross_decimal == null
+                                                        ||
+                                                        det.backgross_decimal ==
+                                                        undefined ? ''
+                                                        : '$' ) }}
+                                                        <span>
+                                                            {{ (det.backgross_decimal == 0 || det.backgross_decimal ==
+                                                            null
+                                                            ||
+                                                            det.backgross_decimal ==
+                                                            undefined ? '-'
+                                                            : det.backgross_decimal |
+                                                            number:'1.2-2' ) }}
+                                                        </span>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align: right !important;"
+                                                    [ngClass]="{ negative: !inTheGreen(det.totalgross_decimal)}">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.totalgross_decimal == 0 || det.totalgross_decimal ==
+                                                        null ||
+                                                        det.totalgross_decimal == undefined ? '-' :'$' ) }}
+                                                        <span>
+                                                            {{ (det.totalgross_decimal == 0 || det.totalgross_decimal ==
+                                                            null ||
+                                                            det.totalgross_decimal == undefined ? '-' :
+                                                            det.totalgross_decimal | number:'1.2-2' ) }}
+                                                        </span>
+                                                    </span>
+                                                </td> -->
+                                                <td title="{{det.salesperson1}}"
+                                                    style="cursor: default;white-space: nowrap;text-align: left !important;">
+
+                                                    {{(det.salesperson1 == null || det.salesperson1 == '' ||
+                                                    det.salesperson1 ==
+                                                    undefined ? '-' :
+                                                    det.salesperson1.toString() )}}
+                                                </td>
+                                                <td title="{{det.salesperson2}}"
+                                                    style="cursor: default;white-space: nowrap;text-align: left !important;">
+
+
+                                                    {{(det.salesperson2 == null || det.salesperson2 == '' ||
+                                                    det.salesperson2 ==
+                                                    undefined ? '-' :
+                                                    det.salesperson2.toString()
+                                                    )}}</td>
+                                                <td title="{{det.fimanager}}"
+                                                    style="cursor: default;white-space: nowrap;text-align: left !important;">
+
+
+                                                    {{(det.fimanager == null || det.fimanager == '' || det.fimanager ==
+                                                    undefined ? '-' :
+                                                    det.fimanager.toString() )}}</td>
+                                                <td title="{{det.salesmanager}}"
+                                                    style="cursor: default;white-space: nowrap;text-align: left !important;">
+
+                                                    {{(det.salesmanager == null || det.salesmanager == '' ||
+                                                    det.salesmanager ==
+                                                    undefined ? '-' :
+                                                    det.salesmanager.toString()
+                                                    )}}</td>
+                                                <td
+                                                    style="cursor: default;white-space: nowrap;text-align: right !important;">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{ (det.FinReserve == 0 || det.FinReserve == null ||
+                                                        det.FinReserve
+                                                        ==
+                                                        undefined ?
+                                                        '' :'$') }}
+                                                        <span>
+                                                            {{ (det.FinReserve == 0 || det.FinReserve == null ||
+                                                            det.FinReserve
+                                                            ==
+                                                            undefined ?
+                                                            '-' :
+                                                            det.FinReserve | number:'1.0-0' ) }}
+                                                        </span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {{ (det.productcount == 0 || det.productcount == null ||
+                                                    det.productcount ==
+                                                    undefined ? '-' :
+                                                    det.productcount | number ) }}
+                                                </td>
+
+                                                <td style="text-align: right !important;"
+                                                    *ngFor="let pdct of det.products"
+                                                    [ngClass]="{ negative: !inTheGreen(pdct.Amount)}">
+                                                    <span class="d-flex justify-content-between">
+                                                        {{
+                                                        (pdct.Amount == 0 || pdct.Amount == null ||
+                                                        pdct.Amount == undefined
+                                                        ? '' : '$' ) }}
+                                                        <span>
+                                                            {{
+                                                            (pdct.Amount == 0 || pdct.Amount == null ||
+                                                            pdct.Amount == undefined
+                                                            ? '-' : pdct.Amount | number:'1.0-0' ) }}
+                                                        </span>
+                                                    </span>
+
+                                                </td>
+
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                    <ng-template #ifNotShow>
+                                        <tr *ngIf="NoData">
+                                            <td colspan="22" style="text-align: center; font-size: .8vw; height: 30px;">
+                                                No
+                                                Data
+                                                Found!!!</td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

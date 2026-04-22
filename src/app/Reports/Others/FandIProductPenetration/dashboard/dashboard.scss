@@ -1,0 +1,423 @@
+// .Selectedrow {
+//   background-color: #d3ecff !important;
+// //   color:  !important;
+// }
+::ng-deep .modal-dialog {
+  max-width: 95%;
+  /* adjust width */
+  left: 20px;
+  z-index: 9999;
+}
+
+.popuppointer {
+  cursor: pointer;
+  color: #026df3;
+  text-decoration: underline;
+
+  //  pointer-events: none;
+  //   color: #000;
+}
+.divBold {
+  position: sticky;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9;
+  font-family: 'Roboto' !important;
+
+  td {
+    img {
+      display: none;
+    }
+  }
+}
+.popupdisable {
+  pointer-events: none;
+  color: #000;
+  // text-decoration: underline;
+}
+
+.align-left {
+  text-align: left !important;
+}
+
+.align-right {
+  text-align: right !important;
+}
+
+
+
+.pointer {
+  /* cursor: pointer; */
+  /* pointer-events: visible; */
+  color: #2d7dcc;
+  text-decoration: underline;
+}
+
+.timeframe {
+  position: fixed;
+  z-index: 1060;
+  // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.fandipenetration-tbl {
+  .table {
+
+    thead,
+    tbody {
+
+      th:first-child,
+      th:nth-child(7),
+      td:first-child,
+      td:nth-child(7),
+      th:last-child,
+      td:last-child {
+        box-shadow:
+          inset 0 0.4px 0 0 #e0edff,
+          inset -3px 0 0 0 #e0edff,
+          inset 0 -0.4px 0 0 #e0edff,
+          inset 0.4px 0 0 0 #e0edff;
+      }
+
+      .bdr-rt {
+        box-shadow:
+          inset 0 0.4px 0 0 #e0edff,
+          inset -3px 0 0 0 #e0edff,
+          inset 0 -0.4px 0 0 #e0edff,
+          inset 0.4px 0 0 0 #e0edff;
+      }
+
+      .bdr-rt:last-child {
+        box-shadow: none
+      }
+
+    }
+  }
+}
+
+//////////////Date Filter/////////////////////
+
+.Benchmark-tbl {
+  // overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  // border-radius: 12px;
+  height: 75vh;
+  overflow: auto;
+  // max-width: fit-content;
+  margin: 0% 0%;
+  width: 100%;
+
+
+  .table {
+    border-collapse: collapse;
+    text-transform: capitalize;
+
+    th,
+    td {
+      white-space: nowrap;
+      vertical-align: top;
+      // min-width: 150px;
+      // max-width: 150px;
+      // width: 150px;
+      padding: 4px 8px;
+      margin: 0;
+    }
+
+    th {
+      border: 1px solid #8db4ff;
+    }
+
+    td {
+      border: 1px solid #dbe7ff;
+      padding: 8px !important;
+    }
+
+    th:first-child,
+    td:first-child {
+      // position: sticky;
+      left: 0;
+      z-index: 103;
+      // min-width: 150px;
+      // max-width: 150px;
+      // width: 150px;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    th:not(:first-child):not(:nth-child(2)),
+    td:not(:first-child):not(:nth-child(2)) {
+      text-align: end;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      font-family: "RobotoBold";
+      font-size: 1rem;
+
+      tr:nth-child(1) {
+        background-color: #dbe7ff !important;
+        color: #000;
+
+        th {
+          border: none;
+          box-shadow: none;
+        }
+
+        th:first-child {
+          background-color: #dbe7ff;
+          text-align: left;
+          z-index: 103;
+        }
+
+        th:nth-child(2) {
+          text-align: center !important;
+        }
+
+        th:nth-child(3) {
+          text-align: left !important;
+        }
+
+        // th:not(:first-child) {
+        //   text-align: center !important;
+        //   text-align: right !important;
+        // }
+
+        th {
+          border: 1px solid #8db4ff;
+        }
+      }
+    }
+
+    tbody {
+      font-family: "Roboto";
+      font-size: 16px;
+      line-height: 24px;
+
+      td:first-child {
+        color: #000;
+        text-align: left;
+        z-index: 10;
+      }
+
+      td:not(:first-child) {
+        text-align: end;
+        position: sticky !important;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9fbff;
+      }
+
+      tr:nth-child(odd) {
+        background-color: #ffffff;
+      }
+
+
+      .text-bold {
+        font-family: "RobotoBold";
+
+        td:first-child {
+          text-align: center;
+        }
+
+        td:nth-child(2) {
+          text-align: left;
+        }
+      }
+
+      .sticky-bottom-row {
+        position: sticky;
+        bottom: 0;
+        background-color: #fff;
+        z-index: 10;
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+      }
+
+
+      .sticky-footer {
+        td:first-child {
+          position: sticky;
+          left: 0;
+          z-index: 104;
+          background-color: #fff !important;
+          text-align: center;
+        }
+
+        td:nth-child(2) {
+          position: sticky;
+          left: 50px;
+          z-index: 103;
+          background-color: #fff !important;
+          text-align: left;
+        }
+
+        td {
+          position: sticky;
+          bottom: 0;
+          font-family: "RobotoBold";
+          z-index: 102;
+          font-size: 0.9rem;
+        }
+      }
+
+      tr:last-child td:first-child {
+        border-bottom-left-radius: 12px;
+        // border: none;
+      }
+
+      tr:last-child td:last-child {
+        border-bottom-right-radius: 12px;
+        // border: none;
+      }
+    }
+  }
+}
+
+/////////////////////////////////////DATE PICKER SCSS////////////////////////////////////
+::ng-deep bs-daterangepicker-container {
+  z-index: 1080;
+}
+
+::ng-deep .bs-datepicker {
+  display: flex;
+  align-items: stretch;
+  flex-flow: row wrap;
+  background: #fff;
+  box-shadow: 0 0 10px 0 #aaa;
+  position: relative;
+  z-index: 1;
+  border-radius: 12px;
+  top: 5px;
+  // right: 167px ;
+  left: 4.4rem;
+}
+
+::ng-deep .theme-green .bs-datepicker-head {
+  background-color: #fff;
+
+}
+
+::ng-deep .bs-datepicker-head {
+  min-width: 270px;
+  height: 30px;
+  padding: 10px;
+  border-radius: 3px 3px 0 0;
+  text-align: justify;
+}
+
+::ng-deep .bs-datepicker-head button {
+  display: inline-block;
+  vertical-align: top;
+  font-family: 'Roboto';
+  padding: 0;
+  height: 30px;
+  line-height: 30px;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  cursor: pointer;
+  color: black;
+  transition: 0.3s;
+}
+
+::ng-deep .bs-datepicker-head button[disabled],
+.bs-datepicker-head button[disabled]:hover,
+.bs-datepicker-head button[disabled]:active {
+  background: #fff;
+  color: #000;
+  cursor: not-allowed;
+}
+
+::ng-deep .bs-datepicker-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  padding-top: 0px;
+  border-top: none;
+}
+
+::ng-deep .bs-datepicker-body {
+  padding: 10px;
+  border-radius: 0 0 3px 3px;
+  min-height: 190px;
+  min-width: 270px;
+  border: none;
+}
+
+::ng-deep .bs-datepicker-body table th {
+  font-size: 13px;
+  color: #000;
+  font-family: 'Roboto';
+  font-weight: 400;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+::ng-deep .bs-datepicker-body table td {
+  color: #000;
+  text-align: center;
+  font-family: 'Roboto';
+  position: relative;
+  padding: 0;
+}
+
+::ng-deep .bs-datepicker-body table.days span {
+  width: 24px;
+  height: 24px;
+  font-family: 'Roboto';
+  line-height: 24px;
+}
+
+::ng-deep .theme-green .bs-datepicker-body table td span.selected,
+.theme-green .bs-datepicker-body table td.selected span,
+.theme-green .bs-datepicker-body table td span[class*=select-]:after,
+.theme-green .bs-datepicker-body table td[class*=select-] span:after {
+  background-color: #0554ef;
+}
+
+::ng-deep .theme-green .bs-datepicker-body table td span[class*=select-]:before,
+.theme-green .bs-datepicker-body table td[class*=select-] span:before {
+  background: #e9edf0 !important;
+  height: 20px;
+  margin-top: -3px;
+  font-family: 'Roboto';
+}
+
+::ng-deep .bs-datepicker-body table.days td.active:not(.select-start):before,
+.bs-datepicker-body table.days td.in-range:not(.select-start):before,
+.bs-datepicker-body table.days span.active:not(.select-start):before,
+.bs-datepicker-body table.days span.in-range:not(.select-start):before {
+  background: none !important;
+}
+
+::ng-deep .bs-datepicker-body table.days td.active,
+.bs-datepicker-body table.days td.in-range,
+.bs-datepicker-body table.days span.active,
+.bs-datepicker-body table.days span.in-range,
+.bs-datepicker-body table.days span.select-start {
+  background: #e9edf0 !important;
+  height: 20px;
+  margin-top: -3px;
+  font-family: 'Roboto';
+}
+
+::ng-deep .is-other-month {
+  display: none !important;
+}
+
+::ng-deep .bs-datepicker-container {
+  padding: 10px;
+}
+
+.year-input::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+
+

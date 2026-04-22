@@ -1,0 +1,478 @@
+<div *ngIf="!isLoading">
+    <div class="row">
+        <div class="cc_repairOrder">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-5 col-12 g-0">
+                        <div class="cc_repair-info">
+                            <div class="mt-0 mx-3 mb-1 p-2">
+                                <div class="row align-items-center justify-content-between mb-2 cc_store_logo">
+                                    <div class="col-3">
+                                        <img [src]="storeDetails[0]?.grouplogo" alt="">
+                                    </div>
+                                    <div class="col-9 d-flex align-items-center justify-content-end">
+                                        <!-- <img [src]="storeDetails[0]?.storelogo" alt=""> -->
+                                        <h1>{{storeDetails[0]?.store}}</h1>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <!-- <div class="col-lg-7">
+
+                                        </div> -->
+                                    <div class="col-12">
+                                        <div class="cc_address text-end">
+                                            <h2 class="m-0 p-0">repair order: <span>{{data?.ro}}</span></h2>
+                                            <div class="d-flex justify-content-end">
+                                                <h6 class="m-0 pe-1">Completed: </h6>
+                                                <!-- <div class="bd-right mx-2"></div> -->
+                                                <span class="m-0 p-0">{{storeDetails[0]?.completeddate}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="cc_address">
+                                            <h5 class="m-0 p-0">{{storeDetails[0]?.storeaddress}}</h5>
+                                            <h5 class="m-0 p-0">{{storeDetails[0]?.storecitystate}}</h5>
+                                            <h5 class="m-0 p-0">{{storeDetails[0]?.storephone}}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="m-3 mt-0 mx-4 cc_details" *ngIf="storeDetails[0]?.showuserdetails=='Y'">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="head">Customer Details</div>
+                                    </div>
+                                </div>
+                                <div class="row px-3 py-1 pt-3">
+                                    <div class="col-lg-6">
+                                        <h6 class="m-0 p-0">name:</h6>
+                                        <h4 class="m-0 p-0 titleCase">{{userDetails[0]?.customername}}</h4>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <h6 class="m-0 p-0">customer ID:</h6>
+                                        <h4 class="m-0 p-0 text-uppercase">UC{{userDetails[0]?.customerid}}</h4>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <h6 class="m-0 p-0">{{userDetails[0]?.source}} ID:</h6>
+                                        <h4 class="m-0 p-0 text-uppercase">{{userDetails[0]?.custno}}</h4>
+                                    </div>
+                                </div>
+                                <div class="row px-3 py-1">
+                                    <div class="col-lg-5">
+                                        <h6 class="m-0 p-0">address:</h6>
+                                        <h5 class="m-0 p-0 titleCase">{{userDetails[0]?.address}}</h5>
+                                        <h5 class="m-0 p-0 titleCase">{{userDetails[0]?.cityzip}}</h5>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <div class="row">
+                                            <div class="col-5 text-end">
+                                                <h6 class="m-0 p-0 ">Home:</h6>
+                                            </div>
+                                            <div class="col-7 text-start ps-0">
+                                                <h5 class="m-0 p-0">{{
+                                                    formatPhoneNumber(userDetails[0]?.homephone)}}
+                                                </h5>
+                                            </div>
+                                            <div class="col-5 text-end">
+                                                <h6 class="m-0 p-0 ">Mobile:</h6>
+                                            </div>
+                                            <div class="col-7 text-start ps-0">
+                                                <h5 class="m-0 p-0">
+                                                    {{formatPhoneNumber(userDetails[0]?.mobilephone)}} </h5>
+                                            </div>
+                                            <div class="col-5 text-end">
+                                                <h6 class="m-0 p-0 ">Work:</h6>
+                                            </div>
+                                            <div class="col-7 text-start ps-0">
+                                                <h5 class="m-0 p-0">{{formatPhoneNumber(userDetails[0]?.workphone)}}
+                                                </h5>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row px-3 py-1 pb-3">
+                                    <div class="col-12 ">
+                                        <h6 class="m-0 p-0 pe-2">Email:</h6>
+                                        <h4 class="lowerCase">{{userDetails[0]?.email}}</h4>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="m-3 mx-4 cc_veh_details">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="head">Vehicle Details
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row px-3 py-3">
+                                    <div class="col-12">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4 ps-0">
+                                                        <h5 class="mb-1 p-0">vehicle: </h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6 class="mb-1 p-0">{{vehicleDetails[0]?.vehicle}} </h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4 ps-0">
+                                                        <h5 class="mb-1 p-0">Type: </h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6 class="mb-1 p-0">{{vehicleDetails[0]?.servicesalestype}}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4 ps-0">
+                                                        <h5 class="mb-1 p-0 text-uppercase">Vin: </h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6 class="mb-1 p-0">{{vehicleDetails[0]?.vin}} </h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <h5 class="mb-1 p-0 ">Stock #:</h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6>{{vehicleDetails[0]?.stock}}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4 ps-0">
+                                                        <h5 class="mb-1 p-0">Tag: </h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6 class="mb-1 p-0">{{vehicleDetails[0]?.tagnumber}} </h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <h5 class="mb-1 p-0">License:</h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6>{{vehicleDetails[0]?.license}}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4 ps-0">
+                                                        <h5 class="mb-1 p-0">Miles In: </h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6 class="mb-1 p-0">{{vehicleDetails[0]?.milesin}} </h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4 ps-0">
+                                                        <h5 class="mb-1 p-0">Miles Out: </h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6 class="mb-1 p-0">{{vehicleDetails[0]?.milesout}} </h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-6 col-12">
+                                                <div class="row">
+                                                    <div class="col-4 ps-0">
+                                                        <h5 class="mb-1 p-0">Color: </h5>
+                                                    </div>
+                                                    <div class="col-8 ps-0">
+                                                        <h6 class="mb-1 p-0">{{vehicleDetails[0]?.color}} </h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="m-3 mx-4 cc_veh_details">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="head">RO Details</div>
+                                    </div>
+                                </div>
+                                <!-- <div class="row px-3 py-3">
+                                    <ng-container *ngFor="let ro of roDetails;let i=index;">
+                                        <div class="col-lg-12 col-12" *ngIf="i>1">
+                                            <div class="row">
+                                                    <h5 class="mb-1 p-0">{{ro?.datatitle}} </h5>
+                                                    <h6 class="mb-1 p-0">{{ro?.datavalue}} </h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" *ngIf="(i==1)">
+                                                    <h5 class="mb-1 p-0">{{roDetails[0]?.datatitle}} </h5>
+                                                    <h6 class="mb-1 ps-3">{{roDetails[0]?.datavalue}} </h6>
+                                                    <h6 class="mb-1 ps-1" *ngIf="i==1">({{ro?.datavalue}})</h6>
+                                        </div>
+                                    </ng-container>
+                                </div> -->
+                                <div class="row px-3 py-3">
+                                    <div class="col-6" *ngFor="let ro of roDetails; let i = index">
+                                        <h5 class="mb-1 p-0 text-start">
+                                            {{ ro?.datatitle }}:
+                                        </h5>
+                                        <h6 class="mb-1 p-0">
+                                            {{ ro?.datavalue || '-' }}
+                                            <!-- <span *ngIf="i === 1" class="ms-1">
+                                                ({{ roDetails[0]?.datavalue }})
+                                            </span> -->
+                                        </h6>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                    <div class="col-lg-7 col-12 bg-white">
+                        <div class="bg-white ps-2 pe-0">
+                            <div class="d-flex justify-content-end my-3">
+                                <span class="close" (click)="closeModal()"><i class="bi bi-x"></i></span>
+
+                            </div>
+                            <div class="cc_tbl-repair mt-3">
+                                <div class="float-start w-100 px-3">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="head">
+                                                <span>RO Summary</span>
+                                                <span class="ms-4">Internal Copy</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 px-3">
+                                            <table class="cc_repair-table mt-2 mx-0">
+                                                <tbody>
+                                                    <tr class="font-blue">
+                                                        <td class="text-end">Labor Sales</td>
+                                                        <td class="text-end">Labor Gross</td>
+                                                        <td class="text-end">Hours</td>
+                                                        <td class="text-end">Parts Sale</td>
+                                                        <td class="text-end">Parts Gross</td>
+                                                        <td class="text-end">Misc Gross</td>
+                                                        <td class="text-end">Total Gross</td>
+
+                                                    </tr>
+                                                    <ng-container *ngIf="rosummary?.length>0">
+                                                        <tr *ngFor="let rosum of rosummary">
+                                                            <td class="text-end"
+                                                                [ngStyle]="{'color': checkSymbols(rosum?.laborsale) ? 'red' : 'black'}">
+                                                                {{rosum?.laborsale}}</td>
+                                                            <td class="text-end"
+                                                                [ngStyle]="{'color': checkSymbols(rosum?.laborgross) ? 'red' : 'black'}">
+                                                                {{rosum?.laborgross}}</td>
+                                                            <td class="text-end">{{rosum?.hours}}</td>
+                                                            <td class="text-end"
+                                                                [ngStyle]="{'color': checkSymbols(rosum?.partssale) ? 'red' : 'black'}">
+                                                                {{rosum?.partssale}}</td>
+                                                            <td class="text-end"
+                                                                [ngStyle]="{'color': checkSymbols(rosum?.partsgross) ? 'red' : 'black'}">
+                                                                {{rosum?.partsgross}}</td>
+                                                            <td class="text-end"
+                                                                [ngStyle]="{'color': checkSymbols(rosum?.miscgross) ? 'red' : 'black'}">
+                                                                {{rosum?.miscgross}}</td>
+                                                            <td class="text-end"
+                                                                [ngStyle]="{'color': checkSymbols(rosum?.total) ? 'red' : 'black'}">
+                                                                {{rosum?.total}}</td>
+
+
+                                                        </tr>
+                                                    </ng-container>
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="float-start w-100 mt-2 px-3">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="head">
+                                                <span>Line Items (Sale)</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 px-3">
+                                            <table class="cc_repair-table mt-2 mx-0">
+                                                <tbody>
+                                                    <tr class="font-blue">
+                                                        <td>Line</td>
+                                                        <td>OPCODE</td>
+                                                        <td class="text-end">Tech(s)</td>
+                                                        <td class="text-end">Lbr</td>
+                                                        <td class="text-end">Parts</td>
+                                                        <td class="text-end">Hours</td>
+                                                        <td class="text-end">Other</td>
+                                                        <td class="text-end">Total</td>
+                                                    </tr>
+                                                    <ng-container *ngIf="rocompleteDetails?.length>0">
+                                                        <ng-container *ngFor="let rolineitem of rocompleteDetails">
+                                                            <tr>
+                                                                <td class="text-start">{{rolineitem?.linenumber}}
+                                                                </td>
+                                                                <td class="text-start">{{rolineitem?.opcode}}</td>
+                                                                <td class="text-end">{{rolineitem?.tech}}</td>
+                                                                <td class="text-end"
+                                                                    [ngStyle]="{'color': checkSymbols(rolineitem?.laborsale) ? 'red' : 'black'}">
+                                                                    {{rolineitem?.laborsale}}</td>
+                                                                <td class="text-end"
+                                                                    [ngStyle]="{'color': checkSymbols(rolineitem?.partssale) ? 'red' : 'black'}">
+                                                                    {{rolineitem?.partssale}}</td>
+                                                                <td class="text-end me-2">{{rolineitem?.hrs}}</td>
+                                                                <td class="text-end"
+                                                                    [ngStyle]="{'color': checkSymbols(rolineitem?.other) ? 'red' : 'black'}">
+                                                                    {{rolineitem?.other}}</td>
+                                                                <td class="text-end"
+                                                                    [ngStyle]="{'color': checkSymbols(rolineitem?.total) ? 'red' : 'black'}">
+                                                                    {{rolineitem?.total}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td class="pb-2" colspan="7"
+                                                                    style="font-family: 'Roboto';font-weight: 700;">
+                                                                    {{rolineitem?.description}}</td>
+                                                            </tr>
+                                                            <tr style="border-top: 1px solid #f1f1f1;">
+                                                                <td colspan="8"></td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="float-start w-100 mt-2 px-3">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="head">
+                                                <span>Totals</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 px-3">
+                                            <div class="row">
+                                                <div class="col-md-4 col-12"></div>
+
+                                                <div class="col-md-8 col-12">
+
+                                                    <table class="cc_repair-table mt-2 mx-0">
+
+                                                        <!-- ✅ Customer Pay Section -->
+                                                        <ng-container *ngIf="customerpay?.length > 0">
+                                                            <tr style="white-space: nowrap;">
+                                                                <td colspan="5"
+                                                                    style="font-size: 0.9rem;font-family: 'Roboto';font-weight: 600;">
+                                                                    Customer Pay
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr *ngFor="let pay of customerpay">
+                                                                <td>&nbsp;</td>
+                                                                <td class="lcolor">{{pay?.name}}</td>
+
+                                                                <td class="vcolor text-end pe-4"
+                                                                    [ngStyle]="{'color': checkSymbols(pay?.value) ? 'red' : 'black'}">
+                                                                    {{pay?.value}}
+                                                                </td>
+
+                                                                <td class="lcolor pe-2">{{pay?.name2}}</td>
+
+                                                                <td class="cc_vcolor text-end"
+                                                                    [ngStyle]="{'color': checkSymbols(pay?.value2) ? 'red' : 'black'}">
+                                                                    {{pay?.value2}}
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+
+                                                        <!-- ✅ Internal Pay Section -->
+                                                        <ng-container *ngIf="internalpay?.length > 0">
+
+                                                            <!-- Section Title -->
+                                                            <tr style="white-space: nowrap;">
+                                                                <td colspan="5"
+                                                                    style="font-size: 0.9rem;font-family: 'Roboto';font-weight: 600;">
+                                                                    Internal Pay
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr *ngFor="let pay of internalpay">
+                                                                <td>&nbsp;</td>
+                                                                <td class="lcolor">{{pay?.name}}</td>
+
+                                                                <td class="vcolor text-end pe-4"
+                                                                    [ngStyle]="{'color': checkSymbols(pay?.value) ? 'red' : 'black'}">
+                                                                    {{pay?.value}}
+                                                                </td>
+
+                                                                <td class="lcolor pe-2">{{pay?.name2}}</td>
+
+                                                                <td class="vcolor text-end "
+                                                                    [ngStyle]="{'color': checkSymbols(pay?.value2) ? 'red' : 'black'}">
+                                                                    {{pay?.value2}}
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="isLoading" class="cc_loading-overlay">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>

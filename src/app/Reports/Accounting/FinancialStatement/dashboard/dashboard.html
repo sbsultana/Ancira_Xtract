@@ -1,0 +1,217 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid px-2" id="FinancialStatement">
+        <div class="col-12">
+            <div class="reports-bar">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">
+                                ( {{storecount}}
+                                {{storedisplayname}} )
+                            </span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="dp.show()">
+                            Month
+                            <span class="light-font">
+                                ( {{ selectedDate | date:'MMMM/yyyy' }} )
+                            </span>
+                        </button>
+                        <input #dp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="selectedDate"
+                            [bsConfig]="bsConfig" readonly (keydown)="$event.preventDefault()"
+                            style="position: absolute; opacity: 0; height: 0; width: 0;" />
+                    </div>
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="applyDateChange()"><span>Apply</span></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-12">
+            <div class="scorecard-multi-header financialstatement-tbl">
+                <table class="table mb-0 w-100">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">
+                                {{currentMonth | date:'MMMM yyyy'}}</th>
+                            <th colspan="6">{{storename}}</th>
+                        </tr>
+                        <tr>
+                            <th style="width: 20%;">
+                                Department
+                            </th>
+                            <th>Actual</th>
+                            <th>Budget</th>
+                            <th>
+                                Variance</th>
+                            <!-- <th class="text-dark">{{lastFourMonthsArray[1] | date:'MMMM yyyy'}}</th>
+                    <th class="text-dark">{{lastFourMonthsArray[2] | date:'MMMM yyyy'}}</th>
+                    <th class="text-dark">{{lastFourMonthsArray[3] | date:'MMMM yyyy'}}</th> -->
+                            <th *ngFor="let month of lastFourMonthsArray; let isLast = last">
+                                {{ month }}
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let data of FSData; let i = index">
+
+                            <tr [ngClass]="{
+      'bg-grey': data.IsHeader == 'Y',
+      'title': data.IsHeader == 'T',
+      'title-center': data.Fs_Titles == 'TitleCenter',
+      'sub-title': data.IsHeader == 'N',
+      'text-bold': data.IsHeader == 'T',
+      'Selectedrow': i.toString() == index,
+      'lightblue-bg': data.IsHeader == 'Y'
+    }" (click)="selectRow(i)">
+                                <td class="text-start">
+                                    <span (click)="expandorcollapse(i,$event,data.data2sign,data,data.Department)"
+                                        [id]="'D_'+i" [ngStyle]="{
+          cursor: data.Has_detail === 'Y' ? 'pointer' : 'default',
+          'pointer-events': data.Has_detail === 'Y' ? 'auto' : 'none'
+        }">
+                                        <i class="fa-solid fa-chevron-down" style="font-size:.75rem;margin-right:6px"
+                                            *ngIf="data.data2sign === '+' && data.Has_detail === 'Y'"></i>
+
+                                        <i class="fa-solid fa-chevron-up" style="font-size:.75rem;margin-right:6px"
+                                            *ngIf="data.data2sign === '-' && data.Has_detail === 'Y'"></i>
+
+                                        {{ data.DisplayName }}
+                                    </span>
+                                </td>
+
+                                <td
+                                    [ngClass]="{ negative: !inTheGreen(data.Actual) && isSpecialRow(data.DisplayName) }">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.Actual, data.ValueType)">
+                                        <span *ngIf="data.ValueType === '$' && data.Actual">$
+                                        </span>
+                                        <span>{{ formatValue(data.Actual, data.ValueType) }}</span>
+                                    </span>
+                                </td>
+
+                                <td
+                                    [ngClass]="{ negative: !inTheGreen(data.Budget) && isSpecialRow(data.DisplayName) }">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.Budget, data.ValueType)">
+                                        <span *ngIf="data.ValueType === '$' && data.Budget">$
+                                        </span>
+                                        <span>{{ formatValue(data.Budget, data.ValueType) }}</span>
+                                    </span>
+                                </td>
+
+                                <td [ngClass]="{ negative: !inTheGreen(data.Variance) }">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.Variance, data.ValueType)">
+                                        <span *ngIf="data.ValueType === '$' && data.Variance">$
+                                        </span>
+                                        <span>{{ formatValue(data.Variance, data.ValueType) }}</span>
+                                    </span>
+                                </td>
+
+                                <td [ngClass]="{ negative: !inTheGreen(data.LM1) && isSpecialRow(data.DisplayName) }">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LM1, data.ValueType)">
+                                        <span *ngIf="data.ValueType === '$' && data.LM1">$
+                                        </span>
+                                        <span>{{ formatValue(data.LM1, data.ValueType) }}</span>
+                                    </span>
+                                </td>
+
+                                <td [ngClass]="{ negative: !inTheGreen(data.LM2) && isSpecialRow(data.DisplayName) }">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LM2, data.ValueType)">
+                                        <span *ngIf="data.ValueType === '$' && data.LM2">$
+                                        </span>
+                                        <span>{{ formatValue(data.LM2, data.ValueType) }}</span>
+                                    </span>
+                                </td>
+
+                                <td [ngClass]="{ negative: !inTheGreen(data.LM3) && isSpecialRow(data.DisplayName) }">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LM3, data.ValueType)">
+                                        <span *ngIf="data.ValueType === '$' && data.LM3">$
+                                        </span>
+                                        <span>{{ formatValue(data.LM3, data.ValueType) }}</span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <ng-container *ngFor="let LayerOne of data.SubData; let j = index">
+                                <tr class="lightgrey-bg">
+                                    <td
+                                        [ngClass]="{'hidden': LayerOne.data2sign === '+', 'extra-padding': data.Has_detail === 'Y'}">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ LayerOne['SUBTYPE DETAIL'] }}
+                                    </td>
+
+                                    <td
+                                        [ngClass]="{ negative: !inTheGreen(LayerOne.Actual) && isSpecialRow(LayerOne.DisplayName) }">
+                                        <span class="d-flex" [ngStyle]="getStyle(LayerOne.Actual, LayerOne.ValueType)">
+                                            <span *ngIf="LayerOne.ValueType === '$' && LayerOne.Actual">$
+                                            </span>
+                                            <span>{{ formatValue(LayerOne.Actual, LayerOne.ValueType) }}</span>
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        [ngClass]="{ negative: !inTheGreen(LayerOne.Budget) && isSpecialRow(LayerOne.DisplayName) }">
+                                        <span class="d-flex" [ngStyle]="getStyle(LayerOne.Budget, LayerOne.ValueType)">
+                                            <span *ngIf="LayerOne.ValueType === '$' && LayerOne.Budget">$
+                                            </span>
+                                            <span>{{ formatValue(LayerOne.Budget, LayerOne.ValueType) }}</span>
+                                        </span>
+                                    </td>
+
+                                    <td [ngClass]="{ negative: !inTheGreen(LayerOne.Variance) }">
+                                        <span class="d-flex"
+                                            [ngStyle]="getStyle(LayerOne.Variance, LayerOne.ValueType)">
+                                            <span *ngIf="LayerOne.ValueType === '$' && LayerOne.Variance">$
+                                            </span>
+                                            <span>{{ formatValue(LayerOne.Variance, LayerOne.ValueType) }}</span>
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        [ngClass]="{ negative: !inTheGreen(LayerOne.LM1) && isSpecialRow(LayerOne.DisplayName) }">
+                                        <span class="d-flex" [ngStyle]="getStyle(LayerOne.LM1, LayerOne.ValueType)">
+                                            <span *ngIf="LayerOne.ValueType === '$' && LayerOne.LM1">$
+                                            </span>
+                                            <span>{{ formatValue(LayerOne.LM1, LayerOne.ValueType) }}</span>
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        [ngClass]="{ negative: !inTheGreen(LayerOne.LM2) && isSpecialRow(LayerOne.DisplayName) }">
+                                        <span class="d-flex" [ngStyle]="getStyle(LayerOne.LM2, LayerOne.ValueType)">
+                                            <span *ngIf="LayerOne.ValueType === '$' && LayerOne.LM2">$
+                                            </span>
+                                            <span>{{ formatValue(LayerOne.LM2, LayerOne.ValueType) }}</span>
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        [ngClass]="{ negative: !inTheGreen(LayerOne.LM3) && isSpecialRow(LayerOne.DisplayName) }">
+                                        <span class="d-flex" [ngStyle]="getStyle(LayerOne.LM3, LayerOne.ValueType)">
+                                            <span *ngIf="LayerOne.ValueType === '$' && LayerOne.LM3">$
+                                            </span>
+                                            <span>{{ formatValue(LayerOne.LM3, LayerOne.ValueType) }}</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+                        <tr *ngIf="NoData">
+                            <td>&nbsp;</td>
+                            <td colspan="7"
+                                style="text-align: center;font-size: .8vw;background: #fff !important;color: black; display: revert;">
+                                <label>No Data Found</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>

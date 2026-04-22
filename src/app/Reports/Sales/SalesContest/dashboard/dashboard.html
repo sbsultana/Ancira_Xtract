@@ -1,0 +1,258 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div>
+        <div class="container-fluid">
+            <div class="reports-bar">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                                {{storecount}}
+                                {{storedisplayname}} )</span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(1)">
+                            Time Frame<span class="light-font"> {{ displaytime }}</span>
+                            <span class="arrow"></span></button>
+                        <div class="timeframe" *ngIf="activePopover === 1">
+                            <app-date-range-picker [Dates]="Dates"
+                                (updatedDates)="updatedDates($event)"></app-date-range-picker>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(7)">Contest Type <span
+                                class="light-font">
+                                ( {{dupFiltertype}} )
+                            </span>
+                            <span class="arrow"></span></button>
+                        <div class="reportstores-card my-2" *ngIf="activePopover === 7">
+                            <div class="row h-100">
+                                <div class="stores d-flex flex-column border-0">
+                                    <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                        <div class="store-columns flex-grow-1"
+                                            style="grid-template-rows: repeat(2, auto);">
+                                            <ng-container>
+
+                                                <button class="btn btn-outline-primary store-button"
+                                                    *ngFor="let s of filterData"
+                                                    [ngClass]="{'active':filtertype.indexOf(s.name)>=0,'inactive':filtertype.indexOf(s.name)<0}"
+                                                    (click)="filterselection(s)">{{s.name}}</button>
+
+
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+                    </div>
+                    <div class="asofnow ms-auto mx-3">
+                        <div class="dropdown">
+                            <div *ngIf="SalesContest != undefined" class="d-flex justify-content-end align-items-center divBold ms-2 font-medium">
+                                <span *ngIf="SalesContest.length>0" class="me-2">
+                                    Count:{{(SalesContest).length}}
+                                </span>
+                                <div>
+                                    <span class="divBold ms-auto">{{AsofNow}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scorecard-multi-header salescontest-tbl">
+                <table class="table mb-0 w-100">
+                    <thead>
+                        <tr class="bdr-btm">
+                            <th (click)="sort('Rank',order)" style="cursor: pointer;"> Rank</th>
+                            <th (click)="sort('StoreName',order)" style="cursor: pointer;"> Store
+                            </th>
+
+                            <th colspan="4">New</th>
+
+
+                            <th colspan="4">Used</th>
+
+
+                            <th colspan="5">Total</th>
+
+                        </tr>
+                        <tr>
+                            <th class="bdr-rt"></th>
+                            <th class="bdr-rt"></th>
+
+
+
+                            <th class="bdr-rt" (click)="sort('New_MTD',order)" style="cursor: pointer;">
+                                <span
+                                    *ngIf="datetype() == 'C'"> {{FromDate | date:'MM.dd.yyyy'}} <div
+                                        style="line-height: 0 !important;color: black !important;">-</div> {{ ToDate |
+                                    date:'MM.dd.yyyy'}} </span>
+
+
+                                <span
+                                    *ngIf="datetype() != 'C'">{{datetype()}}</span>
+                            </th>
+                            <th class="bdr-rt" (click)="sort('New_Pace',order)" style="cursor: pointer;">Pace</th>
+                            <th class="bdr-rt" (click)="sort('New_Target',order)" style="cursor: pointer;">Target</th>
+                            <th class="bdr-rt" (click)="sort('New_Variance',order)" style="cursor: pointer;">Variance
+                            </th>
+
+
+
+                            <th class="bdr-rt" (click)="sort('Used_MTD',order)" style="cursor: pointer;">
+                                <span
+                                    *ngIf="datetype() == 'C'"> {{FromDate | date:'MM.dd.yyyy'}} <div
+                                        style="line-height: 0 !important;color: black !important;">-</div> {{ ToDate |
+                                    date:'MM.dd.yyyy'}} </span>
+
+
+                                <span
+                                    *ngIf="datetype() != 'C'">{{datetype()}}</span>
+                            </th>
+                            <th class="bdr-rt" (click)="sort('Used_Pace',order)" style="cursor: pointer;">Pace</th>
+                            <th class="bdr-rt" (click)="sort('Used_Target',order)" style="cursor: pointer;">Target</th>
+                            <th class="bdr-rt" (click)="sort('Used_Variance',order)" style="cursor: pointer;">Variance
+                            </th>
+
+
+                            <th class="bdr-rt" (click)="sort('Total_MTD',order)" style="cursor: pointer;">
+                                <span
+                                    *ngIf="datetype() == 'C'"> {{FromDate | date:'MM.dd.yyyy'}} <div
+                                        style="line-height: 0 !important;color: black !important;">-</div> {{ ToDate |
+                                    date:'MM.dd.yyyy'}} </span>
+
+
+                                <span
+                                    *ngIf="datetype() != 'C'">{{datetype()}}</span>
+                            </th>
+                            <th class="bdr-rt" (click)="sort('Total_Pace',order)" style="cursor: pointer;">Pace</th>
+                            <th class="bdr-rt" (click)="sort('Total_Target',order)" style="cursor: pointer;">Target</th>
+                            <th class="bdr-rt" (click)="sort('Total_Variance',order)" style="cursor: pointer;">Variance
+                            </th>
+                            <th class="bdr-rt" (click)="sort('Total_Percentage',order)" style="cursor: pointer;">% <span>to</span>
+                                Target</th>
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="(SalesContest).length >0; else NoQIdata">
+                            <ng-container *ngIf="SalesContest.length > 0; else NoQIdata">
+                                <tr *ngFor="let Appointment of SalesContest ; let i=index"
+                                    [ngClass]="{'divbold' : i == SalesContest.length-1 }">
+                                    <ng-container>
+                                        <td class="text-center">
+                                            <span>
+                                                {{Appointment["Rank"] || '-'}}
+                                            </span>
+
+                                        </td>
+                                        <td style="text-align: left !important;">
+                                            {{Appointment["StoreName"] || '-'}}</td>
+
+
+                                        <ng-container *ngFor="let k of keys;let i=index">
+                                            <td [ngClass]="{ negative: !inTheGreen(Appointment[k])}"
+                                                style="text-align: right !important;">
+                                                <span *ngIf="i != 12">
+                                                    <span class="d-flex justify-content-between"
+                                                        *ngIf="dupFiltertype.toString() == 'Gross'"> {{
+                                                        ( Appointment[k]
+                                                        == null ? '' :
+                                                        '$') }} <span> {{
+                                                            (
+                                                            Appointment[k] == null ? '-' :
+                                                            Appointment[k] |number:'1.0-0')
+                                                            }}</span></span>
+                                                    <span *ngIf="dupFiltertype.toString() == 'Units'"> {{
+                                                        (
+                                                        Appointment[k] == null ? '-' :
+                                                        Appointment[k] | number:'1.0-0')
+                                                        }}</span>
+                                                </span>
+                                                <span *ngIf="i == 12">
+                                                    {{
+                                                    (
+                                                    Appointment[k] == null ? '-' :
+                                                    (Appointment[k] |number:'1.1-1') +'%')
+                                                    }}
+                                                </span>
+
+
+                                            </td>
+
+                                        </ng-container>
+                                    </ng-container>
+                                </tr>
+                                <tr style="position: sticky; top:0; bottom: 0; left: 0; right: 0;z-index: 995;font-family: 'Roboto' !important;"
+                                    class="divBold" *ngFor="let Appointment of TotalData; let i=index">
+                                    <ng-container>
+                                        <td class="text-center">
+
+                                        </td>
+                                        <td style="text-align: left !important;">
+                                            {{Appointment["StoreName"] || '-'}}</td>
+
+
+                                        <ng-container *ngFor="let k of keys;let i=index">
+                                            <td [ngClass]="{ negative: !inTheGreen(Appointment[k])}"
+                                                style="text-align: right !important;">
+                                                <span *ngIf="i != 3 && i != 7 && i != 11 && i != 12">
+                                                    <span class="d-flex justify-content-between"
+                                                        *ngIf="dupFiltertype.toString() == 'Gross'"> {{
+                                                        ( Appointment[k]
+                                                        == null ? '' :
+                                                        '$') }} <span> {{
+                                                            (
+                                                            Appointment[k] == null ? '-' :
+                                                            Appointment[k] |number:'1.0-0')
+                                                            }}</span></span>
+                                                    <span *ngIf="dupFiltertype.toString() == 'Units'"> {{
+                                                        (
+                                                        Appointment[k] == null ? '-' :
+                                                        Appointment[k] | number:'1.0-0')
+                                                        }}</span>
+
+                                                </span>
+
+
+                                            </td>
+
+                                        </ng-container>
+                                    </ng-container>
+
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #NoQIdata>
+                            <tr *ngIf="searchQuery != '' || NoData">
+                                <!-- <td colspan="5"
+                                                *ngIf="storeIds.toString().indexOf(',')< 0 && storeIds != 0 "
+                                                style="text-align: center !important;font-size: .9vw;background: #fff !important;color: black; display: revert;">
+                                                No Data Found
+                                            </td> -->
+                                <td colspan="18"
+                                    style="text-align: center !important;font-size: 1rem;background: #fff !important;color: black; display: revert;">
+                                    <label>No Data Found</label>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>

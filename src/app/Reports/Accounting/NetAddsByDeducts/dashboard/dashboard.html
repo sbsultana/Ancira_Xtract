@@ -1,0 +1,225 @@
+<app-toast-container></app-toast-container>
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="reports-bar">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                                {{storecount}}
+                                {{storedisplayname}} )</span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="dp.show()">
+                            Month
+                            <span class="light-font">
+                                ( {{ selectDate | date:'MMMM/yyyy' }} )
+                            </span>
+                        </button>
+                        <input #dp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="selectDate"
+                            [bsConfig]="bsConfig" readonly (keydown)="$event.preventDefault()"
+                            style="position: absolute; opacity: 0; height: 0; width: 0;" />
+                    </div>
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="applyDateChange()">
+                            <span>Apply</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scorecard-double-header netdeducts-tbl" (scroll)="updateVerticalScroll($event)" #scrollcent
+            id="scrollcent">
+            <table class="table mb-0 w-100">
+                <thead>
+                    <tr>
+                        <th class="bdr-rt text-center" style="color:#fff">
+                            {{ Month | date: 'MMMM - yyyy' }}
+                        </th>
+                        <ng-container *ngIf="isSingleStoreId()">
+                            <th> Total </th>
+                            <th> Average </th>
+                        </ng-container>
+                        <ng-container *ngIf="IncomeSummaryDataKeys?.length > 0; else emptyColumns">
+                            <ng-container *ngFor="let key of IncomeSummaryDataKeys">
+                                <th
+                                    *ngIf="!['Report Total', 'BDGT_TOTAL', 'VARBDGT'].includes(key) && isKeyVisible(key)">
+                                    {{ formatKey(key) }}
+                                </th>
+                            </ng-container>
+                        </ng-container>
+
+                        <ng-template #emptyColumns>
+                            <th></th>
+                        </ng-template>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="IncomeSummaryData.length > 0; else NoIncomeSummaryData">
+                        <ng-container>
+                            <tr class="sub-title lightblue-bg">
+                                <td class="lightblueCol-bg">
+                                    <strong>Net Adds/Deducts</strong>
+                                </td>
+
+                                <ng-container *ngIf="isSingleStoreId()">
+                                    <td></td>
+                                    <td></td>
+                                </ng-container>
+                                <td [attr.colspan]="IncomeSummaryDataKeys.length">
+                                    <label>&nbsp;</label>
+                                </td>
+                            </tr>
+                            <tr *ngFor="let item of IncomeSummaryData"
+                                [ngClass]="{'text-start divBold': item['LINE HEAD'] === 'Report Total'}">
+                                <td class="ps-3" [ngClass]="{'ps-0': item['LINE HEAD'] === 'Report Total'}">{{
+                                    item['LINE HEAD'] }}
+                                </td>
+
+                                <ng-container *ngIf="isSingleStoreId()">
+                                    <td>
+                                        <span class="d-flex justify-content-between">
+                                            {{ (item['TOTAL'] == 0 || item['TOTAL'] == null ? '&nbsp;' : '$') }}
+                                            <span>
+                                                {{ (item['TOTAL'] == 0 || item['TOTAL'] == null ? '-' : item['TOTAL'] |
+                                                number:'1.0-0') }}
+                                            </span>
+                                        </span>
+
+                                    <td>
+                                        <span class="d-flex justify-content-between">
+                                            {{ (item['AVG'] == 0 || item['AVG'] == null ? '&nbsp;' : '$') }}
+                                            <span>
+                                                {{ (item['AVG'] == 0 || item['AVG'] == null ? '-' : item['AVG'] |
+                                                number:'1.0-0') }}
+                                            </span>
+                                        </span>
+                                    </td>
+
+                                </ng-container>
+                                <ng-container *ngFor="let key of IncomeSummaryDataKeys">
+                                    <td *ngIf="!['TOTAL', 'AVG', 'VARBDGT'].includes(key) && isKeyVisible(key)">
+                                        <span class="d-flex justify-content-between cursor-pointer"
+                                            (click)="openMonthDetails(item,key,item['LINE HEAD'],'','')"
+                                            [ngClass]="isDisabled(item, key) ? 'disabled-cell' : 'clickable-cell'">
+                                            {{ (item[key] == 0 || item[key] == null ? '&nbsp;' : '$') }}
+                                            <span>
+                                                {{ (item[key] == 0 || item[key] == null ? '-' : item[key] |
+                                                number:'1.0-0') }}
+                                            </span>
+                                        </span>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                </tbody>
+            </table>
+            <ng-template #NoIncomeSummaryData>
+                <tr *ngIf="NoData">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center" [attr.colspan]="IncomeSummaryDataKeys.length + 1">
+                        <label>No Data Found</label>
+                    </td>
+                </tr>
+            </ng-template>
+        </div>
+    </div>
+
+</main>
+
+
+<div class="modal fade" id="netaddbydeducts" tabindex="-1" aria-hidden="true" data-bs-backdrop="false"
+    data-bs-keyboard="true">
+
+    <div class="modal-dialog modal-xl recivables-draggable-modal custom-modal-width recap">
+
+        <div class="modal-content">
+
+            <div class="modal-header d-flex align-items-center justify-content-between" id="modalHeader">
+
+                <h5 class="modal-title title">
+                    <span class="slash">//<span class="text-black">{{StoreName}} -</span> {{Lable}}</span>
+                </h5>
+
+                <span class="divBold ms-auto text-black d-flex align-items-center">
+                    As of : {{ paginatedItems[0]?.AS_OF }}
+                    <button type="button" class="btn-close ms-2" data-bs-dismiss="modal"
+                        (click)="clearArray()"></button>
+                </span>
+
+            </div>
+
+            <div class="modal-body position-relative">
+
+                <div *ngIf="spinnerLoader" class="graph-loader">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+
+                <div class="scorecard-single-header" style="height:60vh; overflow:auto">
+
+                    <table class="table mb-0 w-100">
+
+                        <thead>
+                            <tr>
+                                <th class="text-start">Control</th>
+                                <th class="text-center">Date</th>
+                                <th class="text-start">Detail Description</th>
+                                <th class="text-end">Balance</th>
+                            </tr>
+                        </thead>
+
+                        <tbody *ngIf="paginatedItems.length > 0; else ifNotShow">
+
+                            <tr *ngFor="let data of paginatedItems; let j = index">
+
+                                <td class="text-start">{{ data.control || '-' }}</td>
+
+                                <td class="text-center">
+                                    {{ data.accountingdate | date:'MM.dd.yyyy' }}
+                                </td>
+
+                                <td class="text-start">
+                                    {{ data.detaildescription || '-' }}
+                                </td>
+
+                                <td class="text-end" [ngClass]="{ negative: !inTheGreen(data.postingamount) }">
+                                    <span class="d-flex justify-content-between"> $<span>{{ data.postingamount !== null
+                                            && data.postingamount !== undefined
+                                            ? (data.postingamount | number) : '-' }}</span> </span>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                        <ng-template #ifNotShow>
+                            <tr *ngIf="NoData">
+                                <td colspan="4" class="text-center">No Data Found</td>
+                            </tr>
+                        </ng-template>
+                        <tfoot *ngIf="paginatedItems.length > 0">
+                            <tr class="text-bold">
+                                <td colspan="3" class="text-end pe-3">Total:</td>
+                                <td class="text-end" [ngClass]="{ negative: !inTheGreen(postingAmountTotal) }">
+                                    <span class="d-flex justify-content-between"> $<span>{{ postingAmountTotal | number
+                                            }}</span> </span>
+                                </td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

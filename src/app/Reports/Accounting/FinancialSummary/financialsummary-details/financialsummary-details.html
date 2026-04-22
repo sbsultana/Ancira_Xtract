@@ -1,0 +1,202 @@
+<div class="container-fluid d-flex justify-content-center align-items-center recap"
+    [ngStyle]="{'opacity': Opacity == 'Y' ? '.8' : '1' }" style="padding-top: 2vh;">
+    <div class=" gross-popup">
+        <div class="header d-flex align-items-center justify-content-between rounded">
+            <h5 class="title m-0 ms-2">
+                <img src="" alt=""> <span class="slash">// {{Fsdetails.NAME}}</span>
+            </h5>
+            <div class="search ms-auto pe-3">
+                <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchText"
+                    (ngModelChange)="filterData()">
+
+                <img src="images/Magnifer.svg" alt="">
+            </div>
+            <img src="images/Download.svg" (click)="Details_ExportAsXLSX()" class="img-fluid pe-3" alt=""
+                style="cursor: pointer;">
+            <a type="button" class="close-btn" (click)="close()"><i class="fa-solid fa-xmark"></i> </a>
+        </div>
+        <div class="content pt-2">
+            <!-- <div class="loading" *ngIf="spinnerLoader">
+                <div class="loader"></div>
+            </div> -->
+            <div *ngIf="spinnerLoader" class="graph-loader d-flex align-items-center justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <div class="d-block" id="FsDetails" #TABLE #table style="width: 100%;">
+                <div class="performance-scorecard" style="height: 70vh;">
+                    <table class="table table-borderless mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-start" style="border-radius: 10px 0 0 0;">Store Name</th>
+                                <th class="text-center">Account Number</th>
+                                <th class="alignleft"><span>Account Description</span></th>
+                                <th class="alignright" style="border-radius:0 10px  0 0;border: none;">
+                                    <span>Balance <span
+                                            style="font-size: .875rem;text-transform: capitalize;">({{SelectMonthYear}})</span></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="paginatedItems.length > 0; else ifNotShow">
+                            <ng-container *ngFor="let data of paginatedItems; let j = index">
+                                <tr [ngClass]="{ 'even': j % 2 === 0, 'highlight-row': expandedIndex === j }">
+                                    <td style="text-align: left !important;">
+                                        <span style="white-space: nowrap;">{{ data.StoreName || '-' }}</span>
+                                    </td>
+                                    <td style="text-align: center !important; cursor: pointer; text-decoration: underline; color: #0554ef;"
+                                        (click)="GetSubDetails(data['AccountNumber'],data['StoreName'], j)">
+                                        <span style="white-space: nowrap;">{{ data['AccountNumber'] || '-' }}</span>
+                                    </td>
+                                    <td style="text-align: left !important;">
+                                        <span style="white-space: normal; display: block;">{{ data['AccountDescription']
+                                            || '-' }}</span>
+                                    </td>
+                                    <td style="text-align: end !important;width: 15%;"
+                                        [ngClass]="{ negative: !inTheGreen(data['PostingAmount']) }">
+                                        <span class="d-flex justify-content-between">
+                                            $<span>{{ data['PostingAmount'] !== null && data['PostingAmount'] !==
+                                                undefined ? (data['PostingAmount'] | number) : '-' }}</span>
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <ng-container *ngIf="expandedIndex === j && FSSubDetailsMap[j]?.length">
+                                    <tr>
+                                        <td colspan="4" style="padding: 0;">
+                                            <div class="nested-table-container">
+                                                <table class="table table-borderless mb-0 inner-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="alignleft" style="border-radius: 10px 0 0 0;">
+                                                                Control</th>
+                                                            <th class="text-center">Date</th>
+                                                            <th class="alignleft">Detail Description</th>
+                                                            <th class="alignright" style="border-radius: 0 10px 0 0;">
+                                                                Balance</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let sub of FSSubDetailsMap[j]">
+                                                            <td style="text-align: left !important;">
+                                                                <span>{{ sub.Control || '-' }}</span>
+                                                            </td>
+                                                            <td style="text-align: center !important;">
+                                                                <span>{{ sub.AccountingDate | date: 'MM.dd.yyyy'
+                                                                    }}</span>
+                                                            </td>
+                                                            <td style="text-align: left !important;">
+                                                                <span
+                                                                    style="white-space: normal; width: 400px; display: block;">{{
+                                                                    sub.DetailDescription || '-' }}</span>
+                                                            </td>
+                                                            <td style="text-align: end !important;width: 15%;"
+                                                                [ngClass]="{ negative: !inTheGreen(sub.PostingAmount) }">
+                                                                <span class="d-flex justify-content-between">
+                                                                    $<span>{{ sub.PostingAmount !== null &&
+                                                                        sub.PostingAmount !== undefined ?
+                                                                        (sub.PostingAmount | number) : '-' }}</span>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td colspan="3" class="text-end">Sub Total:</td>
+                                                            <td class="px-2 py-1" style="border-radius: 0 0 10px 0;"
+                                                                [ngClass]="{ negative: !inTheGreen(getPostingSubAmountTotal(j)) }">
+                                                                <span class="d-flex justify-content-between">
+                                                                    $<span>{{ getPostingSubAmountTotal(j) | number
+                                                                        }}</span>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </ng-container>
+                        </tbody>
+
+                        <!-- Table Footer -->
+                        <tfoot *ngIf="paginatedItems.length > 0">
+                            <tr>
+                                <td colspan="3" class="sticky-footer text-end pe-3 py-1"
+                                    style="border-radius:0 0 0 10px;border: none;">Total:</td>
+                                <td class="sticky-footer px-2 py-1"
+                                    [ngClass]="{ negative: !inTheGreen(postingAmountTotal) }"
+                                    style="border-radius:0 0 10px 0;border: none;">
+                                    <span class="d-flex justify-content-between">
+                                        $<span>{{ postingAmountTotal | number }}</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tfoot>
+
+                        <!-- No Data -->
+                        <ng-template #ifNotShow>
+                            <tr *ngIf="NoData">
+                                <td colspan="4"
+                                    style="text-align: center; font-size: .875rem;font-family: 'Roboto';padding: 5px 0;">
+                                    No Data
+                                    Found</td>
+                            </tr>
+                        </ng-template>
+                    </table>
+                </div>
+
+            </div>
+            <div class="footer px-2">
+                <div class="container-fluid mt-1 HideItems">
+                    <div class="col-lg-12 rounded">
+                        <div class="row">
+                            <div
+                                class="pagination-container d-flex align-items-center justify-content-end text-black mt-2">
+                                <div class="page-size me-3">
+                                    <label for="pageSize" class="me-1">Page Size:</label>
+                                    <select id="pageSize" [(ngModel)]="itemsPerPage" (change)="onPageSizeChange()"
+                                        class="form-select d-inline-block" style="width: 80px;">
+                                        <option [ngValue]="100">100</option>
+                                        <option [ngValue]="300">300</option>
+                                        <option [ngValue]="500">500</option>
+                                    </select>
+                                </div>
+                                <div class="page-info me-3">
+                                    {{ getStartRecordIndex() }} - {{ getEndRecordIndex() }} of {{
+                                    filteredFSdetailsData.length }}
+                                </div>
+                                <div class="pagination-buttons d-flex align-items-center gap-1">
+
+                                    <button (click)="goToFirstPage()" [disabled]="currentPage === 1" class="btn p-0">
+                                        <img src="images/Arrow_End_Left_Blk.svg" alt="First" />
+                                    </button>
+
+                                    <button (click)="prevPage()" [disabled]="currentPage === 1" class="btn p-0">
+                                        <img src="images/Alt_Arrow_Left_Blk.svg" alt="Previous" />
+                                    </button>
+
+                                    <span class="page-label mx-2">
+                                        Page {{ currentPage }} of {{ getMaxPageNumber() }}
+                                    </span>
+
+                                    <button (click)="nextPage()" [disabled]="currentPage === getMaxPageNumber()"
+                                        class="btn p-0">
+                                        <img src="images/Alt_Arrow_Right_Blk.svg" alt="Next" />
+                                    </button>
+
+                                    <button (click)="goToLastPage()" [disabled]="currentPage === getMaxPageNumber()"
+                                        class="btn p-0">
+                                        <img src="images/Arrow_End_Right_Blk.svg" alt="Last" />
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

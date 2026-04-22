@@ -1,0 +1,194 @@
+<!-- Toast Container -->
+<app-toast-container></app-toast-container>
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="reports-bar">
+            <div class="filter-dropdowns d-flex align-items-center">
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">
+                            ( {{storecount}}
+                            {{storedisplayname}} )
+                        </span>
+                        <span class="arrow"></span></button>
+                    <app-stores
+                        [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                        [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                </div>
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="yearDp.show()">
+                        Year
+                        <span class="light-font">
+                            ( {{ bsValue | date:'yyyy' }} )
+                        </span>
+                    </button>
+
+                    <input #yearDp="bsDatepicker" type="text" bsDatepicker [(bsValue)]="bsValue" [bsConfig]="bsConfig"
+                        (bsValueChange)="onYearSelected($event)" readonly (keydown)="$event.preventDefault()"
+                        style="position: absolute; opacity: 0; height: 0; width: 0;" />
+                </div>
+                <div class="dropdown">
+                    <button class="dropdown-toggle text-capitalize" (click)="togglePopover(1)">
+                        Type <span class="light-font">( {{ selectedFilter }} ) </span><span class="arrow"></span>
+                    </button>
+
+                    <div class="timeframe" *ngIf="activePopover === 1">
+                        <div class="date-filter-card mt-2">
+                            <button class="outline-button text-capitalize" *ngFor="let f of filters"
+                                [ngClass]="{'active': selectedFilter === f}" (click)="selectFilter(f)">
+                                {{ f }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button class="apply-button" (click)="applyFilterAndYear()">
+                    Apply
+                </button>
+
+                <div class="ms-auto">
+                    <button class="btn btn-outline-primary me-2 editbtn" (click)="EditSave()">
+                        {{ isEditMode ? 'Save' : 'Edit' }}
+                    </button>
+                    <button class="btn btn-outline-danger cancelbtn" *ngIf="isEditMode" (click)="cancelEdit()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="scorecard-single-header">
+                    <table class="table mb-0 w-100">
+                        <thead>
+                            <tr>
+                                <th class="text-start">
+                                    Department
+                                </th>
+                                <th style="width: 250px;"
+                                    [ngStyle]="{'left': variableType == 'sales' ? '105px' : '180px'}">
+                                    Description
+                                </th>
+                                <!-- <th *ngFor="let m of ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']"
+                                    style="width: 100px;">
+                                    {{ m }}
+                                </th> -->
+                                <ng-container *ngFor="let mn of monthsShort">
+                                    <th class="avgHeader" *ngIf="avgMonths.includes(mn) && isEditMode" style="background-color: #4584ff;color: #fff;">
+                                        3 Months Avg
+                                    </th>
+                                    <th>
+                                        {{ mn }}
+                                    </th>
+                                </ng-container>
+                                <th style="width: 100px;">
+                                    Total
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody *ngIf="!NoPDCForecastdata; else noData">
+                            <tr *ngFor="let row of PDCForecastData; let i = index">
+                                <td class="customGridTable text-start" *ngIf="variableType == 'sales'">
+                                    <span class="categoryHeader"
+                                        *ngIf="row?.Category && i === 0 || row?.Category !== PDCForecastData[i - 1]?.Category">
+                                        {{ row?.Category }}
+                                    </span>
+                                </td>
+
+                                <td class="customGridTable text-start" *ngIf="variableType == 'expenses'">
+                                    <span class="categoryHeader"
+                                        *ngIf="row?.ITV_CategoryName && i === 0 || row?.ITV_CategoryName !== PDCForecastData[i - 1]?.ITV_CategoryName">
+                                        {{ row?.ITV_CategoryName }}
+                                    </span>
+                                </td>
+
+                                <td class="customGridTable text-start"
+                                    [ngStyle]="{'left': variableType == 'sales' ? '105px' : '180px'}">
+                                    {{ row.ITV_Variable_Name }}
+                                </td>
+                                <ng-container *ngFor="let mn of monthsShort; let j = index">
+                                    <td class="avgCell" *ngIf="avgMonths.includes(mn) && isEditMode" style="background-color: #c6dbff;">
+                                        <span style="width:100px;text-align:right;display:inline-block;color:#000;">
+                                            {{
+                                            row['Avg_' + mn]
+                                            ? (row.ValueType === 'G'
+                                            ? ('$' + (row['Avg_' + mn] | number:'1.0-0'))
+                                            : (row['Avg_' + mn] | number:'1.0-0'))
+                                            : '-'
+                                            }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="!isEditMode">
+
+                                            <ng-container *ngIf="row.ValueType === 'G'; else unitValue">
+                                                {{ row[mn] | currency:'USD':'symbol':'1.0-0' }}
+                                            </ng-container>
+
+                                            <ng-template #unitValue>
+                                                {{ row[mn] | number:'1.0-0' }}
+                                            </ng-template>
+
+                                        </ng-container>
+                                        <ng-container *ngIf="isEditMode">
+                                            <span class="d-flex align-items-center justify-content-end">
+                                                <span class="pe-2"
+                                                    *ngIf="row.ValueType === 'G' && (row[mn] > 0 || row[mn] < 0)">
+                                                    $
+                                                </span>
+                                                <input type="number" class="editabletxt" [(ngModel)]="row[mn]"
+                                                    (input)="onKeydownEvent($event,row,i,mn,j)"
+                                                    (paste)="onPaste($event,i,j)"
+                                                    [disabled]="row.ITV_Formula_Status === 'Y'"
+                                                    style="text-align:right;width:100px!important;" />
+                                            </span>
+                                        </ng-container>
+                                    </td>
+                                </ng-container>
+                                <td>
+                                    <strong>
+                                        <ng-container
+                                            *ngIf="getRowTotal(row) && getRowTotal(row) !== 0; else emptyValue">
+                                            <ng-container *ngIf="row.ValueType === 'G'; else unitValue">
+                                                {{ getRowTotal(row) | currency:'USD':'symbol':'1.0-0' }}
+                                            </ng-container>
+                                            <ng-template #unitValue>
+                                                {{ getRowTotal(row) | number: '1.0-0' }}
+                                            </ng-template>
+                                        </ng-container>
+                                        <ng-template #emptyValue>
+                                            &nbsp;
+                                        </ng-template>
+                                    </strong>
+                                </td>
+                            </tr>
+
+
+                            <!-- Total Row -->
+                            <!-- <tr class="table-total">
+                                <td><strong>Total</strong></td>
+                                <td
+                                    *ngFor="let m of ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; let i = index">
+                                    <strong>{{ getColumnTotal(i) | currency:'USD':'symbol':'1.0-0' }}</strong>
+                                </td>
+                                <td><strong>{{ getGrandTotal() | currency:'USD':'symbol':'1.0-0' }}</strong></td>
+                            </tr> -->
+                        </tbody>
+
+                        <ng-template #noData>
+                            <tbody>
+                                <tr>
+                                    <td colspan="15" class="text-center text-muted py-3">
+                                        No data available
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </ng-template>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

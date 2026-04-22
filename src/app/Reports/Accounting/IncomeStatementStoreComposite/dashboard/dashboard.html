@@ -1,0 +1,135 @@
+<app-toast-container></app-toast-container>
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="reports-bar">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                                {{storecount}}
+                                {{storedisplayname}} )</span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="dp.show()">
+                            Month
+                            <span class="light-font">
+                                ( {{ selectedDate | date:'MMMM/yyyy' }} )
+                            </span>
+                        </button>
+                        <input #dp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="selectedDate"
+                            [bsConfig]="bsConfig" readonly (keydown)="$event.preventDefault()"
+                            style="position: absolute; opacity: 0; height: 0; width: 0;" />
+                    </div>
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="applyDateChange()"><span>Apply</span></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="scorecard-single-header incomestatementstore-tbl" [style.width]="storesWidth">
+            <table class="table mb-0 w-100">
+                <thead>
+                    <tr>
+                        <th *ngIf="XpenseTrendByStoreKeys">{{ currentMonth | date:
+                            'MMMM yyyy' }}</th>
+                        <th *ngFor="let item of ExpenseTrendByStoreKeys.slice(0, -1)">
+                            <span *ngIf="isKeyVisible(item)">{{ formatKey(item) }}</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let item of ExpenseTrendByStore; let i = index">
+
+                        <tr [ngClass]="{ bold: isBoldRow(item.LABLE) }" [ngStyle]="{
+        'pointer-events': item.LABLE === 'Bonuses' ? 'none' : 'auto',
+        'cursor': item.LABLE === 'Bonus' ? 'not-allowed' : 'pointer'
+      }">
+
+                            <!-- LABEL COLUMN (ONLY HERE apply notbold) -->
+                            <td class="text-start" [ngClass]="{
+      'bold store': isBoldRow(item.LABLE),
+      'notbold store first-col-padding': !isBoldRow(item.LABLE)
+    }">
+                                <span class="nowrap">
+                                    {{ item.LABLE }}
+                                </span>
+                            </td>
+
+                            <!-- VALUE COLUMNS -->
+                            <td *ngFor="let itemKey of AllDatakeys.slice(0, -1)" class="text-end" [ngClass]="{
+          negative: !inTheGreen(item[itemKey]) && (item.LABLE === 'Operating Profit' || item.LABLE === 'Net Profit'),
+          setPerens: !inTheGreen(item[itemKey]),
+          nopointerevents: isNonClickable(item[itemKey], itemKey, item.LABLE),
+          pointerevents: !isNonClickable(item[itemKey], itemKey, item.LABLE)
+        }">
+
+                                <!-- UNITS -->
+                                <ng-container
+                                    *ngIf="['New Units','Pre-Owned Units','Unit Retail Sales','Fleet Units'].includes(item.LABLE)">
+                                    {{
+                                    item[itemKey] == null || item[itemKey] === 0
+                                    ? '-'
+                                    : (item[itemKey] | number:'1.0-0')
+                                    }}
+                                </ng-container>
+
+                                <!-- PERCENTAGE -->
+                                <ng-container *ngIf="item.LABLE.endsWith('%')">
+                                    <span (click)="openDetails(item, itemKey, 'store', selectedDate)"
+                                        [ngClass]="getCellClasses(item, itemKey)">
+                                        {{
+                                        item[itemKey] == null || item[itemKey] === 0
+                                        ? '-'
+                                        : item[itemKey] < 0 ? '(' + (item[itemKey] * -1 | number:'1.0-0') + '%)' :
+                                            (item[itemKey] | number:'1.0-0') + '%' }} </span>
+                                </ng-container>
+
+                                <!-- CURRENCY ($ LEFT, VALUE RIGHT) -->
+                                <ng-container *ngIf="!['New Units','Pre-Owned Units','Unit Retail Sales','Fleet Units'].includes(item.LABLE)
+                             && !item.LABLE.endsWith('%')">
+
+                                    <div class="d-flex justify-content-between align-items-center w-100"
+                                        (click)="openDetails(item, itemKey, 'store', selectedDate)"
+                                        [ngClass]="getCellClasses(item, itemKey)">
+
+                                        <!-- $ LEFT -->
+                                        <span>
+                                            {{
+                                            item[itemKey] == null || item[itemKey] === 0 ? '' : '$'
+                                            }}
+                                        </span>
+
+                                        <!-- VALUE RIGHT -->
+                                        <span>
+                                            {{
+                                            item[itemKey] == null || item[itemKey] === 0
+                                            ? '-'
+                                            : item[itemKey] < 0 ? '(' + (item[itemKey] * -1 | number:'1.0-0') + ')' :
+                                                (item[itemKey] | number:'1.0-0') }} </span>
+
+                                    </div>
+
+                                </ng-container>
+
+                            </td>
+                        </tr>
+
+                    </ng-container>
+                </tbody>
+                <tbody *ngIf="NoData">
+                    <tr>
+                        <td colspan="30" class="text-center">No Records Found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

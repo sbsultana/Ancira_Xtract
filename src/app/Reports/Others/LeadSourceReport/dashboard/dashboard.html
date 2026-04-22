@@ -1,0 +1,147 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="reports-bar">
+            <div class="filter-dropdowns">
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                            {{storecount}}
+                            {{storedisplayname}} )</span>
+                        <span class="arrow"></span></button>
+                    <app-stores
+                        [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                        [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                </div>&nbsp;&nbsp;
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(1)">
+                        Time Frame <span class="light-font"> {{displaytime}} </span>
+                        <span class="arrow"></span></button>
+                    <div class="timeframe" *ngIf="activePopover === 1">
+                        <app-date-range-picker [Dates]="Dates"
+                            (updatedDates)="updatedDates($event)"></app-date-range-picker>
+                    </div>
+                </div>
+                <div class="dropdown">&nbsp;&nbsp;
+                    <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="scorecard-multi-header leadsourcereport-tbl w-75">
+            <table class="table mb-0 w-100">
+                <thead>
+                    <tr>
+                        <th class="w-25">{{ FromDate | date:'MM.dd.yyyy'}} - {{ToDate |
+                            date:'MM.dd.yyyy'}}</th>
+                        <th colspan="6"></th>
+                    </tr>
+                    <tr>
+                        <th>Store</th>
+                        <th>Active</th>
+                        <th>Sold</th>
+                        <th>Lost</th>
+                        <th>Bad</th>
+                        <th>Complete</th>
+                        <th>Total Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="LeadSourceData.length > 0; else NoLeadSourceData">
+                        <ng-container *ngFor="let LSST of LeadSourceData; let i=index">
+                            <tr [ngClass]="{ 'divBold': LSST.leadSources === 'Total', 'lightblue-bg': LSST.leadSources !== 'Total' }"
+                                [id]=i>
+                                <td>
+                                    <span>
+                                        {{LSST.leadSources == "" || LSST.leadSources == null
+                                        ? '-'
+                                        : (LSST.leadSources == 'Total' ? 'Report Totals' : LSST.leadSources)}}
+                                    </span>
+                                </td>
+
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(LSST.Active)}">
+                                    <span>{{
+                                        LSST.Active == 0 || LSST.Active == null ? '-' :
+                                        LSST.Active | number}}</span>
+                                </td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(LSST.Sold)}">
+                                    <span>{{
+                                        LSST.Sold == 0 ? '-' :
+                                        LSST.Sold | number}}</span>
+                                </td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(LSST.Lost)}">
+                                    <span>{{
+                                        LSST.Lost
+                                        == 0 ? '-' : LSST.Lost | number}}</span>
+                                </td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(LSST.Bad)}">
+                                    <span>{{
+                                        LSST.Bad
+                                        == 0 ? '-' : LSST.Bad | number}}</span>
+                                </td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(LSST.Complete)}">
+                                    <span>{{
+                                        LSST.Complete ==
+                                        0 ? '-' : LSST.Complete | number}}</span>
+                                </td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(LSST.TotalCount)}">
+                                    <span>{{
+                                        LSST.TotalCount
+                                        == 0 ? '-' : LSST.TotalCount | number}}</span>
+                                </td>
+                            </tr>
+                            <tr *ngFor="let subcat of LSST.data1; let j=index"
+                                [ngClass]="{'Selectedrow': i.toString()+j.toString() == index}">
+
+                                <td class="ps-3"><span class="dlrship"> {{(subcat.StoreName ==
+                                        "" || subcat.StoreName == null ? subcat.StoreName :
+                                        subcat.StoreName)}}
+                                    </span></td>
+
+                                <td class="text-center" class="text-center"
+                                    [ngClass]="{ negative: !inTheGreen(subcat.Active)}"><span>{{
+                                        subcat.Active == 0 || subcat.Active == null ? '-' :
+                                        subcat.Active | number}}</span></td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(subcat.Sold)}"><span>{{
+                                        subcat.Sold == 0 ? '-' :
+                                        subcat.Sold | number}}</span>
+                                </td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(subcat.Lost)}"><span>{{
+                                        subcat.Lost
+                                        == 0 ? '-' : subcat.Lost | number}}</span></td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(subcat.Bad)}"><span>{{
+                                        subcat.Bad
+                                        == 0 ? '-' : subcat.Bad | number}}</span></td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(subcat.Complete)}"><span>{{
+                                        subcat.Complete ==
+                                        0 ? '-' : subcat.Complete | number}}</span></td>
+                                <td class="text-center" [ngClass]="{ negative: !inTheGreen(subcat.TotalCount)}"><span>{{
+                                        subcat.TotalCount
+                                        == 0 ? '-' : subcat.TotalCount | number}}</span></td>
+                            </tr>
+                        </ng-container>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                    <ng-template #NoLeadSourceData>
+                        <tr *ngIf="NoData" style="background-color: #fff;">
+                            <td colspan="7"
+                                style="text-align: center;font-size: 14px;background: transparent !important;color: black; display: revert;">
+                                <label>No Data Found</label>
+                            </td>
+                        </tr>
+                    </ng-template>
+                <tbody>
+            </table>
+        </div>
+    </div>
+</main>

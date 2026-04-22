@@ -1,0 +1,379 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+  <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+
+<main>
+  <div class="container-fluid" *ngIf="ExpenseTrend">
+    <div class="col-12">
+      <div class="reports-bar">
+        <div class="filter-dropdowns">
+          <div class="dropdown">
+            <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">( {{storecount}}
+                {{storedisplayname}} )</span>
+              <span class="arrow"></span></button>
+            <app-stores
+              [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+              [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+          </div>
+
+          <!-- <div class="date-filter-card d-flex align-items-center justify-content-start">
+            <div class="open-calendar position-relative">
+              <input type="text" class="form-control year-input" placeholder="Select month" bsDatepicker
+                [bsConfig]="bsConfig" [(ngModel)]="selectDate" readonly (keydown)="$event.preventDefault()" />
+            </div>
+          </div> -->
+          <div class="dropdown">
+            <button class="dropdown-toggle" (click)="dp.show()">
+              Month
+              <span class="light-font">
+                ( {{ selectDate | date:'MMMM/yyyy' }} )
+              </span>
+            </button>
+            <input #dp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="selectDate" [bsConfig]="bsConfig" readonly
+              (keydown)="$event.preventDefault()" style="position: absolute; opacity: 0; height: 0; width: 0;" />
+          </div>
+          <div class="dropdown">
+            <button class="dropdown-toggle" (click)="togglePopover(1)">
+              Department <span class="light-font"> {{ selectedLabel }} </span> <span class="arrow"></span>
+            </button>
+
+            <div class="timeframe" *ngIf="activePopover === 1">
+              <div class="date-filter-card mt-2">
+                <button class="outline-button" *ngFor="let f of filters" [class.active]="isSelected(f)"
+                  (click)="toggleFilter(f)">
+                  {{ f }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown">
+            <button class="apply-button" (click)="applyDateChange()">
+              <span>Apply</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scorecard-multi-header expensetrend-tbl" (scroll)="updateVerticalScroll($event)" #scrollcent
+      id="scrollcent">
+      <table class="table mb-0 w-100">
+        <thead>
+          <tr>
+            <th>For the period ending</th>
+            <th></th>
+            <th colspan="4"></th>
+            <th [attr.colspan]="ExpenseTrendKeys.length"></th>
+          </tr>
+
+          <tr>
+            <th>
+              {{ ExpenseTrendKeys[0] }}
+              <span> to </span>
+              {{ ExpenseTrendKeys[this.ExpenseTrendKeys.length - 1] }}
+            </th>
+
+            <th><span>&nbsp;</span></th>
+            <th><span>YTD</span></th>
+            <th><span>PYTD</span></th>
+            <th><span>Pace</span></th>
+            <th>
+              <span>Average</span>
+            </th>
+
+            <th *ngFor="let date of ExpenseTrendKeys" style="box-shadow: inset 0 0 0 0.3px #e0edff;">
+              <span>{{ date | date:'MMM yyyy' }}</span>
+            </th>
+          </tr>
+
+        </thead>
+        <tbody>
+          <ng-container *ngIf="ExpenseTrendByStoreMonth.length > 6; else NoExpenseTrendData">
+            <tr *ngFor="let data of ExpenseTrendByStoreMonth; let j=index"
+              [ngClass]="{'lightblue-bg': data.DISPLAYHEAD_FLAG === 1,'padding': data.ISHEAD_TOTAL === 'Y','extra-padding': data.ISHEAD_TOTAL === 'N',
+                  'parentheses': data.DISPLAY_LABLE == 'Advertising Rebates' || data.DISPLAY_LABLE == 'Interest Floor Plan Credit'}">
+              <td style="text-align: left !important;"
+                [ngClass]="{'lightblueCol-bg': data.DISPLAYHEAD_FLAG === 1,'padding': data.ISHEAD_TOTAL === 'Y','extra-padding': data.ISHEAD_TOTAL === 'N'}">
+                <span style="white-space: nowrap;">{{data.DISPLAY_LABLE}}</span>
+              </td>
+              <td>
+
+                <i class="fa fa-area-chart" [ngStyle]="{
+                    'display': data.DISPLAYHEAD_FLAG === 1 ? 'none' : 'block'
+                  }" style="font-size:15px; color:#0554ef; cursor: pointer;"
+                  (click)="openGraph(Month,dates,data,data.DISPLAY_LABLE)"></i>
+
+              </td>
+              <td *ngIf="!data.DISPLAY_LABLE.includes('%')" [ngStyle]="{
+                    'cursor': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'not-allowed' : 'pointer',
+                    'pointer-events': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'none' : 'auto'
+                  }" (click)="openMonthDetails(data,currentMonth,data.DISPLAY_LABLE,data.ROWID,'YTD')"
+                [ngClass]="{ negative: !inTheGreen(data.YTD)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                <span class="d-flex justify-content-between">
+                  $<span>{{ data.YTD ?
+                    (data.YTD | number: '1.0-0') :
+                    '-' }}</span></span>
+              </td>
+              <td class="text-end" [ngStyle]="{
+                    'cursor': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'not-allowed' : 'pointer',
+                    'pointer-events': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'none' : 'auto'
+                  }" (click)="openMonthDetails(data,currentMonth,data.DISPLAY_LABLE,data.ROWID,'YTD')"
+                *ngIf="data.DISPLAY_LABLE.includes('%')"
+                [ngClass]="{ negative: !inTheGreen(data.YTD)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                {{ data.YTD !=
+                null
+                ? data.YTD + '%' : '-' }}</td>
+
+              <td *ngIf="!data.DISPLAY_LABLE.includes('%')" [ngStyle]="{
+                    'cursor': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'not-allowed' : 'pointer',
+                    'pointer-events': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'none' : 'auto'
+                  }" (click)="openMonthDetails(data,currentMonth,data.DISPLAY_LABLE,data.ROWID,'PYTD')"
+                [ngClass]="{ negative: !inTheGreen(data.PYTD)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                <span class="d-flex justify-content-between">
+                  $<span>{{ data.PYTD ?
+                    (data.PYTD | number: '1.0-0') :
+                    '-' }}</span></span>
+              </td>
+              <td class="text-end" [ngStyle]="{
+                    'cursor': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'not-allowed' : 'pointer',
+                    'pointer-events': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'none' : 'auto'
+                  }" (click)="openMonthDetails(data,Month,data.DISPLAY_LABLE,data.ROWID,'PYTD')"
+                *ngIf="data.DISPLAY_LABLE.includes('%')"
+                [ngClass]="{ negative: !inTheGreen(data.PYTD)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                {{ data.PYTD
+                !=
+                null ? data.PYTD + '%' : '-' }}</td>
+
+              <td class="text-end" *ngIf="!data.DISPLAY_LABLE.includes('%')"
+                [ngClass]="{ negative: !inTheGreen(data.PACE)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                <span class="d-flex justify-content-between">
+                  $<span>{{ data.PACE ?
+                    (data.PACE | number: '1.0-0') :
+                    '-' }}</span></span>
+              </td>
+              <td class="text-end" *ngIf="data.DISPLAY_LABLE.includes('%')"
+                [ngClass]="{ negative: !inTheGreen(data.PACE)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                {{ data.PACE !=
+                null ? data.PACE + '%' : '-' }}</td>
+
+              <td *ngIf="!data.DISPLAY_LABLE.includes('%')"
+                [ngClass]="{ negative: !inTheGreen(data.AVG)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                <span class="d-flex justify-content-between"> $<span>{{
+                    data.AVG ? (data.AVG | number: '1.0-0') : '-' }}</span></span>
+              </td>
+              <td class="text-end" *ngIf="data.DISPLAY_LABLE.includes('%')"
+                [ngClass]="{ negative: !inTheGreen(data.AVG)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                {{
+                data.AVG != null ? data.AVG + '%' : '-' }}</td>
+              <ng-container *ngFor="let key of ExpenseTrendKeys;let i = index">
+                <td (click)="openMonthDetails(data,ExpenseTrendKeys[i],data.DISPLAY_LABLE,data.ROWID,'MTD')" [ngStyle]="{
+                      'cursor': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'not-allowed' : 'pointer',
+                      'pointer-events': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'none' : 'auto'
+                    }" *ngIf="!data.DISPLAY_LABLE.includes('%')"
+                  [ngClass]="{ negative: !inTheGreen(data[key])  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                  <span class="d-flex justify-content-between"> $<span>{{ data[key] ?
+                      (data[key] | number: '1.0-0') :
+                      '-' }}</span></span>
+                </td>
+                <td class="text-end" (click)="openMonthDetails(data,ExpenseTrendKeys[i],data.DISPLAY_LABLE,data.ROWID,'MTD')"
+                  [ngStyle]="{
+                        'cursor': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'not-allowed' : 'pointer',
+                        'pointer-events': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'none' : 'auto'
+                      }" *ngIf="data.DISPLAY_LABLE.includes('%')"
+                  [ngClass]="{ negative: !inTheGreen(data[key])  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
+                  {{
+                  data[key] !=
+                  null ? data[key] + '%' : '-' }}</td>
+              </ng-container>
+            </tr>
+          </ng-container>
+
+          <ng-template #NoExpenseTrendData>
+            <tr *ngIf="!isLoading">
+              <td class="text-center fw-bold" [attr.colspan]="ExpenseTrendKeys.length+6">
+                No Data Found
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="container-fluid" id="ExpenseTrendDetails" *ngIf="ExpenseTrendDetails">
+    <div class="col-12">
+      <div class="divBold mb-2 p-2 d-flex align-items-center justify-content-flex-start">
+        <span class="printHide back-button" style="cursor: pointer;" (click)="backtoWR()">
+          <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Back
+        </span>
+        <h5 class="title text-capitalize m-0 ms-3">
+          <img src="" alt="">
+          <span class="slash">// {{ Lable }}</span> -
+
+          <span class="text-uppercase">
+            <ng-container *ngIf="DateType === 'YTD' || DateType === 'PYTD'; else monthView">
+              {{ selectedDate | date:'yyyy' }}
+            </ng-container>
+            <ng-template #monthView>
+              {{ selectedDate | date:'MMM yyyy' }}
+            </ng-template>
+          </span>
+        </h5>
+        <div class="search ms-auto">
+          <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchText"
+            (ngModelChange)="filterData()">
+          <img src="images/Magnifer.svg" alt="">
+        </div>
+      </div>
+    </div>
+    <div class="col-12" id="ExpenseTrendDetailsDownload">
+      <div class="scorecard-single-header expensetrenddetails-tbl">
+        <table class="table mb-0 w-100">
+          <thead>
+            <tr>
+              <th class="text-start w-25">Store Name</th>
+              <th class="text-center">Account Number</th>
+              <th class="alignleft w-50"><span>Account Description</span></th>
+              <th class="alignright" style="border-radius: 0 10px 0 0;border-right: none;">
+                <span>Balance </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody *ngIf="paginatedItems.length > 0; else ifNotShow">
+            <ng-container *ngFor="let data of paginatedItems; let j = index">
+              <tr [ngClass]="{ 'even': j % 2 === 0, 'highlight-row': expandedIndex === j }">
+                <td style="text-align: left !important;">
+                  <span style="white-space: nowrap;">{{ data.StoreName || '-' }}</span>
+                </td>
+                <td style="text-align: center !important; cursor: pointer; text-decoration: underline; color: #0554ef;"
+                  (click)="GetSubDetails(data['AccountNumber'],data['StoreName'], j)">
+                  <span style="white-space: nowrap;">{{ data['AccountNumber'] || '-' }}</span>
+                </td>
+                <td style="text-align: left !important;">
+                  <span style="white-space: normal; display: block;">{{ data['AccountDescription'] || '-' }}</span>
+                </td>
+                <td style="text-align: end !important;width: 15%;"
+                  [ngClass]="{ negative: !inTheGreen(data['PostingAmount']) }">
+                  <span class="d-flex justify-content-between">
+                    $<span>{{ data['PostingAmount'] !== null && data['PostingAmount'] !== undefined ?
+                      (data['PostingAmount'] | number) : '-' }}</span>
+                  </span>
+                </td>
+              </tr>
+              <ng-container *ngIf="expandedIndex === j && FSSubDetailsMap[j]?.length">
+                <tr>
+                  <td colspan="4" style="padding: 0;">
+                    <div class="nested-table-container">
+                      <table class="table table-borderless mb-0 inner-table">
+                        <thead>
+                          <tr>
+                            <th class="alignleft w-25">Control</th>
+                            <th class="text-center">Date</th>
+                            <th class="alignleft w-50" class="w-50">Detail Description</th>
+                            <th class="alignright">Balance</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let sub of FSSubDetailsMap[j]">
+                            <td style="text-align: left !important;">
+                              <span>{{ sub.Control || '-' }}</span>
+                            </td>
+                            <td style="text-align: center !important;">
+                              <span>{{ sub.AccountingDate | date: 'MM.dd.yyyy' }}</span>
+                            </td>
+                            <td style="text-align: left !important;">
+                              <span style="white-space: normal;">{{
+                                sub.DetailDescription || '-' }}</span>
+                            </td>
+                            <td style="text-align: end !important;"
+                              [ngClass]="{ negative: !inTheGreen(sub.PostingAmount) }">
+                              <span class="d-flex justify-content-between">
+                                $<span>{{ sub.PostingAmount !== null && sub.PostingAmount !== undefined ?
+                                  (sub.PostingAmount | number) : '-' }}</span>
+                              </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                        <tfoot
+                          style="position: sticky; top:0; bottom: 0; left: 0; right: 0;z-index: 995;font-family: 'Roboto' !important;">
+                          <tr>
+                            <td colspan="3" class="text-end">Sub Total:</td>
+                            <td class="px-2 py-1" [ngClass]="{ negative: !inTheGreen(getPostingSubAmountTotal(j)) }">
+                              <span class="d-flex justify-content-between">
+                                $<span>{{ getPostingSubAmountTotal(j) | number }}</span>
+                              </span>
+                            </td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </tbody>
+          <tfoot *ngIf="paginatedItems.length > 0"
+            style="position: sticky; top:0; bottom: 0; left: 0; right: 0;z-index: 995;font-family: 'Roboto' !important;">
+            <tr>
+              <td colspan="3" class="sticky-footer text-end pe-3 py-1" style="border-radius: 0 0 0 10px;">Total:</td>
+              <td class="sticky-footer px-2 py-1" [ngClass]="{ negative: !inTheGreen(postingAmountTotal) }"
+                style="border-radius: 0 0 10px 0;">
+                <span class="d-flex justify-content-between">
+                  $<span>{{ postingAmountTotal | number }}</span>
+                </span>
+              </td>
+            </tr>
+          </tfoot>
+          <ng-template #ifNotShow>
+            <tr *ngIf="NoData">
+              <td colspan="4" style="text-align: center; font-size: 1rem; font-family: 'Roboto';font-weight: 700;">No
+                Data Found!!!</td>
+            </tr>
+          </ng-template>
+        </table>
+      </div>
+    </div>
+    <div class="container-fluid mt-1 HideItems">
+      <div class="col-lg-12 rounded">
+        <div class="row">
+          <div class="pagination-container d-flex align-items-center justify-content-end text-black mt-2">
+            <div class="page-size me-3">
+              <label for="pageSize" class="me-1">Page Size:</label>
+              <select id="pageSize" [(ngModel)]="itemsPerPage" (change)="onPageSizeChange()"
+                class="form-select d-inline-block" style="width: 80px;">
+                <option [ngValue]="100">100</option>
+                <option [ngValue]="300">300</option>
+                <option [ngValue]="500">500</option>
+              </select>
+            </div>
+            <div class="page-info me-3">
+              {{ getStartRecordIndex() }} - {{ getEndRecordIndex() }} of {{
+              filteredETdetailsData.length }}
+            </div>
+            <div class="pagination-buttons d-flex align-items-center gap-1">
+
+              <button (click)="goToFirstPage()" [disabled]="currentPage === 1" class="btn p-0">
+                <img src="images/Arrow_End_Left_Blk.svg" alt="First" />
+              </button>
+
+              <button (click)="prevPage()" [disabled]="currentPage === 1" class="btn p-0">
+                <img src="images/Alt_Arrow_Left_Blk.svg" alt="Previous" />
+              </button>
+
+              <span class="page-label mx-2">
+                Page {{ currentPage }} of {{ getMaxPageNumber() }}
+              </span>
+
+              <button (click)="nextPage()" [disabled]="currentPage === getMaxPageNumber()" class="btn p-0">
+                <img src="images/Alt_Arrow_Right_Blk.svg" alt="Next" />
+              </button>
+
+              <button (click)="goToLastPage()" [disabled]="currentPage === getMaxPageNumber()" class="btn p-0">
+                <img src="images/Arrow_End_Right_Blk.svg" alt="Last" />
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,643 @@
+<ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="white" type="ball-clip-rotate">
+    <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+
+<!-- <div class="NavBarHide mt-4">
+    <app-fandipp-report [header]="header"></app-fandipp-report>
+</div> -->
+
+<main>
+    <div class="container-fluid">
+        <div class="reports-bar">
+            <div class="filter-dropdowns">
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                            {{storecount}}
+                            {{storedisplayname}} )</span>
+                        <span class="arrow"></span></button>
+                    <app-stores
+                        [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                        [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                </div>
+
+
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(1)">
+                        Time Frame <span class="light-font"> {{displaytime}}</span>
+                        <span class="arrow"></span></button>
+                    <div class="timeframe" *ngIf="activePopover === 1">
+                        <app-date-range-picker [Dates]="Dates"
+                            (updatedDates)="updatedDates($event)"></app-date-range-picker>
+                    </div>
+                </div>
+
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(4)">
+                        <div *ngIf="spinnerLoader"
+                            class="graph-loader d-flex align-items-center justify-content-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        People <span class="light-font">
+                            ({{ financeManagerId.length == 1 ? fiManagersname : 'Selected' }}
+                            <span *ngIf="financeManagerId.length > 1"> {{ financeManagerId.length }}
+                            </span>)
+                        </span>
+
+                        <span class="arrow"></span>
+                    </button>
+                    <div class="reportstores-card my-2" *ngIf="activePopover ===4">
+                        <div class="row h-100">
+                            <div class="groups pe-2 d-flex flex-column">
+                                <div class="groups-wrapper flex-grow-1">
+                                    <div class="group-columns">
+
+                                        <button class="btn group-button w-100 text-start active">
+                                            <span>F&I Managers</span>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stores d-flex flex-column ps-0">
+                                <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+
+                                    <div class="allstores text-start">
+                                        <a class="text-primary text-decoration-none cursor-pointer me-2"
+                                            (click)="employees('AllFM',0)">Select
+                                            All</a> |
+                                        <a class="text-primary text-decoration-none cursor-pointer ms-2"
+                                            (click)="employees('AllFM',1)">Clear
+                                            All</a>
+                                    </div>
+                                    <div class="store-columns flex-grow-1">
+
+                                        <!-- <ng-container *ngIf="storeIds.length > 0">                               
+                                    <div class="allstores text-start" *ngIf="salesPersons.length == 0">
+                                        <a class="text-primary text-decoration-none cursor-pointer me-2"
+                                            style="pointer-events: none;">No Sales Persons
+                                        </a>
+                                    </div>
+                                </ng-container> -->
+
+
+                                        <ng-container *ngIf="activePopover==4">
+                                            <ng-container *ngFor="let fm of financeManager;let i=index">
+                                                <button class="btn btn-outline-primary store-button"
+                                                    (click)="employees('FM',fm.FiId)"
+                                                    [ngClass]="{'active':financeManagerId.indexOf(fm.FiId)>=0,'inactive':financeManagerId.indexOf(fm.FiId)<0}">
+                                                    <span> {{fm.FiName}}</span>
+                                                </button>
+                                            </ng-container>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(7)">Deal Type <span class="light-font">
+                            ( {{dealtype.length==1 ?
+                            dealtype : (dealtype.length == 0 ? 'Select' : 'Selected' )}}
+                            {{dealtype.length>1 ? dealtype.length :''}} )
+                        </span>
+                        <span class="arrow"></span></button>
+                    <div class="reportstores-card my-2" *ngIf="activePopover === 7">
+                        <div class="row h-100">
+                            <div class="stores d-flex flex-column border-0">
+                                <div class="stores-wrapper flex-grow-1 d-flex flex-column">
+                                    <div class="store-columns flex-grow-1">
+                                        <ng-container>
+
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Retail')"
+                                                [ngClass]="{'active':dealtype.indexOf('Retail')>=0, 'inactive':dealtype.indexOf('Retail')<0}">Retail</button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Lease')"
+                                                [ngClass]="{'active':dealtype.indexOf('Lease')>=0, 'inactive':dealtype.indexOf('Lease')<0}">Lease</button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Wholesale')"
+                                                [ngClass]="{'active':dealtype.indexOf('Wholesale')>=0, 'inactive':dealtype.indexOf('Wholesale')<0}">Wholesale</button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Misc')"
+                                                [ngClass]="{'active':dealtype.indexOf('Misc')>=0, 'inactive':dealtype.indexOf('Misc')<0}">Misc.</button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Fleet')"
+                                                [ngClass]="{'active':dealtype.indexOf('Fleet')>=0, 'inactive':dealtype.indexOf('Fleet')<0}">Fleet</button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Demo')"
+                                                [ngClass]="{'active':dealtype.indexOf('Demo')>=0, 'inactive':dealtype.indexOf('Demo')<0}">Demo</button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Special Order')"
+                                                [ngClass]="{'active':dealtype.indexOf('Special Order')>=0, 'inactive':dealtype.indexOf('Special Order')<0}">Special
+                                                Order</button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Rental')"
+                                                [ngClass]="{'active':dealtype.indexOf('Rental')>=0, 'inactive':dealtype.indexOf('Rental')<0}">Rental</button>
+                                            <button class="btn btn-outline-primary store-button"
+                                                (click)="multipleorsingle('DL','Dealer Trade')"
+                                                [ngClass]="{'active':dealtype.indexOf('Dealer Trade')>=0, 'inactive':dealtype.indexOf('Dealer Trade')<0}">Dealer
+                                                Trade</button>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="dropdown">
+                    <button class="apply-button" (click)="viewreport()" [disabled]="spinnerLoader"><span>Apply</span></button>
+                </div>
+
+            </div>
+        </div>
+        <div class="scorecard-multi-header fandisummary-tbl w-50" id="scrollcent" #scrollcent>
+            <table class="table mb-0 w-100">
+                <thead>
+                    <tr class="bdr-btm">
+                        <th class="text-center px-3 w-50">
+                            <span>{{DupFromDate |date:'MMMM'}} <span
+                                    *ngIf="(DupFromDate | date: 'MMMM') != (DupToDate | date: 'MMMM')">-
+                                    {{DupToDate
+                                    |date:'MMMM'}} </span>
+                            </span>
+                        </th>
+                        <th colspan="3" class="text-center"> {{storename}}</th>
+                    </tr>
+                    <tr class="bdr-btm">
+                        <!-- <th class="text-center">
+                            <span>{{DupFromDate |date:'dd'}} <span
+                                    *ngIf="(DupFromDate | date: 'yyyy') != (DupToDate | date: 'yyyy')">{{DupFromDate
+                                    |date:'yyyy'}}</span>
+                                - {{DupToDate |date:'dd'}}<span
+                                    *ngIf="(DupFromDate | date: 'yyyy') != (DupToDate | date: 'yyyy')">{{DupToDate
+                                    |date:'yyyy'}}</span><span
+                                    *ngIf="(DupFromDate | date: 'yyyy') == (DupToDate | date: 'yyyy')">,
+                                    {{DupFromDate |
+                                    date:'yyyy'}}</span></span>
+                        </th> -->
+                        <th class="text-center">
+                            {{ DupFromDate | date:'MM.dd.yyyy' }} - {{ DupToDate | date:'MM.dd.yyyy' }}
+                        </th>
+                        <!-- <th class="spacer" style="background-color:#cfd6de !important ;"></th> -->
+
+                        <th class="bdr-btm" colspan="1" class="text-center bdr-rt">New</th>
+                        <th class="bdr-btm" colspan="1" class="text-center bdr-rt">Used</th>
+                        <th class="bdr-btm" colspan="1" class="text-center bdr-rt">Total</th>
+
+                    </tr>
+                </thead>
+                <tbody *ngIf="FISummaryData.length > 0;else NoFIGross">
+                    <ng-container *ngFor="let key of Keys">
+                        <ng-container *ngFor="let FIInfo of FISummaryData; let i=index">
+                            <tr class="lightblue-bg text-bold">
+                                <td class="text-start">{{key.displayname}} </td>
+                                <!-- <td class="spacer"></td> -->
+                                <td>&nbsp;</td>
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+                            <ng-container *ngFor="let subdata of FIInfo[key.name]">
+                                <tr>
+                                    <td
+                                        [ngStyle]="{'pointer-events' : subdata.Products && subdata.Products.length > 0 ? 'default' : 'none','cursor' : subdata.Products && subdata.Products.length > 0 ? 'pointer' : 'none'}">
+                                        <span class="justify-content-between d-flex align-items-center" [id]="'D_'+i"
+                                            title="{{subdata.Category}}" style="padding-left: 1rem;"
+                                            (click)="expandorcollapse(subdata.Category)">
+                                            {{(subdata.Category == undefined ? '--' : (
+                                            (subdata.Category.toString() |
+                                            slice:0:52) +
+                                            (subdata.Category.toString().length > 52 ? '...' : '') ))}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+
+                                            <i class="fa-solid fa-md text-end " aria-hidden="true"
+                                                *ngIf="subdata.Products && subdata.Products.length > 0"
+                                                [ngClass]="expandDataArray.indexOf(subdata.Category) >= 0 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                        </span>
+                                    </td>
+                                    <!-- <td class="spacer"></td> -->
+
+                                    <td [ngClass]="{ negative: !inTheGreen(subdata['New'])}"
+                                        (click)="detailpopup(tmp,subdata,'New' ,key.displayname)"
+                                        [ngStyle]="{'pointer-events' : subdata.New == 0 || subdata.New == null || key.name != 'Counts' || subdata.Category=='Product Index (Total Units)' || (subdata.Products && subdata.Products.length > 0)  ? 'none' : 'default','cursor' : subdata.New == 0 || subdata.New == null || subdata.Category=='Product Index (Total Units)' || (subdata.Products && subdata.Products.length > 0)  ? 'none' : 'pointer'}">
+                                        <span class="d-flex justify-content-between"
+                                            *ngIf="key.symbol == 'D1' || key.symbol == 'D0'"> {{
+                                            (subdata.New == 0 ||
+                                            subdata.New == null == null ? '&nbsp;' :
+                                            '&nbsp;') }} <span> {{
+                                                (subdata.New == 0 ||
+                                                subdata.New == null ? '-' : (key.symbol == 'D1' ? (subdata.New |
+                                                number :
+                                                '1.0-0') : subdata.New | number :
+                                                '1.0-0' ) )
+                                                }}</span></span>
+
+                                        <span *ngIf="key.symbol == 'N'">
+                                            {{ (subdata.New == 0 ||
+                                            subdata.New == null ? '-' : (subdata.Category=='Product Index (Total Units)'
+                                            ? (subdata.New | number : '1.2-2') : (subdata.New | number : '1.0-0') ) )}}
+                                        </span>
+
+                                        <span *ngIf="key.symbol == 'P'">
+                                            {{ (subdata.New == 0 ||
+                                            subdata.New == null ? '-' : (subdata.New | number : '1.1-1') )}}
+                                            <!-- +'%' -->
+                                        </span>
+                                    </td>
+
+                                    <td [ngClass]="{ negative: !inTheGreen(subdata['Used'])}"
+                                        (click)="detailpopup(tmp,subdata,'Used',key.displayname)"
+                                        [ngStyle]="{'pointer-events' : subdata.Used == 0 || subdata.Used == null || key.name != 'Counts' || subdata.Category=='Product Index (Total Units)' || (subdata.Products && subdata.Products.length > 0)  ? 'none' : 'default','cursor' : subdata.Used == 0 || subdata.Used == null || subdata.Category=='Product Index (Total Units)' || (subdata.Products && subdata.Products.length > 0)  ? 'none' : 'pointer'}">
+                                        <span class="d-flex justify-content-between"
+                                            *ngIf="key.symbol == 'D1' || key.symbol == 'D0'"> {{
+                                            (subdata.Used == 0 ||
+                                            subdata.Used == null == null ? '&nbsp;' :
+                                            '&nbsp;') }} <span> {{
+                                                (subdata.Used == 0 ||
+                                                subdata.Used == null ? '-' : (key.symbol == 'D1' ? (subdata.Used |
+                                                number :
+                                                '1.0-0') : subdata.Used | number :
+                                                '1.0-0' ) )
+                                                }}</span></span>
+
+                                        <span *ngIf="key.symbol == 'N'">
+                                            {{ (subdata.Used == 0 ||
+                                            subdata.Used == null ? '-' : (subdata.Category=='Product Index (Total
+                                            Units)' ? (subdata.Used | number : '1.2-2') : (subdata.Used | number :
+                                            '1.0-0') ) )}}
+                                        </span>
+
+                                        <span *ngIf="key.symbol == 'P'">
+                                            {{ (subdata.Used == 0 ||
+                                            subdata.Used == null ? '-' : (subdata.Used | number : '1.1-1') )}}
+                                        </span>
+                                    </td>
+
+                                    <td [ngClass]="{ negative: !inTheGreen(subdata['Total'])}"
+                                        (click)="detailpopup(tmp,subdata,'Total',key.displayname)"
+                                        [ngStyle]="{'pointer-events' : subdata.Total == 0 || subdata.Total == null || key.name != 'Counts' || subdata.Category=='Product Index (Total Units)' || (subdata.Products && subdata.Products.length > 0)  ? 'none' : 'default','cursor' : subdata.Total == 0 || subdata.Total == null || subdata.Category=='Product Index (Total Units)' || (subdata.Products && subdata.Products.length > 0)  ? 'none' : 'pointer'}">
+                                        <span class="d-flex justify-content-between"
+                                            *ngIf="key.symbol == 'D1' || key.symbol == 'D0'"> {{
+                                            (subdata.Total == 0 ||
+                                            subdata.Total == null == null ? '&nbsp;' :
+                                            '&nbsp;') }} <span> {{
+                                                (subdata.Total == 0 ||
+                                                subdata.Total == null ? '-' : (key.symbol == 'D1' ? (subdata.Total |
+                                                number :
+                                                '1.0-0') : subdata.Total | number :
+                                                '1.0-0' ) )
+                                                }}</span></span>
+
+                                        <span *ngIf="key.symbol == 'N'">
+                                            {{ (subdata.Total == 0 ||
+                                            subdata.Total == null ? '-' : ( subdata.Category=='Product Index (Total
+                                            Units)' ? (subdata.Total | number : '1.2-2') : (subdata.Total | number :
+                                            '1.0-0') ) )}}
+                                        </span>
+
+                                        <span *ngIf="key.symbol == 'P'">
+                                            {{ (subdata.Total == 0 ||
+                                            subdata.Total == null ? '-' : (subdata.Total | number : '1.1-1') )}}
+                                        </span>
+                                    </td>
+
+
+
+                                </tr>
+                                <ng-container
+                                    *ngIf="subdata.Products && subdata.Products.length > 0 && expandDataArray.indexOf(subdata.Category) >= 0">
+                                    <tr *ngFor="let pd of subdata.Products">
+
+                                        <td>
+                                            <span title="{{pd.ProductName}}" class="px-5">
+                                                {{(pd.ProductName == undefined || pd.ProductName == '' ? '-' : (
+                                                (pd.ProductName.toString() |
+                                                slice:0:52) +
+                                                (pd.ProductName.toString().length > 52 ? '...' : '') ))}} </span>
+                                        </td>
+                                        <!-- <td class="spacer"></td> -->
+
+                                        <td [ngClass]="{ negative: !inTheGreen(pd['New'])}"
+                                            (click)="detailpopup(tmp,subdata,'New' ,key.displayname,pd.ProductName)"
+                                            [ngStyle]="{'pointer-events' : pd.New == 0 || pd.New == null || key.name != 'Counts' ? 'none' : 'default','cursor' : pd.New == 0 || pd.New == null ? 'none' : 'pointer'}">
+                                            <span class="d-flex justify-content-between"
+                                                *ngIf="key.symbol == 'D1' || key.symbol == 'D0'"> {{
+                                                (pd.New == 0 ||
+                                                pd.New == null == null ? '&nbsp;' :
+                                                '&nbsp;') }} <span> {{
+                                                    (pd.New == 0 ||
+                                                    pd.New == null ? '-' : (key.symbol == 'D1' ? (pd.New |
+                                                    number :
+                                                    '1.0-0') : pd.New | number :
+                                                    '1.0-0' ) )
+                                                    }}</span></span>
+
+                                            <span *ngIf="key.symbol == 'N'">
+                                                {{ (pd.New == 0 ||
+                                                pd.New == null ? '-' : pd.New | number : '1.0-0' )}}
+                                            </span>
+
+                                            <span *ngIf="key.symbol == 'P'">
+                                                {{ (pd.New == 0 ||
+                                                pd.New == null ? '-' : (pd.New | number : '1.1-1')+'%' )}}
+                                                <!-- +'%' -->
+                                            </span>
+                                        </td>
+
+                                        <td [ngClass]="{ negative: !inTheGreen(pd['Used'])}"
+                                            (click)="detailpopup(tmp,subdata,'Used',key.displayname,pd.ProductName)"
+                                            [ngStyle]="{'pointer-events' : pd.Used == 0 || pd.Used == null || key.name != 'Counts' ? 'none' : 'default','cursor' : pd.Used == 0 || pd.Used == null ? 'none' : 'pointer'}">
+                                            <span class="d-flex justify-content-between"
+                                                *ngIf="key.symbol == 'D1' || key.symbol == 'D0'"> {{
+                                                (pd.Used == 0 ||
+                                                pd.Used == null == null ? '&nbsp;' :
+                                                '&nbsp;') }} <span> {{
+                                                    (pd.Used == 0 ||
+                                                    pd.Used == null ? '-' : (key.symbol == 'D1' ? (pd.Used |
+                                                    number :
+                                                    '1.1-1') : pd.Used | number :
+                                                    '1.0-0' ) )
+                                                    }}</span></span>
+
+                                            <span *ngIf="key.symbol == 'N'">
+                                                {{ (pd.Used == 0 ||
+                                                pd.Used == null ? '-' : pd.Used | number : '1.0-0' )}}
+                                            </span>
+
+                                            <span *ngIf="key.symbol == 'P'">
+                                                {{ (pd.Used == 0 ||
+                                                pd.Used == null ? '-' : (pd.Used | number : '1.0-0') )}}
+                                            </span>
+                                        </td>
+
+                                        <td [ngClass]="{ negative: !inTheGreen(pd['Total'])}"
+                                            (click)="detailpopup(tmp,subdata,'Total',key.displayname,pd.ProductName)"
+                                            [ngStyle]="{'pointer-events' : pd.Total == 0 || pd.Total == null || key.name != 'Counts' ? 'none' : 'default','cursor' : pd.Total == 0 || pd.Total == null ? 'none' : 'pointer'}">
+                                            <span class="d-flex justify-content-between"
+                                                *ngIf="key.symbol == 'D1' || key.symbol == 'D0'"> {{
+                                                (pd.Total == 0 ||
+                                                pd.Total == null == null ? '&nbsp;' :
+                                                '&nbsp;') }} <span> {{
+                                                    (pd.Total == 0 ||
+                                                    pd.Total == null ? '-' : (key.symbol == 'D1' ? (pd.Total |
+                                                    number :
+                                                    '1.1-1') : pd.Total | number :
+                                                    '1.0-0' ) )
+                                                    }}</span></span>
+
+                                            <span *ngIf="key.symbol == 'N'">
+                                                {{ (pd.Total == 0 ||
+                                                pd.Total == null ? '-' : pd.Total | number : '1.0-0' )}}
+                                            </span>
+
+                                            <span *ngIf="key.symbol == 'P'">
+                                                {{ (pd.Total == 0 ||
+                                                pd.Total == null ? '-' : (pd.Used | number : '1.0-0') )}}
+                                            </span>
+                                        </td>
+
+
+                                    </tr>
+                                </ng-container>
+
+                            </ng-container>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+
+                </tbody>
+                <ng-template #NoFIGross>
+                    <tr *ngIf="NoData != ''">
+                        <td></td>
+                        <!-- <td class="spacer"></td> -->
+                        <td colspan="3" *ngIf="NoData != ''"
+                            style="text-align: center;background: #fff !important;color: black; display: revert;font-size: .8rem;">
+                            <label>{{NoData}}</label>
+                        </td>
+                    </tr>
+                </ng-template>
+            </table>
+        </div>
+    </div>
+
+
+
+</main>
+
+<ng-template #tmp>
+    <div class="container-fluid px-0 mx-0" id="warningmessage" tabindex="-1" aria-labelledby="contModalLabel"
+        aria-hidden="true">
+        <div class="recap position-relative">
+            <div class="row d-flex w-100 m-0">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-12 col-12">
+                            <div class="m-2 p-2">
+                                <div class="row align-items-center">
+                                    <div class="col-12 p-0 d-flex align-items-center">
+                                        <!-- <h2 class="m-0 p-0">
+                                            <span class="slash">// <span class="slash_header"></span> <span
+                                                    class="pt-0">
+                                                    {{storename}}
+                                                </span>
+                                            </span>
+                                            <span class="slash">// <span class="slash_header">
+                                                </span> <span class="pt-0"> {{popupvalues.key}}
+                                                </span>
+                                            </span>
+                                            <span class="slash">// <span class="slash_header"> </span> <span
+                                                    class="pt-0">
+                                                    {{popupvalues.block}}
+                                                </span>
+                                            </span>
+                                            <span class="slash">// <span class="slash_header"> </span> <span
+                                                    class="pt-0">
+                                                    {{popupvalues.Category}}
+                                                </span>
+                                            </span>
+                                            <span class="slash" *ngIf="popupvalues.prodname != ''">// <span
+                                                    class="slash_header"> </span> <span class="pt-0">
+                                                    {{popupvalues.prodname}}
+                                                </span>
+                                            </span>
+
+                                        </h2> -->
+
+                                        <h2 class="m-0 p-0">
+                                            <span>
+                                                <span class="font-blue">
+                                                    // {{storename}}
+                                                </span>
+                                                <span>
+                                                    <i class="fa fa-long-arrow-right"></i>
+                                                    {{popupvalues.key}}
+                                                </span>
+                                                <span>
+                                                    <i class="fa fa-long-arrow-right"></i>
+                                                    {{popupvalues.block}}
+                                                </span>
+                                                <span>
+                                                    <i class="fa fa-long-arrow-right"></i>
+                                                    {{popupvalues.Category}}
+                                                </span>
+                                                <span *ngIf="popupvalues.prodname != ''">
+                                                    <i class="fa fa-long-arrow-right"></i>
+                                                    {{popupvalues.prodname}}
+                                                </span>
+                                            </span>
+                                        </h2>
+                                        <img src="images/Download.svg" alt="Download" class="ms-auto px-3"
+                                            style="cursor: pointer;" (click)="excelDownload()" />
+
+                                        <!-- <a type="button" class="close-btn  me-0" (click)="closePopup()"><i
+                                                class="fa-solid fa-xmark"></i> </a> -->
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close" (click)="closePopup()"></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="scorecard-single-header mb-3"
+                                style="overflow: auto;max-height: calc(100vh - 200px);">
+                                <div *ngIf="(FISummaryDetails == null || FISummaryDetails.length === 0) && FISummaryDetailsNoData === ''"
+                                    class="graph-loader d-flex align-items-center justify-content-center">
+                                    <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+                                    <span class="visually-hidden ms-2">Loading...</span>
+                                </div>
+                                <table class="table mb-0 w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Deal #</th>
+                                            <th>Stock</th>
+                                            <ng-container *ngIf="popupvalues.saletype == ''">
+                                                <th>Vin</th>
+                                                <!-- <th>Ap Name</th>
+                                    <th>Prod Name</th> -->
+                                            </ng-container>
+
+                                            <th>Customer Name</th>
+                                            <th>FI Manager</th>
+
+                                            <ng-container *ngIf="popupvalues.saletype == ''">
+                                                <th>Sale</th>
+                                                <th>Cost</th>
+                                                <th>Total Gross</th>
+                                            </ng-container>
+
+                                            <ng-container *ngIf="popupvalues.saletype != ''">
+                                                <th>Front Gross</th>
+                                                <th>Back Gross</th>
+                                                <th>Total Gross</th>
+                                            </ng-container>
+
+                                            <!-- <th>Sale Type 1</th>
+                                <th>Sale Type 2</th> -->
+
+
+
+                                        </tr>
+                                    </thead>
+                                    <ng-container *ngIf="FISummaryDetails && FISummaryDetails.length > 0;else NoRD">
+                                        <tbody>
+                                            <tr *ngFor="let ld of FISummaryDetails ;let i=index">
+
+                                                <td style="text-align: center !important;">{{ ld['Date'] ? (ld['Date'] |
+                                                    date:'MM.dd.yyyy') : '-'}}</td>
+
+                                                <td style="text-align: left !important;"
+                                                    [ngClass]="[ld.ad_dealid != 0 && ld.ad_dealid != null && ld.ad_dealid != undefined && ld.ad_dealid != '' && ld.ad_dealid != '-' ? 'popuppointer' : 'popupdisable']"
+                                                    (click)="openSalesModal(ld.ad_dealid,ld.VIN,ld.Store_Id,ld.Stock,ld?.source,ld?.customernumber)">
+                                                    {{ ld['ad_dealid'] || '-'}}</td>
+
+                                                <td style="text-align: center;">{{ ld['Stock'] || '-'}}</td>
+
+                                                <ng-container *ngIf="popupvalues.saletype == ''">
+                                                    <td style="text-align: center !important;">{{ ld['VIN'] ||
+                                                        '-'}}</td>
+                                                    <!-- <td style="text-align: left !important;">{{ ld['AP_NAME'] || '-'}}</td>
+                                        <td style="text-align: left !important;">{{ ld['PROD_NAME'] || '-'}}</td> -->
+                                                </ng-container>
+
+                                                <td style="text-align: left !important;">{{ ld['CustomerName']
+                                                    || '-'}}</td>
+                                                <td style="text-align: left !important;">{{ ld['FIManager'] ||
+                                                    '-'}}</td>
+
+
+
+                                                <td>
+                                                    <span class="d-flex justify-content-between"> {{
+                                                        (ld['ad_frontgross'] == 0 || ld['ad_frontgross'] == null
+                                                        ? '' :
+                                                        '$') }} <span> {{
+                                                            (ld['ad_frontgross'] == 0 || ld['ad_frontgross'] ==
+                                                            null ? '-' :
+                                                            ld['ad_frontgross'] |number:'1.0-0')
+                                                            }}</span></span>
+                                                </td>
+
+                                                <td>
+                                                    <span class="d-flex justify-content-between"> {{
+                                                        (ld['ad_backgross'] == 0 || ld['ad_backgross'] == null ?
+                                                        '' :
+                                                        '$') }} <span> {{
+                                                            (ld['ad_backgross'] == 0 || ld['ad_backgross'] ==
+                                                            null ? '-' :
+                                                            ld['ad_backgross'] |number:'1.0-0') }}</span></span>
+                                                </td>
+
+                                                <td>
+                                                    <span class="d-flex justify-content-between"> {{
+                                                        (ld['TotalGross'] == 0 || ld['TotalGross'] == null ? ''
+                                                        :
+                                                        '$') }} <span> {{
+                                                            (ld['TotalGross'] == 0 || ld['TotalGross'] == null ?
+                                                            '-' :
+                                                            ld['TotalGross'] |number:'1.0-0') }}</span></span>
+                                                </td>
+
+                                                <!-- <td >{{ ld['ad_saletype'] || '-'}}</td>
+                                    <td >{{ ld['ad_dealtype2'] || '-'}}</td> -->
+
+                                            </tr>
+                                        </tbody>
+                                    </ng-container>
+                                    <ng-template #NoRD>
+                                        <tr>
+                                            <td [attr.colspan]="popupvalues.saletype == '' ? 11 : 10 "
+                                                *ngIf="FISummaryDetailsNoData== ''">
+                                                <!-- <div
+                                                    class="graph-loader d-flex align-items-center justify-content-center">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div> -->
+                                            </td>
+                                            <td [attr.colspan]="popupvalues.saletype == '' ? 11 : 10 "
+                                                *ngIf="FISummaryDetailsNoData != ''"
+                                                style="text-align: center;background: #fff !important;color: black; display: revert;font-size: .8rem;">
+                                                <label>{{FISummaryDetailsNoData}}</label>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ng-template>

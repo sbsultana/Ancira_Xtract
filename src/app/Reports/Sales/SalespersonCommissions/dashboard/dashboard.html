@@ -1,0 +1,312 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="reports-bar">
+            <div class="filter-dropdowns">
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                            {{storecount}}
+                            {{storedisplayname}} )</span>
+                        <span class="arrow"></span></button>
+                    <app-stores
+                        [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                        [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                </div>
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(1)">
+                        Time Frame <span class="light-font"> {{displaytime}} </span>
+                        <span class="arrow"></span></button>
+                    <div class="timeframe" *ngIf="activePopover === 1">
+                        <app-date-range-picker [Dates]="Dates"
+                            (updatedDates)="updatedDates($event)"></app-date-range-picker>
+                    </div>
+                </div>
+                <div class="dropdown">&nbsp;&nbsp;
+                    <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+                </div>
+           
+            </div>
+        </div>
+
+        <div class="scorecard-double-header commissions-tbl">
+            <table class="table mb-0 w-100">
+                   <thead>
+                        <tr>
+                            <th class="text-center ">{{FromDate | date:'MMMM dd'}} - {{ToDate | date:'MMMM dd'}}
+                            </th>
+                           
+                            <th colspan="1" >&nbsp;</th>
+                           
+                            <th colspan="2" >Front Gross</th>
+                           
+                            <th colspan="2" >Back Gross</th>
+                           
+                            <th colspan="2" >Commission</th>
+                           
+                            <th colspan="3" >Bonuses</th>
+                           
+                            <th colspan="3" >Total Pay</th>
+                           
+                            <th  >&nbsp;</th>
+
+
+                        </tr>
+                        <tr class="bdr-btm">
+                            <th>Salesperson </th>
+                           
+                            <!-- <th >Comments</th> -->
+                            <th >Units</th>
+                           
+
+                            <th >Total</th>
+                            <th >PVR</th>
+                           
+
+                            <th >Total</th>
+                            <th >PVR</th>
+                           
+
+                            <th >Total</th>
+                            <th >Average</th>
+                           
+
+                            <th >Volume</th>
+                            <th >New Hire</th>
+                            <th >Lease</th>
+                           
+
+                            <th > MTD
+                                <!-- <span style="background-color: #fff !important;color:black !important" *ngIf="datetype() == 'C'"> {{FromDate | date:'MM.dd.yyyy'}} <br> - {{ ToDate | date:'MM.dd.yyyy'}} </span>
+                                <span style="background-color: #fff !important;color:black !important" *ngIf="datetype() != 'C'" >{{datetype()}}</span>     -->
+                            </th>
+                            <th > Pace</th>
+                            <th > Guarantee</th>
+                           
+
+                            <th >Adjustments</th>
+                        </tr>
+                    </thead>
+
+                    <tbody [ngClass]="{'hidden': NoData == true }">
+
+                        <ng-container>
+                            <tr [id]=i *ngFor="let SPC of SalespersonCommData;let i = index">
+                                <td id="DataBody1" [id]="'D_'+i">
+                                    <span style="float: left; margin-right: .5rem; color: #363b4f;"
+                                        id="D_0"></span><span title="{{SPC.SP1}}" id="D_0"
+                                        (click)="openMenu()">{{(SPC.SP1 == undefined ?
+                                        '--' : (
+                                        (SPC.SP1.toString() |
+                                        slice:0:22) +
+                                        (SPC.SP1.toString().length > 22 ? '...' : '') ))}}
+                                    </span>
+                                </td>
+                       
+                              
+
+                                <td [ngClass]="{ negative: !inTheGreen(SPC.Units)}">{{SPC.Units == 0 || SPC.Units ==
+                                    null ?
+                                    '-' :
+                                    SPC.Units | number }}</td>
+                              
+
+                                <td id="DataBody5" [ngClass]="{ negative: !inTheGreen(SPC.Total_FG)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{ SPC.Total_FG == 0 || SPC.Total_FG == null ? '' :
+                                        '$'}}
+                                        <span>
+                                            {{ SPC.Total_FG == 0 || SPC.Total_FG == null ? '-'
+                                            :
+                                            SPC.Total_FG | number:'1.2-2'}}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.PVR_FG)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.PVR_FG == 0 || SPC.PVR_FG == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.PVR_FG == 0 || SPC.PVR_FG == null ? '-'
+                                            :
+                                            SPC.PVR_FG | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                               
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.Total_BG)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.Total_BG == 0 || SPC.Total_BG == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.Total_BG == 0 || SPC.Total_BG == null ? '-'
+                                            :
+                                            SPC.Total_BG | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.PVR_BG)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.PVR_BG == 0 || SPC.PVR_BG == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.PVR_BG == 0 || SPC.PVR_BG == null ? '-'
+                                            :
+                                            SPC.PVR_BG | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                           
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.Total_Comm)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.Total_Comm == 0 || SPC.Total_Comm == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.Total_Comm == 0 || SPC.Total_Comm == null ? '-'
+                                            :
+                                            SPC.Total_Comm | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.Avg_Comm)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.Avg_Comm == 0 || SPC.Avg_Comm == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.Avg_Comm == 0 || SPC.Avg_Comm == null ? '-'
+                                            :
+                                            SPC.Avg_Comm | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                           
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.Vol_Bonus)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.Vol_Bonus == 0 || SPC.Vol_Bonus == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.Vol_Bonus == 0 || SPC.Vol_Bonus == null ? '-'
+                                            :
+                                            SPC.Vol_Bonus | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.New_Hire_Bonus)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.New_Hire_Bonus == 0 || SPC.New_Hire_Bonus == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.New_Hire_Bonus == 0 || SPC.New_Hire_Bonus == null ? '-'
+                                            :
+                                            SPC.New_Hire_Bonus | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.Lease_Bonus)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.Lease_Bonus == 0 || SPC.Lease_Bonus == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.Lease_Bonus == 0 || SPC.Lease_Bonus == null ? '-'
+                                            :
+                                            SPC.Lease_Bonus | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                           
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.MTD_Tot_Pay)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.MTD_Tot_Pay == 0 || SPC.MTD_Tot_Pay == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.MTD_Tot_Pay == 0 || SPC.MTD_Tot_Pay == null ? '-'
+                                            :
+                                            SPC.MTD_Tot_Pay | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.Pace)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.Pace == 0 || SPC.Pace == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.Pace == 0 || SPC.Pace == null ? '-'
+                                            :
+                                            SPC.Pace | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.Guarantee)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.Guarantee == 0 || SPC.Guarantee == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.Guarantee == 0 || SPC.Guarantee == null ? '-'
+                                            :
+                                            SPC.Guarantee | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                           
+
+                                <td id="DataBody7" [ngClass]="{ negative: !inTheGreen(SPC.Adjustments)}">
+                                    <span class="d-flex justify-content-between">
+                                        {{
+                                        (SPC.Adjustments == 0 || SPC.Adjustments == null ? '' :
+                                        '$') }}
+                                        <span>
+                                            {{
+                                            (SPC.Adjustments == 0 || SPC.Adjustments == null ? '-'
+                                            :
+                                            SPC.Adjustments | number:'1.2-2') }}
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+
+
+                        </ng-container>
+                        <!-- <div class="loader" style="margin-top: 5%;margin-left: 30%;" *ngIf="spinnerLoader"></div> -->
+
+                    </tbody>
+                    <tbody *ngIf="NoData">
+                        <tr>
+                           
+                            <td colspan="22" style="color: black;pointer-events:none ; text-align: center !important;">
+                                No
+                                Records Found</td>
+
+                        </tr>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</main>

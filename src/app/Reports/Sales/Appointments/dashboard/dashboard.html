@@ -1,0 +1,141 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="reports-bar">
+            <div class="filter-dropdowns">
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                            {{storecount}}
+                            {{storedisplayname}} )</span>
+                        <span class="arrow"></span></button>
+                    <app-stores
+                        [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                        [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                </div>&nbsp;&nbsp;
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="togglePopover(1)">
+                        Time Frame <span class="light-font">  {{displaytime}} </span>
+                        <span class="arrow"></span></button>
+                    <div class="timeframe" *ngIf="activePopover === 1">
+                        <app-date-range-picker [Dates]="Dates"
+                            (updatedDates)="updatedDates($event)"></app-date-range-picker>
+                    </div>
+                </div>
+                <div class="dropdown">&nbsp;&nbsp;
+                    <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="totals-block mb-2 col-12" *ngIf="Appointmentdata && Appointmentdata.length > 0">
+            <div class="row">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>
+                        <span class="divNormal">
+                            Appointments Count:&nbsp;&nbsp;
+                        </span>
+                        <span class="divBold">
+                            {{ Appointmentdata.length }}
+                        </span>
+                    </span>
+                    <div class="search ms-auto">
+                        <input type="text" class="form-control Search" placeholder="Search" [(ngModel)]="searchQuery" />
+                        <img src="images/Magnifer.svg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scorecard-single-header appointments-tbl">
+            <table class="table mb-0 w-100">
+                <thead>
+
+                    <tr>
+                        <th class="text-center" (click)="sort('Dealer')"
+                            style="cursor: pointer;border-radius: 10px 0 0 0;"
+                            *ngIf="storeIds.toString().indexOf(',')> 0 || storeIds == 0 " s>Dealer</th>
+
+                        <th (click)="sort('Time')" style="cursor: pointer;"> Time</th>
+
+                        <th (click)="sort('Appt Start Date')" style="cursor: default;"> Date</th>
+                        <th (click)="sort('Stock Number')" style="cursor: pointer;">Stock Number</th>
+                        <th (click)="sort('Year')" style="cursor: pointer;">Year</th>
+                        <th (click)="sort('Make')" style="cursor: pointer;">Make</th>
+                        <th (click)="sort('Model')" style="cursor: pointer;">Model</th>
+
+                        <th (click)="sort('Customer')" style="cursor: pointer;">Customer</th>
+                        <th (click)="sort('Assigned User')" style="cursor: pointer;">Assigned User</th>
+                        <th (click)="sort('Appt ID')" style="cursor: pointer;">Appt ID</th>
+                        <th (click)="sort('Appt Status')" style="cursor: pointer;">Appt Status</th>
+                        <th (click)="sort('Lead Type')" style="cursor: pointer;"> Lead Type</th>
+
+
+                        <th (click)="sort('Status')" style="cursor: pointer;"> Status</th>
+                        <th (click)="sort('Sales Representative')" style="cursor: pointer;"> Sales
+                            Representative</th>
+                        <th (click)="sort('BD Agent')" style="cursor: pointer;">BD Agent</th>
+                        <th (click)="sort('Manager')" style="cursor: pointer;"> Manager</th>
+                        <th (click)="sort('Created')" style="cursor: pointer;">Created</th>
+                        <th (click)="sort('Source')" style="cursor: pointer;">Source</th>
+                        <th (click)="sort('Contacted')" style="cursor: pointer;">
+                            Contacted</th>
+
+
+                    </tr>
+                </thead>
+                <ng-container *ngIf="Appointmentdata != undefined">
+                    <tbody>
+                        <tr *ngFor="let Appointment of Appointmentdata | filter: searchQuery; let i=index">
+                            <td style="text-align: left;" *ngIf="storeIds.toString().indexOf(',')> 0 || storeIds == 0 ">
+                                {{Appointment["Dealer"] || '-'}}</td>
+
+                            <td class="text-center">{{ Appointment['Appt Start Time'] || '-'}}
+                            </td>
+                            <td class="text-center">{{ Appointment['Appt Start Date'] | date:'MM.dd.yyyy'}} </td>
+
+                            <td class="text-start">{{Appointment["Stock Number"] || '-'}}</td>
+
+                            <td class="text-center">{{Appointment["Year"] || '-'}}
+                            </td>
+                            <td class="text-center">{{Appointment["Make"] || '-'}}
+                            </td>
+                            <td class="text-center">{{Appointment["Model"] || '-'}}
+                            </td>
+
+                            <td class="text-start">{{Appointment["Customer"] || '-'}}</td>
+                            <td class="text-start">{{Appointment["Assigned User"] || '-'}}</td>
+                            <td class="text-start">{{Appointment["Appt ID"] || '-'}}</td>
+                            <td class="text-start">{{Appointment["Appt Status"] || '-'}}</td>
+                            <td class="text-start">{{Appointment["Lead Type"] || '-'}}</td>
+
+                            <td class="text-start">{{Appointment["Status"] || '-'}}</td>
+                            <td class="text-start">{{Appointment["Sales Representative"] || '-'}}</td>
+                            <td class="text-start">{{Appointment["BD Agent"] || '-'}}</td>
+                            <td class="text-start">{{Appointment["Manager"] || '-'}}</td>
+                            <td class="text-start">{{Appointment["Created"] | date:'MM.dd.yyyy'}}</td>
+                            <td class="text-start">{{Appointment["Source"] || '-'}}</td>
+                            <td class="text-center">{{Appointment["Contacted"] ||
+                                '-'}}</td>
+
+
+
+
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="(Appointmentdata | filter: searchQuery) as result">
+                        <tr *ngIf="NoData==true ">
+                            <!-- <td colspan="2" style="border-right: none !important;"></td> -->
+                            <td colspan="19" style="border-right: none !important; text-align: center;">
+                                No Records Found!!!</td>
+                        </tr>
+                    </tbody>
+                </ng-container>
+            </table>
+        </div>
+    </div>
+</main>

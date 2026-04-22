@@ -1,0 +1,256 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="reports-bar">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                                {{storecount}}
+                                {{storedisplayname}} )</span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+
+
+                    <div class="dropdown d-flex justify-content-center align-items-center">
+                        <button class="dropdown-toggle acct-no">
+                            Account #
+                        </button>
+                        <input type="text" class="input-field" placeholder="Enter account number" style="width: 180px;"
+                            [(ngModel)]="accountNumber" (keyup.enter)="viewreport()" />
+                    </div>
+
+
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="dp.show()">
+                            Month
+                            <span class="light-font">
+                                ( {{ month | date:'MMMM/yyyy' }} )
+                            </span>
+                        </button>
+
+                        <input bsDatepicker [(ngModel)]="month" [bsConfig]="bsConfig" readonly
+                            (keydown)="$event.preventDefault()" [bsConfig]="bsConfig" #dp="bsDatepicker"
+                            (onShown)="onOpenCalendar($event)" (ngModelChange)="changeDate($event)" [maxDate]="maxDate"
+                            [minDate]="minDate" style="position: absolute; opacity: 0; height: 0; width: 0;" />
+
+
+                    </div>
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scorecard-single-header GLLookup-tbl" *ngIf="actionType == 'Y'">
+            <table class="table mb-0 w-100">
+                <thead>
+
+                    <tr>
+                        <th (click)="sort('Accountnumber',GLData,'M')" class="w-25">Account #</th>
+                        <th (click)="sort('AccountName',GLData,'M')" style="cursor: pointer;">Account Name</th>
+                        <th (click)="sort('Store',GLData,'M')" style="cursor: pointer;" class="w-50">Store</th>
+                        <th (click)="sort('postingamount',GLData,'M')" style="cursor: pointer;">Posting Amount</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="GLData.length > 0; else ifNotShow">
+                    <ng-container *ngFor="let data of GLData; let i = index">
+
+                        <tr (click)="expandGL(i, data)" style="cursor: pointer;"
+                            [ngClass]="{ 'divBold': data.Store?.toLowerCase() === 'report total' }">
+                            <td style="text-align: left !important;">
+                                <span
+                                    style="white-space: normal; display: block;cursor: pointer;color:#0554ef;text-decoration: underline;">
+                                    {{ data['Accountnumber'] || '-' }}
+                                </span>
+                            </td>
+
+                            <td style="text-align: left !important;">
+                                <span style="white-space: normal; display: block;">
+                                    {{ data['AccountName'] || '-' }}
+                                </span>
+
+                            <td style="text-align: left !important;">
+                                <span style="white-space: normal; display: block;">
+                                    {{ data['Store'] || '-' }}
+                                </span>
+                            </td>
+
+                            <td [ngClass]="{ negative: !inTheGreen(data['postingamount']) }">
+                                <span class="d-flex justify-content-between">
+                                    $<span>{{ data['postingamount'] !== null && data['postingamount'] !== undefined
+                                        ? (data['postingamount'] | number:'1.2-2')
+                                        : '-' }}</span>
+                                </span>
+                            </td>
+
+                        </tr>
+                        <ng-container *ngIf="expandedGLRows.indexOf(i) >= 0">
+
+                            <tr>
+                                <td colspan="4" class="p-3">
+                                    <div class="scorecard-single-header"
+                                        style="max-height: 30vh; overflow-x: hidden;overflow-y: auto;">
+
+                                        <table class="table table-borderless mb-0 w-100">
+
+                                            <thead>
+                                                <tr class="tp-bx-shdw lightblue-bg">
+                                                    <td class="lft-bx-shdw"
+                                                        (click)="sort('accountingdate', data.childRows, 'GL')"
+                                                        style="cursor: pointer; text-align: center;">
+                                                        Date
+                                                    </td>
+
+                                                    <td (click)="sort('CountrolNumber', data.childRows, 'GL')"
+                                                        style="cursor: pointer; text-align: center;">
+                                                        Control #
+                                                    </td>
+
+                                                    <td (click)="sort('CountrolNumber2', data.childRows, 'GL')"
+                                                        style="cursor: pointer; text-align: center;">
+                                                        Control #2
+                                                    </td>
+
+                                                    <td (click)="sort('detaildescription', data.childRows, 'GL')"
+                                                        style="cursor: pointer; text-align: center;" class="w-50">
+                                                        Description
+                                                    </td>
+
+                                                    <td class="rt-bx-shdw"
+                                                        (click)="sort('postingamount', data.childRows, 'GL')"
+                                                        style="cursor: pointer; text-align: center;">
+                                                        Amount
+                                                    </td>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                                <!-- Loader before child rows come -->
+                                                <tr *ngIf="data.childRows === undefined">
+                                                    <td colspan="5">
+                                                        <div class="loading">
+                                                            <div class="loader"></div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                                <!-- Child data rows -->
+                                                <tr *ngFor="let row of data.childRows; let k = index"
+                                                    [ngClass]="{ 'btm-bx-shdw': k === data.childRows.length-1 }">
+
+                                                    <td class="text-center">
+                                                        <span style="white-space: nowrap;">
+                                                            {{ row.accountingdate ? (row.accountingdate |
+                                                            date:'MM.dd.yyyy') : '-' }}
+                                                        </span>
+                                                    </td>
+
+                                                    <td class="text-start">
+                                                        <span style="white-space: nowrap;">{{ row.CountrolNumber || '-'
+                                                            }}</span>
+                                                    </td>
+
+                                                    <td class="text-start">
+                                                        <span style="white-space: nowrap;">{{ row.CountrolNumber2 || '-'
+                                                            }}</span>
+                                                    </td>
+
+                                                    <td class="text-start" title="{{row.detaildescription}}">
+                                                        <span style="white-space: nowrap;">
+
+                                                            {{(row.detaildescription == undefined ? '-' : (
+                                                            (row.detaildescription.toString() |
+                                                            slice:0:112) +
+                                                            (row.detaildescription.toString().length > 112 ? '...' : '')
+                                                            ))}}
+                                                        </span>
+                                                    </td>
+
+                                                    <td class="rt-bx-shdw" style="text-align: center;"
+                                                        [ngClass]="{ negative: !inTheGreen(row.postingamount) }">
+
+                                                        <span class="d-flex justify-content-between">
+                                                            $<span>{{ row.postingamount !== null && row.postingamount
+                                                                !== undefined
+                                                                ? (row.postingamount | number:'1.2-2')
+                                                                : '-' }}</span>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr class="divBold"
+                                                    style="position: sticky; bottom: 0; z-index: 995; font-family: 'Roboto' !important;">
+
+                                                    <td></td>
+
+                                                    <td colspan="3" style="text-align:right; font-weight:bold;">
+                                                        Sub Total:
+                                                    </td>
+
+                                                    <td style="font-weight:bold;"
+                                                        [ngClass]="{ negative: getSubTotal(data.childRows) < 0 }">
+
+                                                        <span class="d-flex justify-content-between">
+                                                            $<span>{{ getSubTotal(data.childRows) | number:'1.2-2'
+                                                                }}</span>
+                                                        </span>
+
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+
+                                        </table>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </ng-container>
+                    </ng-container>
+
+                    <tr class="divBold"
+                        style="position: sticky; top:0; bottom: 0; left: 0; right: 0;z-index: 995;font-family: 'Roboto' !important;">
+                        <td></td>
+                        <td colspan="2" style="text-align:right; font-weight:bold;">
+                            Total:
+                        </td>
+
+                        <td style="font-weight:bold;" [ngClass]="{ negative: grandTotal < 0 }">
+
+                            <span class="d-flex justify-content-between">
+                                $<span>{{ grandTotal | number:'1.0-0' }}</span>
+                            </span>
+
+                        </td>
+
+                    </tr>
+                </tbody>
+                <ng-template #ifNotShow>
+                    <tr *ngIf="NoData != ''">
+
+                        <td colspan="4" *ngIf="NoData != ''"
+                            style="text-align: center;background: #fff !important;color: black; display: revert;font-size: .8rem;">
+                            <label>{{NoData}}</label>
+                        </td>
+                    </tr>
+                </ng-template>
+            </table>
+        </div>
+
+
+        <div *ngIf="actionType == 'N'" class="mt-4"
+            style="text-align: center;color: black; display: revert;font-size: 1rem;">
+            Please enter Account Number to Fetch data..!
+        </div>
+    </div>
+</main>
+
+<!-- <button (click)="printDiv()">Print Report</button> -->

@@ -1,0 +1,10 @@
+<!-- Header emits ready event -->
+<app-header (ready)="onHeaderReady()"></app-header>
+<app-toast-container></app-toast-container>
+<!-- External menu loads only when header ready -->
+<app-externalmenu></app-externalmenu>
+<!-- <router-outlet/> -->
+<!-- </div> -->
+<div class="content-wrapper pt-3" [class.sidebar-collapsed]="isSidebarCollapsed">
+    <router-outlet />
+</div>

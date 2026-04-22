@@ -1,0 +1,374 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+  <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+
+<main>
+  <div>
+    <div class="container-fluid">
+
+
+      <div class="col-12">
+        <div class="reports-bar">
+          <div class="filter-dropdowns">
+            <div class="dropdown">
+              <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                  {{storecount}}
+                  {{storedisplayname}} )</span>
+                <span class="arrow"></span></button>
+              <app-stores
+                [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+            </div>
+            <div class="dropdown">
+              <button class="dropdown-toggle" (click)="fromDp.show()">
+                Month
+                <span class="light-font">
+                  ( {{ frommonth ? (frommonth | date:'MMMM/yyyy') : 'Select Month' }} )
+                </span>
+              </button>
+              <input #fromDp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="frommonth"
+                [bsConfig]="monthPickerConfig" (bsValueChange)="changeDatefrom($event)" readonly
+                (keydown)="$event.preventDefault()" (keypress)="$event.preventDefault()"
+                (paste)="$event.preventDefault()" style="position:absolute; opacity:0; height:0; width:0;" />
+            </div>
+            <div class="dropdown">
+              <button class="apply-button" (click)="onApply()"><span>Apply</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid px-0" id="StoreSummary">
+        <div class="tabs-wrapper px-0">
+          <div class="c-tabs px-0">
+            <button class="filter-button border-0" (click)="headerselection('S')"
+              [class.active]="selectedheadertab[0]=='S'">Sale</button>
+            <button class="filter-button border-0" (click)="headerselection('C')"
+              [class.active]="selectedheadertab[0]=='C'">Cost</button>
+            <button class="filter-button border-0" (click)="headerselection('X')"
+              [class.active]="selectedheadertab[0]=='X'">Non-Operating Expense</button>
+            <button class="filter-button border-0" (click)="headerselection('I')"
+              [class.active]="selectedheadertab[0]=='I'">Non-Operating Income</button>
+            <button class="filter-button border-0" (click)="headerselection('E')"
+              [class.active]="selectedheadertab[0]=='E'">Expense</button>
+            <button class="filter-button border-0" (click)="headerselection('A')"
+              [class.active]="selectedheadertab[0]=='A'">Asset</button>
+            <button class="filter-button border-0" (click)="headerselection('L')"
+              [class.active]="selectedheadertab[0]=='L'">Liability</button>
+            <button class="filter-button border-0" (click)="headerselection('Q')"
+              [class.active]="selectedheadertab[0]=='Q'">Equity</button>
+          </div>
+        </div>
+      </div>
+      <div class="filter-row">
+
+        <!-- Search -->
+        <div class="search-box">
+          <input type="text" placeholder="Search" [(ngModel)]="searchText" (keydown.enter)="searchFilter()"
+            (input)="onSearchInput()" />
+          <img src="images/Search-Icon.png" class="s-icon" (click)="searchFilter()" />
+        </div>
+
+        <!-- Mapped / Unmapped -->
+        <div class="tabs-wrapper px-0">
+          <div class="c-tabs px-0">
+            <button class="filter-button border-0" [class.active]="statusFilter.indexOf('M')>=0"
+              (click)="StatusFiltering('M')">
+              Mapped
+            </button>
+            <button class="filter-button border-0" [class.active]="statusFilter.indexOf('U')>=0"
+              (click)="StatusFiltering('U')">
+              Unmapped
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TABLE -->
+      <div class="scorecard-single-header accountmapping-tbl mt-3">
+        <table class="table mb-0 w-100">
+
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Store</th>
+              <th>Acct Desc</th>
+              <th>Acct #</th>
+              <th>Acct Type</th>
+              <th *ngIf="['A','L','Q'].includes(selectedheadertab[0])">Acct Type Detail</th>
+              <th>Opera Area</th>
+              <th>Dept</th>
+              <th>Sub Type</th>
+              <th>Sub Type Detail</th>
+              <th *ngIf="['S','C','I','X','E'].includes(selectedheadertab[0])">Fin Category</th>
+              <th>MTD</th>
+              <th>YTD</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let am of AccountingMapping; let i = index"
+             [ngStyle]="{'color': statusFilter.indexOf('U')>=0? '#D6003D' : 'black' }"
+            >
+
+              <!-- Action Button -->
+              <td class="text-center">
+                <span class="cursor-pointer" data-bs-toggle="modal" data-bs-target="#mapModal"
+                  (click)="bulkEdit('', 'M', '', 'S', am, 'MappedEditMapping')">
+                  <img src="images/Edit_Icon.svg">
+                </span>
+              </td>
+              <td class="text-start">{{ am.as_companyName || '-' }}</td>
+              <td class="text-start">{{ am.accountDescription || '-' }}</td>
+              <td class="text-center">{{ am.accountNumber || '-' }}</td>
+              <td class="text-center">{{ am.accountType || '-' }}</td>
+              <td class="text-center" *ngIf="['A','L','Q'].includes(selectedheadertab[0])">{{ am.acctSubtype ||
+                '-' }}</td>
+              <td class="text-center">{{ am.operationalArea || '-' }}</td>
+              <td class="text-center">{{ am.department || '-' }}</td>
+              <td class="text-start">{{ am.subType || '-' }}</td>
+              <td class="text-start">{{ am.subTypeDetail || '-' }}</td>
+              <td class="text-start" *ngIf="['S','C','I','X','E'].includes(selectedheadertab[0])">{{
+                am.Fin_Summary || '-' }}</td>
+              <td style="text-align: right;">
+                <span class="d-flex justify-content-between">
+                  {{
+                  (am.MTD == 0 || am.MTD == null || am.MTD == undefined ? '' : '$')
+                  }}
+                  <span>
+                    {{
+                    (am.MTD == 0 || am.MTD == null ? '-' : (am.MTD | number:'1.2-2'))
+                    }}
+                  </span>
+                </span>
+              </td>
+
+              <td style="text-align: right;">
+                <span class="d-flex justify-content-between">
+                  {{
+                  (am.YTD == 0 || am.YTD == null || am.YTD == undefined ? '' : '$')
+                  }}
+                  <span>
+                    {{
+                    (am.YTD == 0 || am.YTD == null ? '-' : (am.YTD | number:'1.2-2'))
+                    }}
+                  </span>
+                </span>
+              </td>
+
+            </tr>
+          </tbody>
+
+        </table>
+
+        <div *ngIf="NoData" 
+          style="text-align: center; font-size: 1rem; font-family: 'Roboto';font-weight: 700;">
+          No data found.
+        </div>
+      </div>
+
+
+      <!-- PAGINATION -->
+      <!-- <div class="row" *ngIf="Pagination">
+        <div class="col-12 d-flex justify-content-end">
+          <div class="acc-date" style="padding-right:15px">
+            <div [ngClass]="{'disable': PageCount==1}" (click)="Prev()"><i class="fa-solid fa-arrow-left"></i></div>
+            <div [ngClass]="{'disable': !LastCount}" (click)="Next()"><i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+        </div>
+      </div> -->
+
+    </div>
+  </div>
+</main>
+
+
+
+
+<div class="modal fade" id="mapModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <!-- <div *ngIf="getMissingFields().length > 0" class="graph-loader d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div> -->
+      <div class="modal-header">
+        <h5 class="modal-title">MAP ACCOUNT</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="onclose()"></button>
+      </div>
+
+      <div class="modal-body">
+
+
+        <div class="map-preview-table">
+          <table class="table small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Store</th>
+                <th>Acct Desc</th>
+                <th>Acct #</th>
+                <th>Type</th>
+                <th *ngIf="['A','L','Q'].includes(selectedheadertab[0])">Type Detail</th>
+                <th>Op Area</th>
+                <th>Dept</th>
+                <th>SubType</th>
+                <th>SubType Detail</th>
+                <th *ngIf="['S','C','I','X','E'].includes(selectedheadertab[0])">Fin Cat</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of bulkEditRecords">
+                <td>{{ row.as_companyName || '-' }}</td>
+                <td>{{ row.accountDescription || '-' }}</td>
+                <td>{{ row.accountNumber || '-' }}</td>
+                <td>{{ row.accountType || '-' }}</td>
+                <td *ngIf="['A','L','Q'].includes(selectedheadertab[0])">{{ row.acctSubtype || '-' }}</td>
+                <td>{{ row.operationalArea || '-' }}</td>
+                <td>{{ row.department || '-' }}</td>
+                <td>{{ row.subType || '-' }}</td>
+                <td>{{ row.subTypeDetail || '-' }}</td>
+                <td *ngIf="['S','C','I','X','E'].includes(selectedheadertab[0])">{{ row.Fin_Summary || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- FORM GRID -->
+        <div class="row g-4">
+
+          <!-- LEFT COLUMN -->
+          <div class="col-md-4">
+
+            <label class="form-label">Income Statement / Balance Sheet</label><br>
+            <label><input type="radio" value="Activity" [(ngModel)]="actbal" (change)="OnChange('AT')">&nbsp;Income
+              Statement</label><br>
+            <label><input type="radio" value="Balance" [(ngModel)]="actbal" (change)="OnChange('AT')">&nbsp;Balance
+              Sheet</label>
+
+            <br><br>
+
+            <label class="form-label">Account Type</label>
+            <select class="form-select" [(ngModel)]="accounttype" (change)="actbal=='Activity'
+                ?OnChange('OA','','',accounttype)
+                :OnChange('ATD','','',accounttype)">
+              <option value="0">Select</option>
+              <option *ngFor="let at of Accounttype" [value]="at.accountType">{{ at.accountType }}</option>
+            </select>
+
+            <div *ngIf="actbal=='Balance'" class="mt-3">
+              <label class="form-label">Account Type Detail</label>
+              <select class="form-select" [(ngModel)]="selectedaccounttypedetail"
+                (change)="OnChange('OA','','',accounttype,'','','')">
+                <option value="0">Select</option>
+                <option *ngFor="let atd of Accounttypedetail" [value]="atd.AccountTypeDetail">
+                  {{ atd.AccountTypeDetail }}
+                </option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- CENTER COLUMN -->
+          <div class="col-md-4">
+
+            <label class="form-label">Operational Area</label>
+            <select class="form-select" [(ngModel)]="departmenttype"
+              (change)="OnChange('DT','','',accounttype,'',departmenttype)">
+              <option value="0">Select</option>
+              <option *ngFor="let dt of Departmenttype" [value]="dt.OperationalArea">
+                {{ dt.OperationalArea }}
+              </option>
+            </select>
+
+            <br>
+
+            <label class="form-label">Department</label>
+            <select class="form-select" [(ngModel)]="department"
+              (change)="OnChange('ST','','',accounttype,'','',department)">
+              <option value="0">Select</option>
+              <option *ngFor="let d of Department" [value]="d.Department">{{ d.Department }}</option>
+            </select>
+
+            <br>
+
+            <label class="form-label">Sub Type</label>
+            <select class="form-select" [(ngModel)]="subtype"
+              (change)="OnChange('STD','','',accounttype,'','',department,subtype)">
+              <option value="0">Select</option>
+              <option *ngFor="let st of Subtype" [value]="st.SubType">{{ st.SubType }}</option>
+            </select>
+
+            <br>
+
+            <label class="form-label">Sub Type Detail</label>
+            <select class="form-select" [(ngModel)]="subtypedetail"
+              (change)="OnChange('STFD','','',accounttype,'','',department,subtype,subtypedetail)">
+              <option value="0">Select</option>
+              <option *ngFor="let sd of SubtypeDetail" [value]="sd.SubTypeDetail">
+                {{ sd.SubTypeDetail }}
+              </option>
+            </select>
+
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <div class="col-md-4" *ngIf="actbal=='Activity'">
+
+            <label class="form-label">Fin Category</label>
+            <select class="form-select" [(ngModel)]="financialsummary">
+              <option value="0">Select</option>
+              <option *ngFor="let fs of Financialsummary" [value]="fs.Fin_Summary_Key">
+                {{ fs.Fin_Summary_Key }}
+              </option>
+            </select>
+
+          </div>
+
+        </div>
+
+        <p class="mapping-warning">
+          It takes up to 75 min for mapping updates to reflect in reports.
+        </p>
+
+      </div>
+
+      <div class="modal-footer">
+        <div class="text-center">
+          <button class="editbtn me-1" (click)="save()"
+           >Save</button>
+          <button class="cancelbtn ms-1" data-bs-dismiss="modal" (click)="onclose()"
+            id="forceCloseModal">Cancel</button>
+        </div>
+        <!-- <button id="forceCloseModal" type="button" class="d-none" data-bs-dismiss="modal"></button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- WARNING MODAL (CLEAN) -->
+<ng-template #Alert>
+  <div class="modal-body text-center p-4">
+    <h5 class="text-danger fw-bold mb-3">Missing Required Fields</h5>
+
+    <ul class="list-unstyled text-start mx-auto" style="max-width: 300px;">
+      <li *ngFor="let f of missingFields" class="text-danger">
+        • {{ f }}
+      </li>
+    </ul>
+
+    <button class="btn btn-primary mt-3 px-4" (click)="modalService.dismissAll()">OK</button>
+  </div>
+</ng-template>
+
+
+<!-- CONFIRM MODAL (CLEAN) -->
+<ng-template #confirm>
+  <div class="modal-backdrop fade show"></div>
+  <div class="small-confirm">
+    <p>Are you sure you want to save?</p>
+    <button class="btn btn-primary btn-sm" (click)="save()">Save</button>
+    <button class="btn btn-secondary btn-sm" (click)="onclose()">Cancel</button>
+  </div>
+</ng-template>

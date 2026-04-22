@@ -1,0 +1,762 @@
+main {
+    // padding-top: 75px;
+
+    .backtocustomers {
+        font-family: 'Roboto';
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    .editbtn {
+        background-color: #c6dbff;
+        color: #0554ef;
+        border: none;
+        border: none;
+        padding: 6px 24px;
+        font-family: "Roboto";
+        font-size: .875rem;
+        line-height: 1.25rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            border-radius: 50px;
+            background-color: #d2e3fc;
+            cursor: pointer;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .cancelbtn {
+        // background-color: #c6dbff;
+        background: none !important;
+        color: #c6dbff;
+        border: 2px solid #c6dbff;
+        padding: 4px 24px;
+        font-family: "RobotoMedium";
+        font-size: .875rem;
+        line-height: 1.25rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            border-radius: 50px;
+            // background-color: #d2e3fc;
+            cursor: pointer;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .performance-scorecard {
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+        height: calc(100vh - 135px);
+        padding-right: .3rem;
+        overflow: auto;
+        max-width: 100%;
+
+        .table {
+            border-collapse: collapse;
+            text-transform: capitalize;
+            border-radius: 10px;
+            background: #fff;
+            font-family: 'Roboto';
+            max-width: 100%;
+            position: relative;
+
+            th,
+            td {
+                white-space: nowrap;
+                vertical-align: top;
+                padding: 0.25rem 0.5rem;
+                margin: 0;
+                box-shadow: inset 0 0 0 .4px #e0edff;
+                border-bottom: none;
+            }
+
+            th:first-child,
+            td:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 103;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            th:not(:first-child),
+            td:not(:first-child) {
+                text-align: end;
+            }
+
+            thead {
+                position: sticky;
+                top: 0;
+                z-index: 99;
+                font-family: "Roboto";
+                font-size: 0.875rem;
+
+                th {
+                    text-align: center;
+                }
+
+                tr:nth-child(1) {
+                    background-color: #0554ef !important;
+                    color: #fff;
+
+                    th {
+                        // padding: 4px 6px;
+                        border: none;
+                        box-shadow: none;
+                        font-size: .875rem;
+                        font-family: "Roboto";
+                        font-weight: 700;
+                        text-transform: capitalize;
+
+                        span {
+                            font-size: .875rem;
+                            font-family: "RobotoLight";
+                            font-weight: lighter;
+                        }
+                    }
+
+                    th:first-child {
+                        background-color: #0554ef;
+                        z-index: 103;
+                    }
+
+                    th:not(:first-child) {
+                        text-align: center !important;
+                        box-shadow: inset 1px 0 0px 0 #cfd6de;
+
+                    }
+
+                    th:nth-child(2) {
+                        background-color: #0554ef;
+                        z-index: 102;
+                    }
+                }
+
+                tr:nth-child(2) {
+                    background-color: #dbe7ff !important;
+                    color: #000;
+                    font-family: "Roboto";
+                    // text-transform: uppercase;
+                    font-weight: 700;
+                    font-size: .875rem;
+
+                    th {
+                        text-align: center;
+                        padding: 0.25rem 0.5rem;
+                    }
+
+                    th:first-child {
+                        background-color: #dbe7ff;
+                        z-index: 103;
+                        text-align: center;
+                    }
+
+                    th:nth-child(2) {
+                        background-color: #dbe7ff;
+                        z-index: 102;
+                    }
+                }
+            }
+
+            tbody td:not(first-child) {
+                text-align: end;
+
+                .editabletxt {
+                    font-size: .875rem;
+                    padding: .15rem .75rem;
+                    font-family: 'Roboto';
+                    text-align: end;
+                    width: 100%;
+                    font-size: 13px;
+                    box-sizing: border-box;
+                    overflow-x: auto;
+                    white-space: nowrap;
+                    text-overflow: clip;
+                    border: 1px solid #ccc;
+                    border-radius: 6px;
+                }
+
+                .editabletxt::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .editabletxt:focus {
+                    outline: none;
+                    box-shadow: none;
+                    border-color: #ced4da;
+                }
+
+                .editabletxt[type=number]::-webkit-inner-spin-button,
+                .editabletxt[type=number]::-webkit-outer-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+
+                .editabletxt[type=number] {
+                    -moz-appearance: textfield;
+                }
+            }
+
+            tbody {
+                font-family: "Roboto";
+                font-size: 1rem;
+
+                .member-row {
+                    td:first-child {
+                        font-family: "Roboto";
+                        padding-left: 1rem;
+                        text-align: left;
+                        z-index: 9;
+                    }
+
+                    td {
+                        padding: 4px 8px;
+                        font-family: "Roboto";
+                    }
+                }
+
+                tr:nth-child(even) {
+                    background-color: #f9fbff;
+                }
+
+                tr:nth-child(odd) {
+                    background-color: #ffffff;
+                }
+
+                tr:nth-child(even) {
+                    td:first-child {
+                        background-color: #f9fbff;
+                    }
+                }
+
+                tr:nth-child(odd) {
+                    td:first-child {
+                        background-color: #ffffff;
+                    }
+                }
+
+                td:first-child {
+                    // background-color: #fff;
+                    font-family: "Roboto";
+                    text-align: left;
+                    font-weight: 700;
+                    z-index: 9;
+                    // padding-left: 1.5rem;
+
+                    .MemCount {
+                        color: #125df0;
+                    }
+                }
+
+                .bdr-tp {
+                    border-top: 1px solid #0554ef;
+                }
+
+                .bdr-bt {
+                    border-bottom: 1px solid #0554ef;
+                }
+
+                td:not(:first-child) {
+                    text-align: end;
+                }
+
+                .negative {
+                    color: #D6003D;
+                }
+
+                .sub-title {
+                    font-size: 1rem !important;
+                }
+
+                .sub-subtitle {
+                    font-size: 0.7rem !important;
+                }
+
+                .text-normal {
+                    font-family: "Roboto" !important;
+                }
+
+                .text-medium {
+                    font-family: "RobotoMedium" !important;
+                }
+
+                .text-bold {
+                    font-family: "Roboto";
+                    font-weight: 700;
+                    pointer-events: none !important;
+
+                    td:first-child {
+                        text-align: center;
+                    }
+
+                    td:nth-child(2) {
+                        text-align: left;
+                    }
+                }
+
+                .darkred-bg {
+                    background-color: #282828 !important;
+                    color: #fff;
+                }
+
+                .PaddLeft {
+                    padding-left: 1.5rem !important;
+                }
+
+                .lightblue-bg {
+                    background-color: #c6dbff !important;
+                    color: #000;
+                    font-family: 'Roboto';
+                    font-weight: 700;
+
+                    td:not(:first-child) {
+                        color: #c6dbff !important;
+                        box-shadow: none;
+                    }
+
+                    td:first-child {
+                        background-color: #c6dbff !important;
+                        padding-left: 0.5rem !important;
+                        box-shadow: none;
+                    }
+                }
+
+                .greaterThanVal {
+                    color: #00D782;
+                    font-family: "RobotoBold";
+                }
+
+                .positive-bg {
+                    // background-color: #E0FAF0 !important;
+                    background-color: #40E1A2 !important;
+                    color: #000 !important;
+                    cursor: default;
+                }
+
+                .negative-bg {
+                    // background-color: #FCEEF3 !important;
+                    background-color: #F5B8C9 !important;
+                    color: #000 !important;
+                    cursor: default;
+                }
+
+                .sticky-bottom-row {
+                    position: sticky;
+                    bottom: 0;
+                    background-color: #fff;
+                    z-index: 10;
+                    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+                }
+
+                .gold-bg {
+                    background-color: #ffa51a;
+                    color: #fff;
+                }
+
+                .sticky-footer {
+                    td:first-child {
+                        position: sticky;
+                        left: 0;
+                        z-index: 104;
+                        background-color: #fff !important;
+                    }
+
+                    td:nth-child(2) {
+                        position: sticky;
+                        left: 70px;
+                        z-index: 103;
+                        background-color: #fff !important;
+                        text-align: right !important;
+                        border-right: 1px solid #0554ef !important;
+                    }
+
+                    td {
+                        // box-shadow: inset 0 1px 0 0 #0554ef;
+                        // border-top: 2px solid #0554ef;
+                        padding: 12px 8px;
+                        background-color: #fff;
+                        position: sticky;
+                        text-align: right !important;
+                        bottom: 0;
+                        font-family: "RobotoBold";
+                        z-index: 102;
+                        font-size: 1rem;
+                    }
+                }
+            }
+
+            .spacer {
+                border: 1px solid #0554ef;
+                min-height: 20px;
+            }
+
+            .hidden {
+                display: none !important;
+            }
+
+        }
+    }
+}
+
+
+
+
+
+.filter-dropdowns {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    // padding-bottom: 0.5rem;
+    border-radius: 1.5rem;
+
+    .date-filter-card {
+        border-radius: 10px;
+        width: fit-content;
+        font-family: 'Roboto', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+
+        label {
+            font-family: 'RobotoMedium', sans-serif;
+            font-size: .8rem;
+            color: #fff !important;
+        }
+
+        .open-calendar {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+
+
+            .year-input {
+                width: 150px;
+                background-color: #1e73e8;
+                border: none;
+                color: white;
+                border-radius: 12px;
+                padding: 6px 16px;
+                font-size: .875rem;
+                line-height: 1.25rem;
+                font-family: 'Roboto';
+                text-align: center;
+                cursor: pointer;
+                caret-color: transparent;
+                display: flex;
+                gap: 4px;
+                transition: background-color 0.3s ease;
+
+                &:focus {
+                    outline: none;
+                    border-color: #1e73e8;
+                    box-shadow: 0 0 0 2px rgba(5, 84, 239, 0.2);
+                }
+
+                &:hover {
+                    background-color: #2a84f7;
+                    border-radius: 50px;
+                }
+
+                &::selection {
+                    background: transparent; // prevent text selection highlight
+                }
+            }
+
+
+            .calendar-icon {
+                position: absolute;
+                right: 10px;
+                color: #0554ef;
+                font-size: 16px;
+                pointer-events: none;
+            }
+        }
+    }
+
+    .dropdown {
+        .dropdown-toggle {
+            background-color: #1e73e8;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 6px 16px;
+            font-size: .875rem;
+            line-height: 1.25rem;
+            font-family: 'Roboto';
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: #2a84f7;
+                border-radius: 50px;
+            }
+
+            .arrow {
+                font-size: 10px;
+            }
+        }
+
+        .timeframe {
+            position: absolute;
+            z-index: 1060;
+            // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .date-filter-card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+            width: fit-content;
+            font-family: 'Roboto';
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .outline-button {
+            width: 100%;
+            padding: 8px;
+            border: 1.5px solid #0554ef;
+            border-radius: 12px;
+            background-color: #fff;
+            color: #0554ef;
+            font-size: 12px;
+            line-height: 16px;
+            font-family: 'Roboto';
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+
+            i {
+                font-size: 18px;
+            }
+
+            &:hover {
+                // background-color: #0554ef;
+                border-radius: 50px;
+                // color: white;
+            }
+
+            &.custom-btn {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 12px;
+            }
+        }
+
+        .active-filter {
+            background-color: #0554ef !important;
+            color: #fff !important;
+        }
+
+
+        hr {
+            width: 100%;
+            margin: 0 0;
+            color: #000;
+            background-color: #111;
+            border: 0;
+            opacity: .25;
+        }
+
+        .custon-height {
+            height: 10px;
+        }
+    }
+
+    .apply-button {
+        background-color: #c6dbff;
+        color: #0554ef;
+        border: none;
+        border: none;
+        padding: 6px 24px;
+        font-family: "Roboto";
+        font-size: .875rem;
+        line-height: 1.25rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            border-radius: 50px;
+            background-color: #d2e3fc;
+            cursor: pointer;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+.vertical-divider {
+    width: 1px !important;
+    background-color: #dbe7ff;
+    align-self: stretch;
+    margin: 0 0.8rem;
+    padding: 0 !important;
+    flex-shrink: 0;
+}
+
+
+
+/////////////////////////////////////DATE PICKER SCSS////////////////////////////////////
+::ng-deep bs-daterangepicker-container {
+    z-index: 1080;
+}
+
+::ng-deep .bs-datepicker {
+    display: flex;
+    align-items: stretch;
+    flex-flow: row wrap;
+    background: #fff;
+    box-shadow: 0 0 10px 0 #aaa;
+    position: relative;
+    z-index: 1;
+    border-radius: 12px;
+    top: 5px;
+    // right: 167px ;
+    left: 9rem;
+}
+
+::ng-deep .theme-green .bs-datepicker-head {
+    background-color: #fff;
+
+}
+
+::ng-deep .bs-datepicker-head {
+    min-width: 270px;
+    height: 30px;
+    padding: 10px;
+    border-radius: 3px 3px 0 0;
+    text-align: justify;
+}
+
+::ng-deep .bs-datepicker-head button {
+    display: inline-block;
+    vertical-align: top;
+    font-family: 'Roboto';
+    padding: 0;
+    height: 30px;
+    line-height: 30px;
+    border: 0;
+    background: transparent;
+    text-align: center;
+    cursor: pointer;
+    color: black;
+    transition: 0.3s;
+}
+
+::ng-deep .bs-datepicker-head button[disabled],
+.bs-datepicker-head button[disabled]:hover,
+.bs-datepicker-head button[disabled]:active {
+    background: #fff;
+    color: #000;
+    cursor: not-allowed;
+}
+
+::ng-deep .bs-datepicker-buttons {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-end;
+    padding-top: 0px;
+    border-top: none;
+}
+
+::ng-deep .bs-datepicker-body {
+    padding: 10px;
+    border-radius: 0 0 3px 3px;
+    min-height: 190px;
+    min-width: 270px;
+    border: none;
+}
+
+::ng-deep .bs-datepicker-body table th {
+    font-size: 13px;
+    color: #000;
+    font-family: 'Roboto';
+    font-weight: 400;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+::ng-deep .bs-datepicker-body table td {
+    color: #000;
+    text-align: center;
+    font-family: 'Roboto';
+    position: relative;
+    padding: 0;
+}
+
+::ng-deep .bs-datepicker-body table.days span {
+    width: 24px;
+    height: 24px;
+    font-family: 'Roboto';
+    line-height: 24px;
+}
+
+::ng-deep .theme-green .bs-datepicker-body table td span.selected,
+.theme-green .bs-datepicker-body table td.selected span,
+.theme-green .bs-datepicker-body table td span[class*=select-]:after,
+.theme-green .bs-datepicker-body table td[class*=select-] span:after {
+    background-color: #0554ef;
+}
+
+::ng-deep .theme-green .bs-datepicker-body table td span[class*=select-]:before,
+.theme-green .bs-datepicker-body table td[class*=select-] span:before {
+    background: #e9edf0 !important;
+    height: 20px;
+    margin-top: -3px;
+    font-family: 'Roboto';
+}
+
+::ng-deep .bs-datepicker-body table.days td.active:not(.select-start):before,
+.bs-datepicker-body table.days td.in-range:not(.select-start):before,
+.bs-datepicker-body table.days span.active:not(.select-start):before,
+.bs-datepicker-body table.days span.in-range:not(.select-start):before {
+    background: none !important;
+}
+
+::ng-deep .bs-datepicker-body table.days td.active,
+.bs-datepicker-body table.days td.in-range,
+.bs-datepicker-body table.days span.active,
+.bs-datepicker-body table.days span.in-range,
+.bs-datepicker-body table.days span.select-start {
+    background: #e9edf0 !important;
+    height: 20px;
+    margin-top: -3px;
+    font-family: 'Roboto';
+}
+
+::ng-deep .is-other-month {
+    display: none !important;
+}
+
+::ng-deep .bs-datepicker-container {
+    padding: 10px;
+}
+
+.year-input::-webkit-calendar-picker-indicator {
+    display: none !important;
+    -webkit-appearance: none;
+}

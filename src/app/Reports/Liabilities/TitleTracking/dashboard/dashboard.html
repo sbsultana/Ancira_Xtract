@@ -1,0 +1,245 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+  <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+
+<main>
+  <div class="container-fluid">
+
+    <div class="reports-bar">
+      <div class="filter-dropdowns">
+        <div class="dropdown">
+          <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+              {{storecount}}
+              {{storedisplayname}} )</span>
+            <span class="arrow"></span></button>
+          <app-stores
+            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+        </div>
+        <div class="dropdown">
+          <button class="apply-button" (click)="viewreport()"><span>Apply</span></button>
+        </div>
+        <div class="search ms-auto me-2">
+          <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchText"
+            (ngModelChange)="currentPage = 1">
+          <img src="images/Magnifer.svg" alt="">
+        </div>
+      </div>
+    </div>
+
+    <div id="StoreSummary" class="d-flex align-items-center">
+      <div class="tabs-wrapper col-6">
+        <ul class="c-tabs">
+          <li *ngFor="let ESTtype of LiabilitiesData; let i = index" class="filter-button" [ngClass]="{
+            'active cursor-pointer': selectedreceviabe.url === ESTtype.url,
+            'inactive cursor-pointer': selectedreceviabe.url !== ESTtype.url,
+            'nocursor-pointer': i >= 13
+          }" (click)="i < 13? Getfloorplansdata(ESTtype) : null" style="width: 100px;">
+            {{ ESTtype.Liabilities }}
+          </li>
+        </ul>
+      </div>
+      <div class="col-6">
+        <div class="pagination-container d-flex align-items-center justify-content-end text-black mt-2">
+          <div class="page-size">
+            <label for="pageSize">Page Size:</label>
+            <select id="pageSize" [(ngModel)]="itemsPerPage" (change)="onPageSizeChange()" class="form-select">
+              <option [ngValue]="100">100</option>
+              <option [ngValue]="300">300</option>
+              <option [ngValue]="500">500</option>
+            </select>
+          </div>
+          <div class="page-info">
+            {{ getStartRecordIndex() + 1 }} - {{ getEndRecordIndex() }} of {{ filteredData.length }}
+          </div>
+          <div class="pagination-buttons">
+            <button (click)="goToFirstPage()" [disabled]="currentPage === 1"><img
+                src="images/Arrow_End_Left_Blk.svg" /></button>
+            <button (click)="prevPage()" [disabled]="currentPage === 1"><img
+                src="images/Alt_Arrow_Left_Blk.svg" /></button>
+            <span class="page-label">Page {{ currentPage }} of {{ getMaxPageNumber() }}</span>
+            <button (click)="nextPage()" [disabled]="currentPage === getMaxPageNumber()"><img
+                src="images/Alt_Arrow_Right_Blk.svg" /></button>
+            <button (click)="goToLastPage()" [disabled]="currentPage === getMaxPageNumber()"><img
+                src="images/Arrow_End_Right_Blk.svg" /></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scorecard-triple-header receivables-tbl mt-2">
+      <table class="table mb-0 w-100">
+        <thead>
+          <tr>
+            <th colspan="3"></th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'" colspan="2">Customer</th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'" colspan="2">Deal Info</th>
+            <th colspan="6">Vehicle</th>
+          </tr>
+          <tr>
+            <th (click)="sort('age')" class="cursor">Age</th>
+            <th (click)="sort('dealdate')" class="cursor">Date</th>
+            <th (click)="sort('stock')" class="cursor box-shadow">Stock #</th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'" (click)="sort('customername')" class="cursor">Name</th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'"
+              [ngClass]="selectedreceviabe.path != 'Inventory' ? 'box-shadow' : 'boxshadow-none'"
+              (click)="sort('customer')" class="cursor">Number</th>
+
+            <th *ngIf="selectedreceviabe.path != 'Inventory'" (click)="sort('deal')" class="cursor">Deal #</th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'"
+              [ngClass]="selectedreceviabe.path != 'Inventory' ? 'box-shadow' : 'boxshadow-none'"
+              (click)="sort('dealstatus')" class="cursor">Status</th>
+
+            <th (click)="sort('year')" class="cursor">Year</th>
+            <th (click)="sort('make')" class="cursor">Make</th>
+            <th (click)="sort('model')" class="cursor">Model</th>
+            <th (click)="sort('vin')" class="cursor">VIN</th>
+            <th (click)="sort('invstatus')" class="cursor">INV Status</th>
+            <th (click)="sort('titlerecd')" class="cursor">Title Record</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <ng-container *ngFor="let fp of paginatedItems; let i = index">
+            <tr [ngClass]="{ even: i % 2 === 0, odd: i % 2 !== 0 }">
+              <td class="divRed text-end">{{ fp.age || '-' }}</td>
+              <td class="text-center">
+                {{ fp.dealdate ? (fp.dealdate | date:'MM.dd.yyyy') : '-' }}
+              </td>
+              <td [ngClass]="{'text-center': !fp.stock, 'text-start': fp.stock}" class="box-shadow">
+                {{ fp.stock || '-' }}
+              </td>
+              <td *ngIf="selectedreceviabe.path != 'Inventory'" class="text-start">
+                <span ngbTooltip="{{fp.customername}}">{{ fp.customername ? (fp.customername | slice:0:20) +
+                  (fp.customername.length > 20 ? '..' : '') : '-' }}</span>
+              </td>
+              <td *ngIf="selectedreceviabe.path != 'Inventory'"
+                [ngClass]="selectedreceviabe.path != 'Inventory' ? 'box-shadow' : 'boxshadow-none'" class="text-center">
+                {{ fp.customer || '-' }}
+              </td>
+              <td *ngIf="selectedreceviabe.path != 'Inventory'" class="text-center">
+                {{ fp.deal || '-' }}
+              </td>
+              <td *ngIf="selectedreceviabe.path != 'Inventory'"
+                [ngClass]="selectedreceviabe.path != 'Inventory' ? 'box-shadow' : 'boxshadow-none'" class="text-center">
+                {{ fp.dealstatus || '-' }}
+              </td>
+              <td class="text-center">{{ fp.year || '-' }}</td>
+              <td class="text-start">{{ fp.make || '-' }}</td>
+              <td class="text-start" title="{{fp.model}}">
+                {{ fp.model ? (fp.model | slice:0:16) + (fp.model.length > 14 ? '..' : '') : '-' }}
+              </td>
+              <td class="text-start">{{ fp.vin || '-' }}</td>
+
+              <td class="text-start">{{ fp.invstatus || '-' }}</td>
+
+              <td class="text-center">{{ fp.titlerecd || '-' }}</td>
+            </tr>
+            <tr *ngIf="fp.duplicateNotes && commentsVisibility">
+              <td></td>
+              <td colspan="12" class="text-start ps-3">
+                <h6 class="fw-bold font-blue small">Notes</h6>
+                <div *ngFor="let notes of fp.duplicateNotes" class="ps-4">
+                  {{ notes.NOTES || '-' }}
+                </div>
+                <div *ngIf="fp.duplicateNotes.length > 3" class="ps-4">
+                  <a class="font-blue cursor-pointer" (click)="viewmoreAction(fp)">
+                    {{ fp.Notesstate == '+' ? 'View More' : 'View Less' }}
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+        <tbody *ngIf="NoData">
+          <tr>
+            <td colspan="13" class="text-center">No Records Found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+
+<div class="modal fade" id="payplan" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+
+    <div class="modal-content recap shadow-sm border-0">
+
+      <!-- HEADER -->
+      <div class="d-flex align-items-center justify-content-between px-4 pt-3">
+        <h2 class="m-0">
+          Notes :
+          <span>
+            {{ selecteddata.StockNumner ? '#' + selecteddata.StockNumner : selecteddata.StockNumner }}
+          </span>
+        </h2>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="oncloseone()">
+        </button>
+      </div>
+
+
+      <div class="p-4">
+
+        <!-- NOTES INPUT -->
+        <div class="mb-3">
+          <h5>Add Note :</h5>
+          <textarea class="form-control input-field w-100" rows="5" [(ngModel)]="notesStageText"
+            placeholder="Enter your notes here">
+          </textarea>
+        </div>
+
+        <div class="mb-3 col-lg-12">
+          <h5>Stage : </h5>
+          <select class="form-select input-field w-50" [(ngModel)]="notesStageValue">
+            <option selected disabled value="">Select Stage</option>
+            <option *ngFor="let s of notesstage" [value]="s.NS_ID">
+              {{ s.NS_Text }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-2">
+          <h5>
+            Control :
+            <span class="fw-bold">{{ selecteddata.Control }}</span>
+          </h5>
+        </div>
+
+        <div class="mb-3">
+          <h5>
+            Post Date :
+            <span>{{ selecteddata.FundingDate | date:'MM.dd.yyyy' }}</span>
+          </h5>
+        </div>
+
+        <div *ngIf="selecteddata.Notes?.length > 0">
+          <h4 class="mb-2">Previous Notes : </h4>
+
+          <div class="history-scroll">
+            <div *ngFor="let notes of selecteddata.Notes" class="history-block text-capitalize py-1">
+
+              {{ notes.NOTES || '-' }}
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 px-4 pb-4">
+
+        <button class="editbtn" (click)="save()">
+          Save
+        </button>
+
+        <button class="cancelbtn" data-bs-dismiss="modal" (click)="oncloseone()">
+          Cancel
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>

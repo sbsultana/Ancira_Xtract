@@ -1,0 +1,26 @@
+<div class="date-filter-card mt-2" *ngIf="Data != undefined && Data.length > 0">
+    <button class="outline-button" (click)="SetDates(dates.code)" *ngFor="let dates of Data"
+        [ngClass]="{'active':DateType == dates.code}">{{dates.name}}</button>
+    <hr>
+    <button class="outline-button custom-btn" (click)="SetDates('C','B')"  [ngStyle]="{'display' : customeVisibility == 'Y' ? 'block' : 'none'}">
+        Custom
+        <i class="fa-solid fa-calendar-days calendar-icon"></i>
+    </button>
+</div>
+
+<div class="open-calender cavender-dd d-flex justify-content-flex-start">
+    <input class="text-start opacity-0 custon-height" type="text" bsDaterangepicker [(ngModel)]="bsRangeValue"
+        #datepicker="bsDaterangepicker" [bsConfig]="{
+                            rangeInputFormat: 'MM.dd.yyyy',
+                            dateInputFormat: 'MM.dd.yyyy',
+                            showWeekNumbers: false
+                          }" (bsValueChange)="dateRangeCreated($event)" [maxDate]="maxDate" />
+</div>
+<!-- <div class="open-calender cavender-dd d-flex justify-content-flex-start">
+    <input class="text-start opacity-0 custon-height" type="text" bsDaterangepicker [(ngModel)]="bsRangeValue"
+        #datepicker="bsDaterangepicker" [bsConfig]="{
+                            rangeInputFormat: 'MM.dd.yyyy',
+                            dateInputFormat: 'MM.dd.yyyy',
+                            showWeekNumbers: false
+                          }" (bsValueChange)="dateRangeCreated($event)" [maxDate]="maxDate" />
+</div> -->

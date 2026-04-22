@@ -1,0 +1,21 @@
+.salescontest-tbl {
+    .boxshadow-none {
+        box-shadow: none !important;
+    }
+
+    th:nth-child(1),
+    th:nth-child(2),
+    th:nth-child(6),
+    th:nth-child(10),
+
+    td:nth-child(1),
+    td:nth-child(2),
+    td:nth-child(6),
+    td:nth-child(10) {
+        box-shadow:
+            inset 0 0.4px 0 0 #e0edff,
+            inset -3px 0 0 0 #e0edff,
+            inset 0 -0.4px 0 0 #e0edff,
+            inset 0.4px 0 0 0 #e0edff;
+    }
+}

@@ -1,0 +1,940 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div>
+        <div class="container-fluid">
+            <app-cardeals-reports [header]="header"></app-cardeals-reports>
+
+            <div class="totals-block mb-2 col-12">
+                <div class="row" *ngIf="cardealsdata.length >0 && !NoData">
+                    <div class="col-2 d-flex align-items-center justify-content-start">
+                        <span class="divNormal">
+                            Deal Count:&nbsp;&nbsp;
+                        </span>
+                        <span class="divBold">
+                            {{cardealsdata.length}}
+                        </span>&nbsp;&nbsp;
+                    </div>
+                    <div class="col-10 ">
+                        <div class="d-flex align-items-center justify-content-end"
+                            *ngIf="obTemporary == 'Retail and Lease' || obTemporary == 'Unwound' || obTemporary =='Tradein'">
+                            <span class="ps-2 divNormal">
+                                Total Front Gross:&nbsp;&nbsp;
+                            </span>
+                            <span class="divBold">
+                                <span class="d-flex "
+                                    [ngClass]="{ negative: !inTheGreen(getTotal(cardealsdata,'frontgross'))}">
+                                    $
+                                    <span> {{getTotal(cardealsdata,'frontgross') | number:'1.0-0'}}
+                                    </span></span>
+                            </span>&nbsp;&nbsp;
+                            <span class="ps-2 divNormal">
+                                Total Back Gross:&nbsp;&nbsp;
+                            </span>
+                            <span class="divBold">
+                                <span class="d-flex "
+                                    [ngClass]="{ negative: !inTheGreen(getTotal(cardealsdata,'backgross'))}">
+                                    $
+                                    <span> {{getTotal(cardealsdata,'backgross') | number:'1.0-0'}}
+                                    </span></span>
+                            </span>&nbsp;&nbsp;
+                            <span class="ps-2 divNormal">
+                                Total Gross:&nbsp;&nbsp;
+                            </span>
+                            <span class="divBold">
+                                <span class="d-flex " [ngClass]="{ negative: !inTheGreen(getTotal(cardealsdata,'frontgross') +
+                                                getTotal(cardealsdata,'backgross'))}">
+                                    $
+                                    <span> {{getTotal(cardealsdata,'frontgross') +
+                                        getTotal(cardealsdata,'backgross') | number:'1.0-0'}}
+                                    </span></span>
+                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="ps-2 divNormal">
+                                Front PVR:&nbsp;&nbsp;
+                            </span>
+                            <span class="divBold">
+                                <span class="d-flex "
+                                    [ngClass]="{ negative: !inTheGreen(getTotal(cardealsdata,'frontgross')/(cardealsdata.length))}">
+                                    $
+                                    <span> {{getTotal(cardealsdata,'frontgross')/(cardealsdata.length) |
+                                        number:'1.0-0'}}
+                                    </span></span>
+                            </span>&nbsp;&nbsp;
+                            <span class="ps-2 divNormal">
+                                Back PVR:&nbsp;&nbsp;
+                            </span>
+                            <span class="divBold">
+                                <span class="d-flex "
+                                    [ngClass]="{ negative: !inTheGreen(getTotal(cardealsdata,'backgross')/(cardealsdata.length))}">
+                                    <!--  -->
+                                    $
+                                    <span> {{getTotal(cardealsdata,'backgross')/(cardealsdata.length) |
+                                        number:'1.0-0'}}
+                                    </span></span>
+                            </span>&nbsp;&nbsp;
+                            <span class="ps-2 divNormal">
+                                Total PVR:&nbsp;&nbsp;
+                            </span>
+                            <span class="divBold">
+                                <span class="d-flex "
+                                    [ngClass]="{ negative: !inTheGreen((getTotal(cardealsdata,'backgross')/(cardealsdata.length))+(getTotal(cardealsdata,'frontgross')/(cardealsdata.length)))}">
+                                    $
+                                    <span>
+                                        {{(getTotal(cardealsdata,'backgross')/(cardealsdata.length))+(getTotal(cardealsdata,'frontgross')/(cardealsdata.length))
+                                        |
+                                        number:'1.0-0'}}
+                                    </span></span>
+                            </span>&nbsp;&nbsp;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scorecard-single-header cardeals-tbl"
+                *ngIf="obTemporary == 'Retail and Lease' || obTemporary == 'Unwound' || obTemporary =='Tradein'">
+                <table class="table mb-0 w-100">
+                    <thead>
+                        <tr>
+                            <th style="border-radius: 10px 0 0 0 !important;"></th>
+                            <th (click)="sort('contractdate')" style="cursor: pointer;">Date</th>
+                            <!-- <th>&nbsp;</th> -->
+                            <th class="PrintHide">Notes&nbsp;
+                                <!-- <img src="images/view_hide.png" *ngIf="!notesViewState"  (click)="notesView()">
+                                <img src="images/view_i.png" *ngIf="notesViewState"  (click)="notesView()"> -->
+
+                                <i alt="" class="fa fa-eye cursor-pointer" *ngIf="!notesViewState" aria-hidden="true"
+                                    (click)="notesView()"></i>
+                                <i alt="" class="fa-solid fa-eye-slash cursor-pointer" *ngIf="notesViewState"
+                                    (click)="notesView()"></i>
+                                <!-- <i class="fa fa-eye" style="cursor: pointer;"
+                                               ></i></th> -->
+                            <th *ngIf="store.toString().indexOf(',')> 0 || store == 0 " (click)="sort('store')"
+                                style="cursor: pointer;">Store</th>
+                            <th (click)="sort('dealid')" style="cursor: pointer;">Deal #</th>
+                            <th (click)="sort('Status')" style="cursor: pointer;">Status</th>
+                            <th (click)="sort('RL')" style="cursor: pointer;" *ngIf="(saleType.indexOf('All')>=0 || saleType.indexOf('Retail and Lease')>=0 
+                                            || (saleType.indexOf('Retail')>=0 && saleType.indexOf('Lease')>=0))">
+                                R/L</th>
+                            <th (click)="sort('Stock')" style="cursor: pointer;">Stock #</th>
+                            <th (click)="sort('Type')" style="cursor: pointer;">New/Used</th>
+                            <th (click)="sort('ad_year')" style="cursor: pointer;">Year</th>
+                            <th (click)="sort('ad_make')" style="cursor: pointer;">Make</th>
+                            <th (click)="sort('ad_model')" style="cursor: pointer;">Model</th>
+                            <!-- <th (click)="sort('VehicleAge')" style="cursor: pointer;">Vehicle Age</th> -->
+
+                            <th (click)="sort('TradeACV')" style="cursor: pointer;">Trade</th>
+                            <th (click)="sort('CostPrice')" style="cursor: pointer;">Cost</th>
+
+
+
+                            <th (click)="sort('VIN')" style="cursor: pointer;">
+                                VIN</th>
+                            <th (click)="sort('ad_custAge')" style="cursor: pointer;">Age</th>
+                            <th (click)="sort('frontgross')" style="cursor: pointer;" title="Front Gross">F
+                                Gross</th>
+                            <th (click)="sort('backgross')" style="cursor: pointer;" title="Back Gross"> B
+                                Gross</th>
+                            <th (click)="sort('totalgross')" style="cursor: pointer;">Total</th>
+                            <th (click)="sort('salesmanager')" style="cursor: pointer;">Mgr</th>
+                            <th (click)="sort('fimanager')" style="cursor: pointer;">F&I Mgr</th>
+                            <th (click)="sort('salesperson1')" style="cursor: pointer;">Sp 1</th>
+                            <th (click)="sort('salesperson2')" style="cursor: pointer;">Sp 2</th>
+                            <th (click)="sort('Buyer')" style="cursor: pointer;">Buyer</th>
+                            <th (click)="sort('ad_custid')" style="cursor: pointer;">Cust #</th>
+                            <!-- <th (click)="sort('AcctgCost_Avg')" style="cursor: pointer;">Trd</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="cardealsdata.length >0 && !NoData; ">
+                            <ng-container *ngFor="let cardeals of cardealsdata ; let i=index">
+                                <tr>
+                                    <td class="text-start">{{i+1}}</td>
+                                    <td class="text-center">{{cardeals.contractdate == 0 || cardeals.contractdate ==
+                                        null ? '-' :
+                                        cardeals.contractdate | date:'MM.dd.yyyy'}}</td>
+                                    <td class="PrintHide text-center">
+                                        <img *ngIf="cardeals.NotesStatus=='N'" src="images/Actionblack.png "
+                                            (click)="addNotes(cardeals,notes)" style="cursor: pointer;">
+                                        <img *ngIf="cardeals.NotesStatus=='Y'" src="images/notes_unread.png "
+                                            (click)="addNotes(cardeals,notes)" style="cursor: pointer;">
+                                    </td>
+                                    <td style="text-align: left !important;"
+                                        *ngIf="store.toString().indexOf(',')> 0 || store == 0 ">
+                                        {{cardeals.store}} </td>
+                                    <td class="text-center"
+                                        [ngClass]="[cardeals.dealid != 0 && cardeals.dealid != null && cardeals.dealid != undefined && cardeals.dealid != '' && cardeals.dealid != '-' ? 'popuppointer' : 'popupdisable']"
+                                        (click)="openSalesModal(cardeals.dealid,cardeals.VIN,cardeals.dealerid,cardeals.Stock,cardeals?.source,cardeals?.ad_custid)">
+                                        {{cardeals.dealid == 0 ||
+                                        cardeals.dealid == null
+                                        ? '-' :
+                                        cardeals.dealid}}</td>
+                                    <td class="text-center">{{cardeals.Status == 0 || cardeals.Status == null ? '-' :
+                                        cardeals.Status }}</td>
+                                    <td class="text-start" *ngIf="(saleType.indexOf('All')>=0 || saleType.indexOf('Retail and Lease')>=0 
+                                                || (saleType.indexOf('Retail')>=0 && saleType.indexOf('Lease')>=0))">
+                                        {{ cardeals['RL'] == 0 || cardeals['RL'] == null ? '-' :
+                                        cardeals['RL'] }}</td>
+                                    <td class="text-start">{{cardeals.Stock == 0 || cardeals.Stock == null ?
+                                        '-' :
+                                        cardeals.Stock}}</td>
+                                    <td class="text-center">{{cardeals.Type == 0 || cardeals.Type == null ?
+                                        '-' :
+                                        cardeals.Type}}</td>
+                                    <td class="text-center">{{cardeals.ad_year == 0 || cardeals.ad_year == null ? '-'
+                                        :
+                                        cardeals.ad_year}}</td>
+                                    <td class="text-start">{{cardeals.ad_make == 0 || cardeals.ad_make ==
+                                        null ? '-' :
+                                        cardeals.ad_make}}</td>
+                                    <td class="text-start">{{cardeals.ad_model == 0 || cardeals.ad_model ==
+                                        null ?
+                                        '-' :
+                                        cardeals.ad_model }}</td>
+                                    <!-- <td>{{cardeals.VehicleAge == 0 || cardeals.VehicleAge
+                                        == null
+                                        ? '-' :
+                                        cardeals.VehicleAge}}</td> -->
+                                    <td>
+                                        <span class="d-flex justify-content-between anchor-tag popuppointer" *ngIf="cardeals.TradeACV != 0 && cardeals.TradeACV !=
+                                                    null && cardeals.TradeACV != undefined && cardeals.TradeACV != ''"
+                                            (click)="openTradePopup(cardeals)" data-bs-toggle="modal"
+                                            style="cursor: pointer;" data-bs-target="#warningmessage">
+                                            $
+                                            <span>
+                                                {{
+                                                cardeals.TradeACV | number}}
+                                            </span>
+                                        </span>
+                                        <span
+                                            *ngIf="cardeals.TradeACV == 0 || cardeals.TradeACV ==
+                                                       null || cardeals.TradeACV == undefined || cardeals.TradeACV == ''  ">-</span>
+                                    </td>
+
+                                    <td class="alignright">
+                                        <span class="d-flex justify-content-between">
+                                            {{ cardeals.CostPrice != '' && cardeals.CostPrice!= null &&
+                                            cardeals.CostPrice != undefined ?
+                                            '$' : ''}}
+                                            <span>
+                                                {{ cardeals.CostPrice != '' && cardeals.CostPrice!= null &&
+                                                cardeals.CostPrice != undefined ?
+                                                (cardeals.CostPrice | number:'1.2-2') : '-'}}
+                                            </span>
+
+                                        </span>
+
+                                    </td>
+                                    <td class="text-start">{{cardeals.VIN == 0 || cardeals.VIN == null ? '-'
+                                        :
+                                        cardeals.VIN}}</td>
+                                    <td>{{cardeals.ad_custAge == 0 || cardeals.ad_custAge
+                                        == null
+                                        ? '-' :
+                                        cardeals.ad_custAge}}</td>
+                                    <td [ngClass]="{ negative: !inTheGreen(cardeals.frontgross)}">
+                                        <span class="d-flex justify-content-between"> {{
+                                            (cardeals.frontgross == 0 || cardeals.frontgross == null ? '' :
+                                            '$') }} <span> {{
+                                                (cardeals.frontgross == 0 || cardeals.frontgross == null ?
+                                                '-' :
+                                                cardeals.frontgross |number:'1.0-0') }}</span></span>
+                                    </td>
+                                    <td [ngClass]="{ negative: !inTheGreen(cardeals.backgross)}">
+                                        <span class="d-flex justify-content-between"> {{
+                                            (cardeals.backgross == 0 || cardeals.backgross == null ? '' :
+                                            '$') }} <span> {{
+                                                (cardeals.backgross == 0 || cardeals.backgross == null ? '-'
+                                                :
+                                                cardeals.backgross |number:'1.0-0') }}</span></span>
+                                    </td>
+                                    <td [ngClass]="{ negative: !inTheGreen(cardeals.totalgross)}">
+                                        <span class="d-flex justify-content-between"> {{
+                                            (cardeals.totalgross == 0 || cardeals.totalgross == null ? '' :
+                                            '$') }} <span> {{
+                                                (cardeals.totalgross == 0 || cardeals.totalgross == null ?
+                                                '-' :
+                                                cardeals.totalgross |number:'1.0-0') }}</span></span>
+                                    </td>
+                                    <td class="text-start" title="{{cardeals.salesmanager}}">
+                                        {{(cardeals.salesmanager == undefined ? '--' : (
+                                        (cardeals.salesmanager.toString() |
+                                        slice:0:40) +
+                                        (cardeals.salesmanager.toString().length > 40 ? '..' : '') ))}}</td>
+                                    <td class="text-start" title="{{cardeals.fimanager}}">
+                                        {{(cardeals.fimanager == undefined ? '--' : (
+                                        (cardeals.fimanager.toString() |
+                                        slice:0:40) +
+                                        (cardeals.fimanager.toString().length > 40 ? '..' : '') ))}}</td>
+                                    <td class="text-start" title="{{cardeals.salesperson1}}">
+                                        {{(cardeals.salesperson1 == undefined ? '--' : (
+                                        (cardeals.salesperson1.toString() |
+                                        slice:0:40) +
+                                        (cardeals.salesperson1.toString().length > 40 ? '..' : '') ))}}</td>
+                                    <td class="text-start" title="{{cardeals.salesperson2}}">
+                                        {{(cardeals.salesperson2 == undefined ? '--' : (
+                                        (cardeals.salesperson2.toString() |
+                                        slice:0:40) +
+                                        (cardeals.salesperson2.toString().length > 40 ? '..' : '') ))}}</td>
+                                    <td class="text-start" title="{{cardeals.Buyer}}">{{(cardeals.Buyer ==
+                                        undefined ? '--' : (
+                                        (cardeals.Buyer.toString() |
+                                        slice:0:40) +
+                                        (cardeals.Buyer.toString().length > 40 ? '..' : '') ))}}</td>
+                                    <td class="text-center">{{cardeals.ad_custid == 0 || cardeals.ad_custid ==
+                                        null
+                                        ? '-' :
+                                        cardeals.ad_custid }}</td>
+                                    <!--  -->
+                                </tr>
+                                <ng-container *ngIf="cardeals.Notes != null && notesViewState"
+                                    style="border-bottom: 1px solid #e0e1e2 !important;">
+                                    <tr class="notes-block"
+                                        style="background-color: #fff !important;pointer-events: none;">
+                                        <td colspan="24"
+                                            *ngIf="((saleType.indexOf('All')>=0 || saleType.indexOf('Retail and Lease')>=0 
+                                                            || (saleType.indexOf('Retail')>=0 && saleType.indexOf('Lease')>=0)) ) ">
+                                            <div class="title">Notes</div>
+                                            <div class="notes" *ngFor="let notes of cardeals.Notes">
+                                                {{notes.GN_Text}}
+                                            </div>
+                                        </td>
+                                        <td colspan="23"
+                                            *ngIf="((saleType.indexOf('All')<0 && saleType.indexOf('Retail and Lease')<0 
+                                                            && (saleType.indexOf('Retail')<0 && saleType.indexOf('Lease')<0)))">
+                                            <div class="notes mb-1 mt-1" *ngFor="let notes of cardeals.Notes">
+                                                {{notes.GN_Text}}
+                                            </div>
+                                        </td>
+                                        <td *ngIf="store.toString().indexOf(',')> 0 || store == 0 "></td>
+                                    </tr>
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                        <tr *ngIf="NoData && !spinnerLoader">
+                            <td colspan="23"
+                                style="text-align: center;font-size: .9vw;background: #fff !important;color: black; display: revert;">
+                                <label>No Data Found!</label>
+                            </td>
+                            <td *ngIf="store.toString().indexOf(',')> 0 || store == 0 "></td>
+                            <td *ngIf="(saleType.indexOf('All')>=0 || saleType.indexOf('Retail and Lease')>=0 
+                                        || (saleType.indexOf('Retail')>=0 && saleType.indexOf('Lease')>=0))"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="scorecard-double-header cardeals-tbl" *ngIf="obTemporary == 'Customer' " id="scrollcent">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th (click)="sort('store')" style="cursor: pointer;">Store</th>
+                            <th>Notes&nbsp; <i class="fa fa-eye" style="cursor: pointer;" (click)="notesView()"></i>
+                            </th>
+
+                            <th (click)="sort('contractdate')" style="cursor: pointer;">Date</th>
+                            <!-- <th>&nbsp;</th> -->
+                            <th (click)="sort('dealid')" style="color: #000;font-size: .8rem;cursor: pointer;">Deal #
+                            </th>
+
+                            <th (click)="sort('Status')" style="cursor: pointer;">Status</th>
+                            <th (click)="sort('RL')" style="cursor: pointer;">
+                                R/L</th>
+                            <th (click)="sort('Stock')" style="cursor: pointer;">Stock #</th>
+                            <th (click)="sort('Type')" style="cursor: pointer;">Type</th>
+                            <th (click)="sort('ad_year')" style="cursor: pointer;">Year</th>
+                            <th (click)="sort('ad_make')" style="cursor: pointer;">Make</th>
+                            <th (click)="sort('ad_model')" style="cursor: pointer;">Model</th>
+                            <!-- <th (click)="sort('VIN')" style="color: #000;font-size: .8rem;cursor: pointer;">
+                                            VIN</th> -->
+                            <th (click)="sort('ad_custAge')" style="cursor: pointer;">Age</th>
+                            <!-- <th (click)="sort('frontgross')" style="cursor: pointer;">Front Gross</th>
+                                        <th (click)="sort('backgross')" style="cursor: pointer;"> Back Gross</th> -->
+                            <th (click)="sort('Total')" style="cursor: pointer;">Total</th>
+                            <th (click)="sort('CostPrice')" style="cursor: pointer;">Sale Price</th>
+
+                            <th (click)="sort('salesperson1')" style="cursor: pointer;">Sp 1</th>
+                            <th (click)="sort('salesperson2')" style="cursor: pointer;">Sp 2</th>
+                            <th (click)="sort('ad_custid')" style="cursor: pointer;">Cust #</th>
+                            <th (click)="sort('Buyer')" style="cursor: pointer;">Buyer</th>
+                            <th (click)="sort('')" style="cursor: pointer;">B Age</th>
+
+                            <th (click)="sort('')" style="cursor: pointer;">Co-Buyer</th>
+                            <th (click)="sort('')" style="cursor: pointer;">CB Age</th>
+
+                            <th (click)="sort('')" style="cursor: pointer;">City</th>
+                            <th (click)="sort('')" style="cursor: pointer;">Zip</th>
+                            <th (click)="sort('')" style="cursor: pointer;">Mileage</th>
+                            <!-- <th (click)="sort('AcctgCost_Avg')" style="cursor: pointer;">Trd</th> -->
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="(cardealsdata ).length >0 && !NoData && !spinnerLoader; else result">
+                            <ng-container *ngFor="let cardeals of cardealsdata ; let i=index">
+                                <tr class="sub-title">
+
+                                    <td>{{cardeals.store == 0 || cardeals.store ==
+                                        null ? '-' :
+                                        cardeals.store}}</td>
+
+                                    <td>
+                                        <img *ngIf="cardeals.NotesStatus=='N'" src="images/Actionblack.png "
+                                            (click)="addNotes(cardeals,notes)" style="cursor: pointer;">
+
+                                        <img *ngIf="cardeals.NotesStatus=='Y'" src="images/notes_unread.png "
+                                            (click)="addNotes(cardeals,notes)" style="cursor: pointer;">
+                                    </td>
+
+                                    <td>{{cardeals.displaydate == 0 || cardeals.displaydate ==
+                                        null ? '-' :
+                                        cardeals.displaydate }}</td>
+                                    <td class="alignleft"
+                                        [ngClass]="[cardeals.dealid != 0 && cardeals.dealid != null && cardeals.dealid != undefined && cardeals.dealid != '' && cardeals.dealid != '-' ? 'popuppointer' : 'popupdisable']"
+                                        (click)="openSalesModal(cardeals.dealid,cardeals.VIN,cardeals.dealerid,cardeals.Stock,cardeals?.source,cardeals?.ad_custid)">
+                                        {{cardeals.dealid == 0 ||
+                                        cardeals.dealid == null
+                                        ? '-' :
+                                        cardeals.dealid}}</td>
+                                    <td>{{cardeals.Status == 0 || cardeals.Status == null ? '-' :
+                                        cardeals.Status }}</td>
+                                    <td>
+                                        {{ cardeals['RL'] == 0 || cardeals['RL'] == null ? '-' :
+                                        cardeals['RL'] }}</td>
+                                    <td class="alignleft">{{cardeals.Stock == 0 || cardeals.Stock == null ?
+                                        '-' :
+                                        cardeals.Stock}}</td>
+                                    <td class="alignleft">{{cardeals.ad_dealtype == 0 ||
+                                        cardeals.ad_dealtype == null ?
+                                        '-' :
+                                        cardeals.ad_dealtype}}</td>
+                                    <td>{{cardeals.ad_year == 0 || cardeals.ad_year == null ? '-'
+                                        :
+                                        cardeals.ad_year}}</td>
+                                    <td class="alignleft">{{cardeals.ad_make == 0 || cardeals.ad_make ==
+                                        null ? '-' :
+                                        cardeals.ad_make}}</td>
+                                    <td class="alignleft">{{cardeals.ad_model == 0 || cardeals.ad_model ==
+                                        null ?
+                                        '-' :
+                                        cardeals.ad_model }}</td>
+
+                                    <!-- <td>{{cardeals.VIN == 0 || cardeals.VIN == null ? '-' :
+                                                    cardeals.VIN}}</td> -->
+                                    <td class="alignright">{{cardeals.ad_custAge == 0 || cardeals.ad_custAge
+                                        == null
+                                        ? '-' :
+                                        cardeals.ad_custAge}}</td>
+
+                                    <!-- <td class="alignright"
+                                                    [ngClass]="{ negative: !inTheGreen(cardeals.frontgross)}">
+                                                    {{cardeals.frontgross == 0 || cardeals.frontgross
+                                                    == null
+                                                    ? '-' :
+                                                    cardeals.frontgross | currency: 'USD':'symbol':'1.0-0' }}</td>
+                                                <td class="alignright"
+                                                    [ngClass]="{ negative: !inTheGreen(cardeals.backgross)}">
+                                                    {{cardeals.backgross == 0 || cardeals.backgross
+                                                    == null ? '-' :
+                                                    cardeals.backgross | currency: 'USD':'symbol':'1.0-0' }}</td> -->
+
+                                    <td class="alignright" [ngClass]="{ negative: !inTheGreen(cardeals.Total)}">
+                                        <span class="d-flex justify-content-between"> {{
+                                            (cardeals.Total == 0 || cardeals.Total == null ? '' :
+                                            '$') }} <span> {{
+                                                (cardeals.Total == 0 || cardeals.Total == null ?
+                                                '-' :
+                                                cardeals.Total |number:'1.0-0') }}</span></span>
+
+                                    </td>
+                                    <td class="alignright">
+                                        <span class="d-flex justify-content-between">
+                                            {{ cardeals.CostPrice != '' && cardeals.CostPrice!= null &&
+                                            cardeals.CostPrice != undefined ?
+                                            '$' : ''}}
+                                            <span>
+                                                {{ cardeals.CostPrice != '' && cardeals.CostPrice!= null &&
+                                                cardeals.CostPrice != undefined ?
+                                                (cardeals.CostPrice | number:'1.2-2') : '-'}}
+                                            </span>
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td class="alignleft"> {{(cardeals.salesperson1 == undefined ? '--' : (
+                                        (cardeals.salesperson1.toString() |
+                                        slice:0:12) +
+                                        (cardeals.salesperson1.toString().length > 12 ? '..' : '') ))}}</td>
+                                    <td class="alignleft"> {{(cardeals.salesperson2 == undefined ? '--' : (
+                                        (cardeals.salesperson2.toString() |
+                                        slice:0:12) +
+                                        (cardeals.salesperson2.toString().length > 12 ? '..' : '') ))}}</td>
+
+                                    <td class="alignleft">{{cardeals.ad_custid == 0 || cardeals.ad_custid ==
+                                        null
+                                        ? '-' :
+                                        cardeals.ad_custid }}</td>
+                                    <td class="alignleft"> {{(cardeals.Buyer == undefined ? '--' : (
+                                        (cardeals.Buyer.toString() |
+                                        slice:0:12) +
+                                        (cardeals.Buyer.toString().length > 12 ? '..' : '') ))}}</td>
+
+                                    <td class="alignright">{{cardeals.Buyerage == '' || cardeals.Buyerage ==
+                                        null ?
+                                        '-' :
+                                        cardeals.Buyerage}}</td>
+
+                                    <td class="alignleft"> {{(cardeals.ad_coname1 == undefined ? '--' : (
+                                        (cardeals.ad_coname1.toString() |
+                                        slice:0:12) +
+                                        (cardeals.ad_coname1.toString().length > 12 ? '..' : '') ))}}</td>
+
+                                    <td class="alignright">{{cardeals.CoBuyerage == '' ||
+                                        cardeals.CoBuyerage
+                                        ==
+                                        null ?
+                                        '-' :
+                                        cardeals.CoBuyerage}}</td>
+
+                                    <td class="alignleft">{{cardeals.ad_city == '' ||
+                                        cardeals.ad_city ==
+                                        null ? '-' :
+                                        cardeals.ad_city}}</td>
+                                    <td class="alignleft">{{cardeals.ad_custZip == '' || cardeals.ad_custZip
+                                        == null ?
+                                        '-'
+                                        :
+                                        cardeals.ad_custZip}}</td>
+                                    <td class="alignleft">{{cardeals.ad_trade1mileage == 0 ||
+                                        cardeals.ad_trade1mileage
+                                        == null
+                                        ? '-' :
+                                        cardeals.ad_trade1mileage | number}}</td>
+
+
+
+
+
+                                    <!--  -->
+                                </tr>
+                                <ng-container *ngIf="cardeals.Notes != null && notesViewState">
+                                    <tr>
+                                        <td colspan="24" style="border-bottom: 1px solid #fff;">
+                                            <div>
+
+                                                <div class="titleNotes">Notes:</div>
+                                                <ng-container *ngIf="cardeals.notesView == '+'">
+                                                    <div class="d-flex mt-1"
+                                                        *ngFor="let notes of cardeals.Notes.slice(0,2)">
+                                                        <div class="notes">
+                                                            {{(notes.N_Notes == '' || notes.N_Notes
+                                                            ==
+                                                            null
+                                                            || notes.N_Notes == undefined ? '--'
+                                                            :notes.N_Notes)}}
+
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+
+                                                <ng-container *ngIf="cardeals.notesView == '-'">
+                                                    <div class="d-flex mt-1" *ngFor="let notes of cardeals.Notes">
+                                                        <div class="notes">
+                                                            {{(notes.N_Notes == '' || notes.N_Notes
+                                                            ==
+                                                            null
+                                                            || notes.N_Notes == undefined ? '--'
+                                                            :notes.N_Notes)}}
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                    <ng-container *ngIf="cardeals.Notes">
+                                        <tr *ngIf="cardeals.Notes.length > 2">
+                                            <td colspan="24"
+                                                style="text-align: left;z-index:999;cursor: pointer;color: #2b91f0;text-decoration: underline ;padding-left: 20rem;">
+                                                <span *ngIf="cardeals.notesView == '+'"
+                                                    (click)="toggleView(cardeals)">View More</span>
+                                                <span *ngIf="cardeals.notesView == '-'" (click)="toggleView(cardeals)">
+                                                    View Less</span>
+                                            </td>
+
+                                        </tr>
+                                    </ng-container>
+
+                                </ng-container>
+
+                            </ng-container>
+
+                        </ng-container>
+                        <tr *ngIf="NoData && !spinnerLoader">
+
+                            <td colspan="24"
+                                style="text-align: center;font-size: .9vw;background: #fff !important;color: black; display: revert;">
+                                <label>No Data Found</label>
+                            </td>
+                        </tr>
+                        <ng-template #result>
+                            <tr *ngIf="NoData == false && !spinnerLoader">
+
+                                <td colspan="24"
+                                    style="text-align: center;font-size: .9vw;background: #fff !important;color: black; display: revert;">
+                                    <label>No Data Found </label>
+                                </td>
+                            </tr>
+                        </ng-template>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+<div class="modal fade bd-example-modal-lg" id="warningmessage" tabindex="-1" aria-labelledby="contModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div *ngIf="spinnerLoaderTrade" class="graph-loader d-flex align-items-center justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <div class="recap position-relative">
+                <div class="row d-flex w-100 m-0">
+                    <div class="col-lg-12" style="overflow: auto;height: 400px">
+                        <div class="row">
+                            <div class="col-lg-12 col-12">
+                                <div class="m-2 p-2">
+                                    <div class="row">
+                                        <div class="col-12 d-flex align-items-center p-0">
+                                            <h2 class="m-0 p-0">Trade Details of Deal #:
+                                                <span *ngIf="tradeDetails.length>0">{{tradeDetails[0].ad_dealid}}</span>
+                                            </h2>
+                                            <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12" *ngIf="tradeDetails != undefined">
+                                    <div class="row">
+
+                                        <div class="col-6"
+                                            *ngIf="tradeDetails?.length && tradeDetails[0]?.ad_trade1 == 'Y'">
+                                            <div class="details">
+
+                                                <div class="head align-items-center justify-content-center text-center">
+                                                    Trade 1</div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">VIN:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade1vin || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Stock:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade1stock || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Year:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade1year || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Make:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade1makename || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Model:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade1modelname || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">ACV:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade1acv
+                                                            ? (tradeDetails[0]?.ad_trade1acv |
+                                                            currency:'USD':'symbol':'1.0-0')
+                                                            : '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Mileage:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade1mileage
+                                                            ? (tradeDetails[0]?.ad_trade1mileage | number)
+                                                            : '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-6"
+                                            *ngIf="tradeDetails?.length && tradeDetails[0]?.ad_trade2 == 'Y'">
+                                            <div class="details">
+
+                                                <div class="head align-items-center justify-content-center text-center">
+                                                    Trade 2</div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">VIN:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade2vin || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Stock:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade2stock || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Year:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade2year || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Make:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade2makename || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Model:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade2modelname || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">ACV:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade2acv
+                                                            ? (tradeDetails[0]?.ad_trade2acv |
+                                                            currency:'USD':'symbol':'1.0-0')
+                                                            : '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-3 py-1 align-items-center">
+                                                    <div class="col-6">
+                                                        <h6 class="m-0">Mileage:</h6>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <p class="m-0">
+                                                            {{ tradeDetails[0]?.ad_trade2mileage || '-' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!-- <div class="row" *ngIf="tradeDetails != undefined">
+                                    <div class="col-3 border my-2" *ngIf="tradeDetails.length > 0"  >
+                                        <ul class="list-group">
+                                            <li class=" d-flex justify-content-between align-items-center">
+                                                Total Trade Allowance
+                                                <span class=" badge-primary badge-pill"
+                                                    [ngClass]="{ negative: !inTheGreen(tradeDetails[0].ad_totaltradeallowance)}">
+                                                    {{ (tradeDetails[0].ad_totaltradeallowance == 0 ||
+                                                    tradeDetails[0].ad_totaltradeallowance == null ||
+                                                    tradeDetails[0].ad_totaltradeallowance
+                                                    ==
+                                                    undefined ?
+                                                    '-' :
+                                                    tradeDetails[0].ad_totaltradeallowance |
+                                                    currency:'USD':'symbol':'1.0-0' ) }}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-3 border my-2" *ngIf="tradeDetails.length > 0">
+                                        <ul class="list-group">
+                                            <li class=" d-flex justify-content-between align-items-center">
+                                                Total Trade Net
+                                                <span class=" badge-primary badge-pill"
+                                                    [ngClass]="{ negative: !inTheGreen(tradeDetails[0].ad_totaltradesnet)}">
+                                                    {{ (tradeDetails[0].ad_totaltradesnet == 0 ||
+                                                    tradeDetails[0].ad_totaltradesnet == null ||
+                                                    tradeDetails[0].ad_totaltradesnet ==
+                                                    undefined ? '-'
+                                                    : tradeDetails[0].ad_totaltradesnet |
+                                                    currency:'USD':'symbol':'1.0-0' ) }}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-3 border my-2" *ngIf="tradeDetails.length > 0">
+                                        <ul class="list-group">
+                                            <li class=" d-flex justify-content-between align-items-center">
+                                                Total Trade Over
+                                                <span class=" badge-primary badge-pill"
+                                                    [ngClass]="{ negative: !inTheGreen(tradeDetails[0].ad_totaltradesover)}">
+                                                    {{ (tradeDetails[0].ad_totaltradesover == 0 ||
+                                                    tradeDetails[0].ad_totaltradesover == null ||
+                                                    tradeDetails[0].ad_totaltradesover
+                                                    ==
+                                                    undefined ?
+                                                    '-' :
+                                                    tradeDetails[0].ad_totaltradesover | currency:'USD':'symbol':'1.0-0'
+                                                    ) }}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-3 border my-2" *ngIf="tradeDetails.length > 0">
+                                        <ul class="list-group">
+                                            <li class=" d-flex justify-content-between align-items-center">
+                                                Total Trade Payoff
+                                                <span class=" badge-primary badge-pill"
+                                                    [ngClass]="{ negative: !inTheGreen(tradeDetails[0].ad_totaltradespayoff)}">
+                                                    {{ (tradeDetails[0].ad_totaltradespayoff == 0 ||
+                                                    tradeDetails[0].ad_totaltradespayoff == null ||
+                                                    tradeDetails[0].ad_totaltradespayoff
+                                                    ==
+                                                    undefined ?
+                                                    '-' :
+                                                    tradeDetails[0].ad_totaltradespayoff |
+                                                    currency:'USD':'symbol':'1.0-0' ) }}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div> -->
+                                </div>
+                                <div *ngIf="spinnerLoaderTrade == false && tradeDetails.length==0">
+                                    No Trade Details
+                                </div>
+
+                                <div class="scorecard-single-header" style="height: auto;">
+                                    <table class="table mb-0 w-100" *ngIf="tradeDetails.length>0">
+                                        <thead>
+                                            <tr>
+                                                <th> Total Trade Allowance</th>
+                                                <th> Total Trade Net </th>
+                                                <th> Total Trade Over </th>
+                                                <th> Total Trade Payoff</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container>
+                                                <tr>
+                                                    <td class="text-end"
+                                                        [ngClass]="{ negative: !inTheGreen(tradeDetails[0].ad_totaltradeallowance)}">
+                                                        {{
+                                                        (tradeDetails[0].ad_totaltradeallowance == 0 ||
+                                                        tradeDetails[0].ad_totaltradeallowance == null ||
+                                                        tradeDetails[0].ad_totaltradeallowance == undefined
+                                                        ? '-' : tradeDetails[0].ad_totaltradeallowance |
+                                                        currency:'USD':'symbol':'1.0-0' ) }}</td>
+                                                    <td
+                                                        [ngClass]="{ negative: !inTheGreen( tradeDetails[0].ad_totaltradesnet)}">
+                                                        {{
+                                                        ( tradeDetails[0].ad_totaltradesnet == 0 ||
+                                                        tradeDetails[0].ad_totaltradesnet == null ||
+                                                        tradeDetails[0].ad_totaltradesnet == undefined
+                                                        ? '-' : tradeDetails[0].ad_totaltradesnet |
+                                                        currency:'USD':'symbol':'1.0-0' ) }}</td>
+                                                    <td
+                                                        [ngClass]="{ negative: !inTheGreen( tradeDetails[0].ad_totaltradesover)}">
+                                                        {{
+                                                        ( tradeDetails[0].ad_totaltradesover == 0 ||
+                                                        tradeDetails[0].ad_totaltradesover == null ||
+                                                        tradeDetails[0].ad_totaltradesover == undefined
+                                                        ? '-' : tradeDetails[0].ad_totaltradesover |
+                                                        currency:'USD':'symbol':'1.0-0' ) }}</td>
+                                                    <td
+                                                        [ngClass]="{ negative: !inTheGreen( tradeDetails[0].ad_totaltradespayoff)}">
+                                                        {{
+                                                        ( tradeDetails[0].ad_totaltradespayoff == 0 ||
+                                                        tradeDetails[0].ad_totaltradespayoff == null ||
+                                                        tradeDetails[0].ad_totaltradespayoff == undefined
+                                                        ? '-' : tradeDetails[0].ad_totaltradespayoff |
+                                                        currency:'USD':'symbol':'1.0-0' ) }}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<ng-template #notes>
+    <app-notes [notesData]="notesData" (onClose)="closeNotes($event)"></app-notes>
+</ng-template>

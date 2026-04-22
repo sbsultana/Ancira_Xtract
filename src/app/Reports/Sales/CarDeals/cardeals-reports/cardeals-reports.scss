@@ -1,0 +1,238 @@
+  .report-bar {
+  .filter-dropdowns {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-radius: 1.5rem;
+
+        .dropdown {
+            .dropdown-toggle {
+                background-color: #1e73e8;
+                color: white;
+                border: none;
+                border-radius: 12px;
+                padding: 6px 16px;
+                font-size: .875rem;
+                line-height: 1.25rem;
+                font-family: 'Roboto';
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                transition: background-color 0.3s ease;
+
+                // &:hover {
+                //     background-color: #2a84f7;
+                //     border-radius: 50px;
+                // }
+
+                .arrow {
+                    font-size: 10px;
+                }
+            }
+        }
+    }
+
+      .timeframe {
+        position: absolute;
+        z-index: 1060;
+        // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .reportstores-card {
+    background: #fff;
+    padding: .75rem .5rem;
+    border-radius: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: max-content;
+    // position: sticky;
+    z-index: 1050;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: absolute;
+
+    .groups,
+    .stores {
+        height: 100%;
+    }
+
+    .groups {
+        width: auto;
+        flex-shrink: 0;
+    }
+
+    .stores {
+        flex: 1;
+        overflow-x: auto;
+        border-left: 1px solid #dbe7ff;
+    }
+
+    .groups-wrapper,
+    .stores-wrapper {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stores-wrapper {
+        padding: 0rem 1rem 1rem 1rem;
+
+        .allstores {
+            margin: 5px 0 12px 0;
+
+            a {
+                font-family: "Roboto";
+                font-size: .875rem;
+                line-height: 1.25rem;
+                cursor: pointer;
+
+            }
+        }
+
+        .store-columns {
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(8, auto);
+            grid-auto-columns: 150px;
+            gap: 0.5rem 1rem;
+            max-width: calc(6 * 118px);
+            overflow-x: auto;
+
+            .store-button {
+                width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-align: center;
+                font-family: "Roboto";
+                font-size: .75rem;
+                border-radius: .75rem;
+                padding: .5rem;
+                line-height: 1rem;
+          text-transform: capitalize;
+
+                &.active {
+                    background-color: #0554ef;
+                    color: white;
+                    // border-radius: 50px;
+                    // border: 1px solid #0554ef;
+                }
+
+                &.inactive {
+                    color: #0554ef;
+                    background-color: white;
+                    // border-radius: 50px;
+                    // border: 1px solid #0554ef;
+                }
+
+                // &:hover {
+                //     background-color: #0554ef;
+                //     border-radius: 50px;
+                //     color: white;
+                // }
+            }
+
+            .btn-check:focus+.btn-outline-primary,
+            .btn-outline-primary:focus {
+                box-shadow: none !important;
+                outline: none !important;
+            }
+        }
+    }
+
+    .groups-wrapper {
+        .group-columns {
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(9, auto);
+            grid-auto-columns: 118px;
+            gap: 0.5rem 1rem;
+            max-width: calc(6 * 118px);
+            overflow-x: auto;
+        }
+
+        .group-button {
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: "RobotoMedium";
+            font-size: .875rem;
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+            line-height: 1rem;
+            text-align: left;
+            color: #18181B;
+
+            &.active {
+                background-color: #0554ef;
+                color: white;
+                // border-radius: 50px;
+                // border: 1px solid #0554ef;
+            }
+
+            &.inactive {
+                color: #0554ef;
+                background-color: white;
+                // border-radius: 50px;
+                // border: 1px solid #0554ef;
+            }
+
+            // &:hover {
+            //     background-color: #0554ef;
+            //     border-radius: 50px;
+            //     color: white;
+            // }
+        }
+    }
+}
+.negative {
+  color: #D6003D;
+}
+  .apply-button {
+        background-color: #c6dbff;
+        color: #0554ef;
+        border: none;
+        border: none;
+        padding: 6px 24px;
+        font-family: "Roboto";
+        font-size: .875rem;
+        line-height: 1.25rem;
+        border-radius: 12px; 
+        transition: all 0.3s ease; 
+      
+        &:hover {
+          border-radius: 50px; 
+          background-color: #d2e3fc;
+          cursor: pointer;
+        }
+      
+        &:focus {
+          outline: none;
+        }
+      }
+}
+
+.search input {
+    min-height: 2rem;
+    width: 21rem;
+    /* padding: 0.475rem 0.75rem 0.475rem 2.75rem; */
+    border-radius: 12px;
+    background: #fff;
+    border: 0.5px solid #D9E7FF;
+    font-size: 0.875rem;
+    font-family: "Roboto";
+    font-weight: 400;
+    color: #18181b;
+}
+
+.fa-magnifying-glass {
+  color: #026df3 !important;
+  font-size: 1rem;
+  margin-left: -25px !important;
+  cursor: pointer;
+}

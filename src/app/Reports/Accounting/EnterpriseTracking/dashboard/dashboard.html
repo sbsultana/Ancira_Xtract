@@ -1,0 +1,319 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+  <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+  <div class="container-fluid">
+    <div class="col-12">
+      <div class="reports-bar">
+        <div class="filter-dropdowns">
+          <div class="dropdown">
+            <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">( {{storecount}}
+                {{storedisplayname}} )</span>
+              <span class="arrow"></span></button>
+            <app-stores
+              [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+              [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+          </div>
+
+          <div class="dropdown">
+            <button class="dropdown-toggle" (click)="dp.show()">
+              Month
+              <span class="light-font">
+                ( {{ selectedDate | date:'MMMM/yyyy' }} )
+              </span>
+            </button>
+            <input #dp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="selectedDate" [bsConfig]="bsConfig" readonly
+              (keydown)="$event.preventDefault()" style="position: absolute; opacity: 0; height: 0; width: 0;" />
+          </div>
+          <div class="dropdown">
+            <button class="apply-button" (click)="applyDateChange()"><span>Apply</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scorecard-multi-header enterprisetracking-tbl">
+      <table class="table mb-0 w-100">
+        <thead>
+          <tr>
+            <th>{{currentMonth | date:'MMMM yyyy'}}</th>
+            <th>Retail</th>
+            <th colspan="4">Gross</th>
+            <th colspan="5">Estimated Expenses</th>
+            <th colspan="3">Operating Net</th>
+            <th colspan="2" style="box-shadow: none;">Net Profit</th>
+          </tr>
+          <tr>
+            <th>Store</th>
+            <th>Units</th>
+            <th>Gross</th>
+            <th>Pace</th>
+            <th>{{LastMonth | date:'MMM yyyy'}}</th>
+            <th>% Diff</th>
+            <th>Variable</th>
+            <th>Personnel/Selling</th>
+            <th>Semi-Fixed/Operating</th>
+            <th>Fixed/Overhead</th>
+            <th> Total</th>
+            <th>Op. Net</th>
+            <th>{{LastMonth | date:'MMM yyyy'}}</th>
+            <th>Difference</th>
+            <th>Net Adjust</th>
+            <th>Profit/Loss</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="EnterpriseTrackingData.length > 0; else NoEnterpriseTrackingData">
+            <ng-container *ngFor="let ETNP of EnterpriseTrackingData; let j=index">
+              <tr class="lightblue-bg" [ngClass]="{ 'text-bold': ETNP.STORE === 'REPORT TOTAL' }">
+                <td class="lightblue-bg text-capitalize text-start"><span class="dlrship">
+                    {{(ETNP?.STORE ==
+                    "" ||
+                    ETNP?.STORE == null ? '' : ETNP?.STORE)}}
+                  </span></td>
+                <td class="text-end">
+                  {{ETNP.RETAILUNITS_UNITS ==
+                  0
+                  || ETNP.RETAILUNITS_UNITS == null ?
+                  '-' :
+                  ETNP.RETAILUNITS_UNITS | number }}</td>
+                <td class="alignright" [ngClass]="{ negative: !inTheGreen(ETNP.GROSS_PACE)}" style="cursor: pointer;"
+                  (click)="openMenu(ETNP,selectedDate,'GROSS')">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.GROSS_PACE == 0 || ETNP.GROSS_PACE == null ? '-' :
+                      ETNP.GROSS_PACE | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" [ngClass]="{ negative: !inTheGreen(ETNP.PACE)}">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.PACE == 0 || ETNP.PACE == null ? '-' :
+                      ETNP.PACE | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.GROSS_YOY == 0 || ETNP.GROSS_YOY == null ? '-' : ETNP.GROSS_YOY
+                      | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+
+                <td [ngClass]="{ negative: !inTheGreen(ETNP.GROSS_DIFFPERCENT)}">
+                  {{ETNP.GROSS_DIFFPERCENT == 0 || ETNP.GROSS_DIFFPERCENT == null
+                  ? '-' :
+                  ETNP.GROSS_DIFFPERCENT}}</td>
+                <td class="alignright" style="cursor: pointer;" (click)="openMenu(ETNP,selectedDate,'VARIABLE')">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.EXP_VARIABLE == 0 || ETNP.EXP_VARIABLE == null ? '-' :
+                      ETNP.EXP_VARIABLE | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" style="cursor: pointer;" (click)="openMenu(ETNP,selectedDate,'PERSONNEL')">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.EXP_PERSONNEL == 0 || ETNP.EXP_PERSONNEL == null ? '-' :
+                      ETNP.EXP_PERSONNEL | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" style="cursor: pointer;" (click)="openMenu(ETNP,selectedDate,'SEMIFIXED')">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.EXP_SEMIFIXED == 0 || ETNP.EXP_SEMIFIXED == null ? '-' :
+                      ETNP.EXP_SEMIFIXED | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" style="cursor: pointer;" (click)="openMenu(ETNP,selectedDate,'FIXED')">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.EXP_FIXED == 0 || ETNP.EXP_FIXED == null ? '-' : ETNP.EXP_FIXED
+                      | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.EXP_TOTAL == 0 || ETNP.EXP_TOTAL == null ? '-' : ETNP.EXP_TOTAL
+                      | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" [ngClass]="{ negative: !inTheGreen(ETNP.OPERATINGNET_OPNET)}"
+                  style="cursor: pointer;" (click)="openMenu(ETNP,selectedDate,'OPERATINGPROFIT')">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.OPERATINGNET_OPNET == 0 || ETNP.OPERATINGNET_OPNET == null ? '-'
+                      : ETNP.OPERATINGNET_OPNET | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" [ngClass]="{ negative: !inTheGreen(ETNP.OPERATINGNET_YOY)}">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.OPERATINGNET_YOY == 0 || ETNP.OPERATINGNET_YOY == null ? '-' :
+                      ETNP.OPERATINGNET_YOY | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" [ngClass]="{ negative: !inTheGreen(ETNP.OPERATINGNET_DIFF)}">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.OPERATINGNET_DIFF == 0 || ETNP.OPERATINGNET_DIFF == null ? '-' :
+                      ETNP.OPERATINGNET_DIFF | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" [ngClass]="{ negative: !inTheGreen(ETNP.NETPROFIT_NETADJUST)}"
+                  style="cursor: pointer;" (click)="openMenu(ETNP,selectedDate,'NETADJUST')">
+                  <span class="d-flex justify-content-between">
+                    $<span>
+                      {{ ETNP.NETPROFIT_NETADJUST == 0 || ETNP.NETPROFIT_NETADJUST == null ?
+                      '-' : ETNP.NETPROFIT_NETADJUST | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+                <td class="alignright" [ngClass]="{ negative: !inTheGreen(ETNP.NETPROFIT)}">
+                  <span class="d-flex justify-content-between" style="cursor: pointer;"
+                    (click)="openMenu(ETNP,selectedDate,'NETPROFIT')">
+                    $<span>
+                      {{ ETNP.NETPROFIT == 0 || ETNP.NETPROFIT == null ? '-' : ETNP.NETPROFIT
+                      | number: '1.0-0' }}
+                    </span>
+                  </span>
+                </td>
+
+              </tr>
+              <ng-container *ngFor="let ET of ETNP.sub; let j=index">
+                <tr class="title" id="DV_0" *ngIf="ET.DEPT !== null && ET.DEPT !== 'TOTAL'"
+                  [ngClass]="{ 'text-bold': ET.STORE === 'REPORT TOTAL' }">
+                  <td class="extra-padding text-capitalize text-start"><span title="{{ET.SP1}}" id="D_0">{{(ET.DEPT ==
+                      undefined
+                      ? '--' : (
+                      (ET.DEPT.toString() |
+                      slice:0:22) +
+                      (ET.DEPT.toString().length > 22 ? '...' : '') ))}}
+                    </span></td>
+                  <td class="text-end">
+                    {{ET.RETAILUNITS_UNITS ==
+                    0
+                    || ET.RETAILUNITS_UNITS == null ?
+                    '-' :
+                    ET.RETAILUNITS_UNITS | number }}</td>
+                  <td class="alignright" [ngClass]="{ negative: !inTheGreen(ET.GROSS_PACE)}">
+                    <span class="d-flex justify-content-between" style="cursor: pointer;"
+                      (click)="openMenu(ET,selectedDate,'GROSS')">
+                      $<span>
+                        {{ ET.GROSS_PACE == 0 || ET.GROSS_PACE == null ? '-' : ET.GROSS_PACE
+                        | number : '1.0-0' }}
+                      </span>
+                    </span>
+                  </td>
+                  <td class="alignright" [ngClass]="{ negative: !inTheGreen(ET.PACE)}">
+                    <span class="d-flex justify-content-between">
+                      $<span>
+                        {{ ET.PACE == 0 || ET.PACE == null ? '-' : ET.PACE
+                        | number : '1.0-0' }}
+                      </span>
+                    </span>
+                  </td>
+                  <td class="alignright">
+                    <span class="d-flex justify-content-between">
+                      $<span>
+                        {{ ET.GROSS_YOY == 0 || ET.GROSS_YOY == null ? '-' : ET.GROSS_YOY |
+                        number: '1.0-0' }}
+                      </span>
+                    </span>
+                  </td>
+
+                  <td [ngClass]="{ negative: !inTheGreen(ET.GROSS_DIFFPERCENT)}">
+                    {{ET.GROSS_DIFFPERCENT == 0 || ET.GROSS_DIFFPERCENT == null
+                    ? '-' :
+                    ET.GROSS_DIFFPERCENT}}</td>
+                  <td class="alignright" style="cursor: pointer;" (click)="openMenu(ET,selectedDate,'VARIABLE')">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.EXP_VARIABLE == 0 || ET.EXP_VARIABLE == null ? '-' :
+                        ET.EXP_VARIABLE | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright" style="cursor: pointer;" (click)="openMenu(ET,selectedDate,'PERSONNEL')">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.EXP_PERSONNEL == 0 || ET.EXP_PERSONNEL == null ? '-' :
+                        ET.EXP_PERSONNEL | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright" style="cursor: pointer;" (click)="openMenu(ET,selectedDate,'SEMIFIXED')">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.EXP_SEMIFIXED == 0 || ET.EXP_SEMIFIXED == null ? '-' :
+                        ET.EXP_SEMIFIXED | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright" style="cursor: pointer;" (click)="openMenu(ET,selectedDate,'FIXED')">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.EXP_FIXED == 0 || ET.EXP_FIXED == null ? '-' : ET.EXP_FIXED
+                        | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.EXP_TOTAL == 0 || ET.EXP_TOTAL == null ? '-' : ET.EXP_TOTAL
+                        | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright" style="cursor: pointer;" (click)="openMenu(ET,selectedDate,'OPERATINGPROFIT')"
+                    [ngClass]="{ negative: !inTheGreen(ET.OPERATINGNET_OPNET) }">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.OPERATINGNET_OPNET == 0 || ET.OPERATINGNET_OPNET == null ?
+                        '-' : ET.OPERATINGNET_OPNET | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright" [ngClass]="{ negative: !inTheGreen(ET.OPERATINGNET_YOY) }">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.OPERATINGNET_YOY == 0 || ET.OPERATINGNET_YOY == null ? '-'
+                        : ET.OPERATINGNET_YOY | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright" [ngClass]="{ negative: !inTheGreen(ET.OPERATINGNET_DIFF) }">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.OPERATINGNET_DIFF == 0 || ET.OPERATINGNET_DIFF == null ?
+                        '-' : ET.OPERATINGNET_DIFF | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright" [ngClass]="{ negative: !inTheGreen(ET.NETPROFIT_NETADJUST) }"
+                    style="cursor: pointer;" (click)="openMenu(ET,selectedDate,'NETADJUST')">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.NETPROFIT_NETADJUST == 0 || ET.NETPROFIT_NETADJUST == null
+                        ? '-' : ET.NETPROFIT_NETADJUST | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                  <td class="alignright" [ngClass]="{ negative: !inTheGreen(ET.NETPROFIT) }" style="cursor: pointer;"
+                    (click)="openMenu(ET,selectedDate,'NETPROFIT')">
+                    <span class="d-flex justify-content-between">
+                      $<span>{{ ET.NETPROFIT == 0 || ET.NETPROFIT == null ? '-' : ET.NETPROFIT
+                        | number: '1.0-0' }}</span>
+                    </span>
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <ng-template #NoEnterpriseTrackingData>
+            <tr *ngIf="NoData">
+              <td colspan="22"
+                style="text-align: center !important;font-size: .8vw;background: #fff !important;color: black; display: revert;">
+                <label>No Data Found</label>
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,9 @@
+<div  class="riv-icon-wrapper"
+  [style.width.px]="width"
+  [style.height.px]="height"
+  (mouseenter)="play()"
+  (mouseleave)="pause()">
+  
+  <canvas #canvasEl [attr.width]="width" [attr.height]="height"></canvas>
+  
+</div>

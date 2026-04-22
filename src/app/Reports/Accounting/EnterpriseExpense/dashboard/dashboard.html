@@ -1,0 +1,401 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="reports-bar">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                                {{storecount}}
+                                {{storedisplayname}} )</span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+                    <!-- <div class="date-filter-card d-flex align-items-center justify-content-start">
+                    <div class="open-calendar position-relative">
+                        <input type="text" class="form-control year-input" placeholder="Select month" bsDatepicker
+                            [bsConfig]="bsConfig" [(ngModel)]="selectDate" readonly
+                            (keydown)="$event.preventDefault()" />
+                    </div>
+                </div> -->
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="dp.show()">
+                            Month
+                            <span class="light-font">
+                                ( {{ selectDate | date:'MMMM/yyyy' }} )
+                            </span>
+                        </button>
+                        <input #dp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="selectDate"
+                            [bsConfig]="bsConfig" readonly (keydown)="$event.preventDefault()"
+                            style="position: absolute; opacity: 0; height: 0; width: 0;" />
+                    </div>
+                    <div class="dropdown d-none">
+                        <button class="dropdown-toggle" (click)="togglePopover(1)">
+                            Department <span class="light-font"> {{ selectedLabel }} </span> <span class="arrow"></span>
+                        </button>
+
+                        <div class="timeframe" *ngIf="activePopover === 1">
+                            <div class="date-filter-card mt-2">
+                                <button class="outline-button" *ngFor="let f of filters" [class.active]="isSelected(f)"
+                                    (click)="toggleFilter(f)">
+                                    {{ f }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="all-debits px-2 me-2">
+                        <div class="radio-wrapper d-flex gap-4">
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="filterType"
+                                id="departmentRadio"
+                                value="Department"
+                                [(ngModel)]="selectedType"
+                                (change)="onTypeChange()">
+
+                            <label class="form-check-label" for="departmentRadio">
+                            Department
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="filterType"
+                                id="vendorRadio"
+                                value="Vendor"
+                                [(ngModel)]="selectedType"
+                                (change)="onTypeChange()">
+
+                            <label class="form-check-label" for="vendorRadio">
+                            Vendor
+                            </label>
+                        </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="applyDateChange()">
+                            <span>Apply</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="scorecard-triple-header enterpriseincome-tbl">
+            <table class="table mb-0 w-100">
+                <thead>
+                    <tr>
+                        <th class="w-25">{{currentMonth | date: 'MMMM - yyyy'}}</th>
+                        <th>Total</th>
+                        <th>Average</th>
+                        <ng-container *ngFor="let key of IncomeSummaryDataKeys">
+                            <th *ngIf="isKeyVisible(key)" style="box-shadow: inset 0 0 0 0.3px #e0edff;">
+                                {{ formatKey(key) }}
+                            </th>
+                        </ng-container>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="IncomeSummaryData.length > 6; else NoIncomeSummaryData">
+                        <ng-container *ngFor="let STR of IncomeSummaryData; let j=index">
+                            <tr class="sub-title" [ngClass]="{'lightblue-bg': STR.DISPLAYHEAD_FLAG === 1,'highlight-row': STR.ISHEAD_TOTAL === 'Y','even': j % 2 === 0,'cursorpointer': 
+                    STR.PARENTLABLECODE === 'IS' || STR.PARENTLABLECODE === 'NS'}" [ngStyle]="{
+                                        'font-weight': STR.data2sign === '-' ? '600' : 'normal'
+                                    }">
+                                <ng-container>
+                                    <td
+                                        [ngClass]="{'lightblue-bg': STR.DISPLAYHEAD_FLAG === 1,'padding': STR.ISHEAD_TOTAL === 'Y','extra-padding': STR.ISHEAD_TOTAL === 'N'}">
+                                        <span class="dlrship d-flex align-items-center justify-content-start"
+                                            [ngClass]="{'pointer-none': STR.DISPLAY_LABLE.includes('% of GP') || STR.LABLECODE !== ''}"
+                                            [ngStyle]="{ 'cursor': STR.LABLECODE === '' ? 'pointer' : 'default' }"
+                                            (click)="expandorcollapse(j,$event,STR.data2sign,STR,'')" [id]="'D_'+j">
+                                            <img [id]="'D_'+j" src="images/Add_Circle.svg" alt="Plus"
+                                                style="margin-right: 10px;"
+                                                *ngIf="STR.data2sign === '+' && STR.ISHEAD_TOTAL === 'N' && STR.DISPLAYHEAD_FLAG !== 1 && STR.LABLECODE === '' && STR.PARENTLABLECODE !== 'IS'">
+
+                                            <img [id]="'D_'+j" src="images/Minus_CircleIcon.svg" alt="Minus"
+                                                style="margin-right: 10px;"
+                                                *ngIf="STR.data2sign === '-' && STR.ISHEAD_TOTAL === 'N' && STR.DISPLAYHEAD_FLAG !== 1 && STR.LABLECODE === '' && STR.PARENTLABLECODE !== 'IS'">
+
+                                            {{STR.DISPLAY_LABLE}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="dlrship px-1" [ngClass]="{
+                          'd-flex justify-content-between': !STR.DISPLAY_LABLE.includes('% of GP') && STR['TOTAL'],
+                          'text-center': STR.DISPLAY_LABLE.includes('% of GP') || !STR['TOTAL'],
+                          'negative': ['Net Profit (Loss)', 'Operating Net'].includes(STR.DISPLAY_LABLE) && !inTheGreen(STR['AVG'])
+                        }">
+                                            <span *ngIf="STR['TOTAL'] && !STR.DISPLAY_LABLE.includes('% of GP')">
+                                                $
+                                            </span>
+                                            {{
+                                            STR['TOTAL']
+                                            ? STR.DISPLAY_LABLE.includes('% of GP')
+                                            ? (STR['TOTAL'] | number: '1.2-2') + '%'
+                                            : (STR['TOTAL'] | number: '1.0-0')
+                                            : '-'
+                                            }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="dlrship px-1" [ngClass]="{
+                          'd-flex justify-content-between': !STR.DISPLAY_LABLE.includes('% of GP') && STR['AVG'],
+                          'text-center': STR.DISPLAY_LABLE.includes('% of GP') || !STR['AVG'],
+                          'negative': ['Net Profit (Loss)', 'Operating Net'].includes(STR.DISPLAY_LABLE) && !inTheGreen(STR['AVG'])
+                        }">
+                                            <span *ngIf="STR['AVG'] && !STR.DISPLAY_LABLE.includes('% of GP')">
+                                                $
+                                            </span>
+                                            {{
+                                            STR['AVG']
+                                            ? STR.DISPLAY_LABLE.includes('% of GP')
+                                            ? (STR['AVG'] | number: '1.2-2') + '%'
+                                            : (STR['AVG'] | number: '1.0-0')
+                                            : '-'
+                                            }}
+                                        </span>
+                                    </td>
+                                    <!-- <ng-container *ngFor="let key of IncomeSummaryDataKeys">
+                                        <td>
+                                            <span class="dlrship px-1" [ngClass]="{
+                              'd-flex justify-content-between': !STR.DISPLAY_LABLE.includes('% of GP') && !key.endsWith('_GP') && STR[key],
+                              'text-center': STR.DISPLAY_LABLE.includes('% of GP') || key.endsWith('_GP') || !STR[key],
+                               'negative': !inTheGreen(STR[key]) && ['Net Profit (Loss)', 'Operating Net'].includes(STR.DISPLAY_LABLE),
+                              'pointer-events-none': !isNumber(STR[key]) || key.endsWith('_GP'),
+                              'pointer-none': key.endsWith('_GP') || key.endsWith('_VAR') || key.endsWith('_BDGT') || STR.DISPLAY_LABLE.includes('% of GP') || STR.LABLECODE !== ''
+                            }" *ngIf="isKeyVisible(key)" (click)="openMainStoresDetails(STR, key, 'LayerOneDetails')"
+                                                [ngStyle]="{
+                              'cursor': isNumber(STR[key]) && STR.LABLECODE === '' && !key.endsWith('_GP') ? 'pointer' : 'default'
+                            }">
+                                                <span
+                                                    *ngIf="STR[key] && !STR.DISPLAY_LABLE.includes('% of GP') && !key.endsWith('_GP')">
+                                                    $
+                                                </span>
+                                                {{
+                                                STR[key]
+                                                ? key.endsWith('_GP')
+                                                ? (STR[key] | number: '1.0-0') + '%'
+                                                : STR.DISPLAY_LABLE.includes('% of GP')
+                                                ? (STR[key] | number: '1.2-2') + '%'
+                                                : (STR[key] | number: '1.0-0')
+                                                : '-'
+                                                }}
+                                            </span>
+                                        </td>
+                                    </ng-container> -->
+                                    <ng-container *ngFor="let key of IncomeSummaryDataKeys">
+                                        <td>
+                                            <span class="dlrship px-1 nocursor-pointer" [ngClass]="{
+                              'd-flex justify-content-between': !STR.DISPLAY_LABLE.includes('% of GP') && !key.endsWith('_GP') && STR[key],
+                              'text-center': STR.DISPLAY_LABLE.includes('% of GP') || key.endsWith('_GP') || !STR[key],
+                               'negative': !inTheGreen(STR[key]) && ['Net Profit (Loss)', 'Operating Net'].includes(STR.DISPLAY_LABLE),
+                              'pointer-events-none': !isNumber(STR[key]) || key.endsWith('_GP'),
+                              'pointer-none': key.endsWith('_GP') || key.endsWith('_VAR') || key.endsWith('_BDGT') || STR.DISPLAY_LABLE.includes('% of GP') || STR.LABLECODE !== ''
+                            }" *ngIf="isKeyVisible(key)" [ngStyle]="{
+                              'cursor': isNumber(STR[key]) && STR.LABLECODE === '' && !key.endsWith('_GP') ? 'pointer' : 'default'
+                            }">
+                                                <span
+                                                    *ngIf="STR[key] && !STR.DISPLAY_LABLE.includes('% of GP') && !key.endsWith('_GP')">
+                                                    $
+                                                </span>
+                                                {{
+                                                STR[key]
+                                                ? key.endsWith('_GP')
+                                                ? (STR[key] | number: '1.0-0') + '%'
+                                                : STR.DISPLAY_LABLE.includes('% of GP')
+                                                ? (STR[key] | number: '1.2-2') + '%'
+                                                : (STR[key] | number: '1.0-0')
+                                                : '-'
+                                                }}
+                                            </span>
+                                        </td>
+                                    </ng-container>
+                                </ng-container>
+                            </tr>
+                            <ng-container>
+                                <ng-container *ngFor="let LayerOne of STR.SubData; let k=index">
+                                    <tr [ngStyle]="{'font-weight': LayerOne.dataLayer2sign === '-' ? '600' : 'normal'}">
+                                        <td class=" LayerOne" style="background: #edf3ff;"
+                                            [ngClass]="{'hidden': LayerOne.data2sign === '+','lightblueCol-bg': LayerOne.DISPLAYHEAD_FLAG === 1,'padding': LayerOne.ISHEAD_TOTAL === 'Y','extra-padding': LayerOne.ISHEAD_TOTAL === 'N'}">
+                                            <!-- <span class="dlrship d-flex align-items-center justify-content-start"
+                                                style="cursor: pointer;"
+                                                (click)="expandorcollapse(k,$event,LayerOne.dataLayer2sign,LayerOne,STR)"
+                                                [id]="'DN_'+k">
+                                                <img [id]="'DN_'+k" src="images/Add_Circle.svg" alt="Plus"
+                                                    style="margin-right: 10px; margin-left: 24px;"
+                                                    *ngIf="LayerOne.dataLayer2sign === '+'">
+
+                                                <img [id]="'DN_'+k" src="images/Minus_CircleIcon.svg" alt="Minus"
+                                                    style="margin-right: 10px; margin-left: 24px;"
+                                                    *ngIf="LayerOne.dataLayer2sign === '-'">
+
+                                                {{LayerOne.Desc}} -
+                                                {{LayerOne.AcctNum}}
+                                            </span> -->
+                                            <span
+                                                class="dlrship d-flex align-items-center justify-content-start mx-1 px-4"
+                                                [id]="'DN_'+k">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{LayerOne.Department}}
+                                            </span>
+                                        </td>
+                                        <td style="background: #edf3ff;">
+                                            <span class="dlrship px-1" [ngClass]="{
+                            'd-flex justify-content-between': !LayerOne.Department.includes('% of GP') && LayerOne['TOTAL'],
+                            'text-center': LayerOne.Department.includes('% of GP') || !LayerOne['TOTAL'],
+                            'negative': !inTheGreen(LayerOne['TOTAL']) && STR.DISPLAY_LABLE === 'Net Profit (Loss)'
+                          }">
+                                                <span
+                                                    *ngIf="LayerOne['TOTAL'] && !LayerOne.Department.includes('% of GP')">
+                                                    $
+                                                </span>
+                                                {{
+                                                LayerOne['TOTAL']
+                                                ? LayerOne.Department.includes('% of GP')
+                                                ? (LayerOne['TOTAL'] | number: '1.2-2') + '%'
+                                                : (LayerOne['TOTAL'] | number: '1.0-0')
+                                                : '-'
+                                                }}
+                                            </span>
+                                        </td>
+                                        <td style="background: #edf3ff;">
+                                            <span class="dlrship px-1" [ngClass]="{
+                            'd-flex justify-content-between': !LayerOne.Department.includes('% of GP') && LayerOne['AVG'],
+                            'text-center': LayerOne.Department.includes('% of GP') || !LayerOne['AVG'],
+                            'negative': !inTheGreen(LayerOne['AVG']) && STR.DISPLAY_LABLE === 'Net Profit (Loss)'
+                          }">
+                                                <span
+                                                    *ngIf="LayerOne['AVG'] && !LayerOne.Department.includes('% of GP')">
+                                                    $
+                                                </span>
+                                                {{
+                                                LayerOne['AVG']
+                                                ? LayerOne.Department.includes('% of GP')
+                                                ? (LayerOne['AVG'] | number: '1.2-2') + '%'
+                                                : (LayerOne['AVG'] | number: '1.0-0')
+                                                : '-'
+                                                }}
+                                            </span>
+                                        </td>
+                                        <ng-container *ngFor="let key of IncomeSummaryDataKeys">
+                                            <td style="background: #edf3ff;">
+                                                <span class="dlrship px-1" [ngClass]="{
+                              'd-flex justify-content-between': !LayerOne.Department.includes('% of GP') && LayerOne[key],
+                              'text-center': LayerOne.Department.includes('% of GP') || !LayerOne[key],
+                              'negative': !inTheGreen(LayerOne[key]) && STR.DISPLAY_LABLE === 'Net Profit (Loss)'
+                            }" *ngIf="isKeyVisible(key)">
+                                                    <span
+                                                        *ngIf="LayerOne[key] && !LayerOne.Department.includes('% of GP')">
+                                                        $
+                                                    </span>
+                                                    {{
+                                                    LayerOne[key]
+                                                    ? LayerOne.Department.includes('% of GP')
+                                                    ? (LayerOne[key] | number: '1.2-2') + '%'
+                                                    : (LayerOne[key] | number: '1.0-0')
+                                                    : '-'
+                                                    }}
+                                                </span>
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                    <!-- <ng-container>
+                                        <ng-container *ngFor="let LayerTwo of LayerOne.SubLayerData; let l=index">
+                                            <tr>
+                                                <td class="LayerTwo" style="background-color: #d2defb;"
+                                                    [ngClass]="{'hidden': LayerTwo.dataLayer2sign === '+','lightblueCol-bg': LayerTwo.DISPLAYHEAD_FLAG === 1,'padding': LayerTwo.ISHEAD_TOTAL === 'Y','extra-padding': LayerTwo.ISHEAD_TOTAL === 'N'}">
+                                                    <span class="dlrship" style="margin-left: 53px;">
+                                                        {{LayerTwo.Desc}}
+                                                    </span>
+                                                </td>
+                                                <td style="background-color: #d2defb;">
+                                                    <span class="dlrship px-1" [ngClass]="{
+                                'd-flex justify-content-between': !LayerTwo.Desc.includes('% of GP') && LayerTwo['TOTAL'],
+                                'text-center': LayerTwo.Desc.includes('% of GP') || !LayerTwo['TOTAL'],
+                                'negative': !inTheGreen(LayerTwo['TOTAL']) && STR.DISPLAY_LABLE === 'Net Profit (Loss)'
+                              }">
+                                                        <span
+                                                            *ngIf="LayerTwo['TOTAL'] && !LayerTwo.Desc.includes('% of GP')">
+                                                            $
+                                                        </span>
+                                                        {{
+                                                        LayerTwo['TOTAL']
+                                                        ? LayerTwo.Desc.includes('% of GP')
+                                                        ? (LayerTwo['TOTAL'] | number: '1.2-2') + '%'
+                                                        : (LayerTwo['TOTAL'] | number: '1.0-0')
+                                                        : '-'
+                                                        }}
+                                                    </span>
+                                                </td>
+                                                <td style="background-color: #d2defb;">
+                                                    <span class="dlrship px-1" [ngClass]="{
+                                'd-flex justify-content-between': !LayerTwo.Desc.includes('% of GP') && LayerTwo['AVG'],
+                                'text-center': LayerTwo.Desc.includes('% of GP') || !LayerTwo['AVG'],
+                                'negative': !inTheGreen(LayerTwo['AVG']) && STR.DISPLAY_LABLE === 'Net Profit (Loss)'
+                              }">
+                                                        <span
+                                                            *ngIf="LayerTwo['AVG'] && !LayerTwo.Desc.includes('% of GP')">
+                                                            $
+                                                        </span>
+                                                        {{
+                                                        LayerTwo['AVG']
+                                                        ? LayerTwo.Desc.includes('% of GP')
+                                                        ? (LayerTwo['AVG'] | number: '1.2-2') + '%'
+                                                        : (LayerTwo['AVG'] | number: '1.0-0')
+                                                        : '-'
+                                                        }}
+                                                    </span>
+                                                </td>
+                                                <ng-container *ngFor="let key of IncomeSummaryDataKeys">
+                                                    <td style="background-color: #d2defb;">
+                                                        <span class="dlrship px-1" [ngClass]="{
+                                  'd-flex justify-content-between': !LayerTwo.Desc.includes('% of GP') && LayerTwo[key],
+                                  'text-center': LayerTwo.Desc.includes('% of GP') || !LayerTwo[key],
+                                  'negative': !inTheGreen(LayerTwo[key]) && STR.DISPLAY_LABLE === 'Net Profit (Loss)',
+                                  'pointer-events-none': !isNumber(LayerTwo[key])}" *ngIf="isKeyVisible(key)"
+                                                            (click)="openStoresDetails(STR,LayerOne,LayerTwo,key,'LayerThreeDetails')"
+                                                            [ngStyle]="{ 'cursor': isNumber(LayerTwo[key]) ? 'pointer' : 'default' }">
+                                                            <span
+                                                                *ngIf="LayerTwo[key] && !LayerTwo.Desc.includes('% of GP')">
+                                                                $
+                                                            </span>
+                                                            {{
+                                                            LayerTwo[key]
+                                                            ? LayerTwo.Desc.includes('% of GP')
+                                                            ? (LayerTwo[key] | number: '1.2-2') + '%'
+                                                            : (LayerTwo[key] | number: '1.0-0')
+                                                            : '-'
+                                                            }}
+                                                        </span>
+                                                    </td>
+                                                </ng-container>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container> -->
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #NoIncomeSummaryData>
+                        <tr *ngIf="!isLoading">
+                            <td class="text-center fw-bold" [attr.colspan]="IncomeSummaryDataKeys.length + 6">
+                                <label>No Data Found</label>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

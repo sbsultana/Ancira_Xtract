@@ -1,0 +1,95 @@
+//////////////////////////////////// REPORT BAR ////////////////////////////////////////
+/// 
+/// 
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.sp-rankings {
+  .table {
+
+    thead,
+    tbody {
+      .boxshadow-none {
+        box-shadow: none !important;
+      }
+
+      th:nth-child(3),
+      td:nth-child(3){
+        box-shadow:
+          inset 0 0.4px 0 0 #e0edff,
+          inset -3px 0 0 0 #e0edff,
+          inset 0 -0.4px 0 0 #e0edff,
+          inset 0.4px 0 0 0 #e0edff;
+      }
+    }
+  }
+}
+
+.btn-dealtype {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(6, auto);
+  grid-auto-columns: 150px !important;
+}
+
+//////////////////////////////////// SALES PERSON GRID ////////////////////////////////////////
+.negative {
+  color: #D6003D;
+}
+
+
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 1cm;
+    /* Adjust the margin as needed */
+  }
+
+  .NavBarHide {
+    display: none;
+  }
+
+  #ServiceAdvisorRankings {
+    .performance-scorecard {
+      width: 100%;
+      height: auto;
+
+      table,
+      td,
+      th {
+        border-collapse: collapse;
+      }
+
+      tr:nth-child(1) th {
+        .HideItems {
+          display: none;
+        }
+      }
+
+      th {
+        padding: 2px 4px;
+        font-size: 0.75vw;
+      }
+
+      tr th:last-child {
+        padding-right: 6px;
+      }
+
+      td {
+        padding: 2px 4px;
+        font-size: 0.75vw;
+      }
+
+      .HideItems {
+        display: none;
+      }
+    }
+  }
+}
+
+.divBold {
+  font-family: 'RobotoBold' !important;
+}

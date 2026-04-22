@@ -1,0 +1,214 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-clip-rotate" [fullScreen]="true">
+    <p style="color: white"> Loading.. </p>
+</ngx-spinner>
+<main>
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="reports-bar">
+                <div class="filter-dropdowns">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="togglePopover(0)">Stores <span class="light-font">(
+                                {{storecount}}
+                                {{storedisplayname}} )</span>
+                            <span class="arrow"></span></button>
+                        <app-stores
+                            [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
+                            [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" (click)="dp.show()">
+                            Month
+                            <span class="light-font">
+                                ( {{ selectedDate | date:'MMMM/yyyy' }} )
+                            </span>
+                        </button>
+                        <input #dp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="selectedDate"
+                            [bsConfig]="bsConfig" readonly (keydown)="$event.preventDefault()"
+                            style="position: absolute; opacity: 0; height: 0; width: 0;" />
+                    </div>
+                    <div class="dropdown">
+                        <button class="apply-button" (click)="applyDateChange()"><span>Apply</span></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="scorecard-multi-header financialsummary-tbl" id="FinancialSummary">
+            <table class="table mb-0 w-100">
+                <thead>
+                    <tr>
+                        <th>
+                            For the period ending</th>
+                        <th colspan="4" class="bdr-rt">
+                            MTD</th>
+                        <th colspan="2" class="bdr-rt">
+                            LY MTD</th>
+                        <th colspan="2" class="bdr-rt">
+                            LM</th>
+                        <th colspan="3" class="bdr-rt">
+                            YTD</th>
+                        <th colspan="2">LY</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{currentMonth| date:'MMMM yyyy' }}</th>
+
+                        <th>{{Current_Date| date:'MMMM' }}&nbsp;{{Current_Date| slice:7 }}</th>
+                        <th>Pace</th>
+                        <th>Budget</th>
+                        <th>
+                            Variance</th>
+
+                        <th>{{LMY_Date| date:'MMMM' }}&nbsp;{{LMY_Date| slice:7 }}</th>
+                        <th>
+                            Variance</th>
+
+                        <th>{{LM_Date | date:'MMMM' }}&nbsp;{{LM_Date| slice:7 }}</th>
+                        <th>
+                            Variance</th>
+
+                        <th>{{Current_Date| slice:7 }}</th>
+                        <th>Budget</th>
+                        <th>
+                            Variance</th>
+
+                        <th>{{LMY_Date | slice:7 }}</th>
+                        <th>Variance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="FSData.length > 0; else NoFsdata">
+                        <ng-container *ngFor="let data of FSData; let i = index;">
+                            <tr class="sub-title" *ngIf="!hiddenRows[i]" [class.hidden]="hiddenRows[i]"
+                                [ngClass]="{'lightblue-bg': data.MainTitle == 'MainHeader', 'text-bold': data.Fs_Titles == 'FontBold','padding': data.Fs_Titles == 'PaddingLeft'}"
+                                [ngStyle]="{
+                                        'pointer-events': data.ValueType === '%' || data.ValueType === '#' || data.LABLE1 === 'Bonus' ? 'none' : 'auto'
+                                      }">
+                                <td (click)="toggleRows(i)"
+                                    [ngClass]="{'lightblue-bg': data.MainTitle == 'MainHeader'}"><span
+                                        class="label1 d-flex align-items-center"
+                                        [ngClass]="{'padding': data.Fs_Titles == 'PaddingLeft'}" title="{{data.LABLE1}}"
+                                        [ngStyle]="{
+                                              'cursor': data.LABLE1 === 'Selling Gross%' ? 'pointer' : 'default',
+                                              'pointer-events': data.LABLE1 === 'Selling Gross%' ? 'auto' : 'none'
+                                            }">{{data.LABLE1}}
+                                        <span *ngIf="data.LABLE1 === 'Selling Gross%'" class="text-end mx-2"
+                                            style="cursor: pointer !important;">
+                                            <i class="fa-solid fa-md text-end " aria-hidden="true"
+                                                [ngClass]="showAdditionalRows ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                        </span>
+                                    </span></td>
+                                <!-- <td class="PrintHide" style="text-align: right;cursor: pointer;">
+                                    <img width="17px" class="mx-3" *ngIf="data.CommentsStatus == 'N'"
+                                        src="images/LineChart_Icon2.png"
+                                        style="cursor: pointer !important;pointer-events: visible !important; text-align: center;"
+                                        title="Show Graph" (click)="openGraph(data,Current_Date,LMY_Date,LM_Date)">
+                                </td> -->
+                                <td (click)="openMenu(data,Current_Date)" style="cursor: pointer;"
+                                    [ngClass]="{ negative: !inTheGreen(data.MTD) && (data.LABLE1 === 'Operating Profit' || data.LABLE1 === 'Net Profit')}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.MTD,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.MTD != null && data.MTD != 0">$</span><span>{{
+                                            formatValue(data.MTD,
+                                            data.ValueType) }}</span></span>
+                                </td>
+                                <td
+                                    [ngClass]="{ negative: !inTheGreen(data.PACE) && (data.LABLE1 === 'Operating Profit' || data.LABLE1 === 'Net Profit')}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.PACE,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.PACE != null && data.PACE != 0">$</span><span>{{
+                                            formatValue(data.PACE,
+                                            data.ValueType) }}</span></span>
+                                </td>
+                                <td
+                                    [ngClass]="{ negative: !inTheGreen(data.BUDGET) && (data.LABLE1 === 'Operating Profit' || data.LABLE1 === 'Net Profit')}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.BUDGET,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.BUDGET != null && data.BUDGET != 0">$</span><span>{{
+                                            formatValue(data.BUDGET, data.ValueType) }}</span></span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(data.VARIANCE)}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.VARIANCE,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.VARIANCE != null && data.VARIANCE != 0">$</span><span>{{
+                                            formatValue(data.VARIANCE, data.ValueType) }}</span></span>
+                                </td>
+                                <td (click)="openMenu(data,LMY_Date)" style="cursor: pointer;"
+                                    [ngClass]="{ negative: !inTheGreen(data.LMY_MTD) && (data.LABLE1 === 'Operating Profit' || data.LABLE1 === 'Net Profit')}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LMY_MTD,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.LMY_MTD != null && data.LMY_MTD != 0">$</span><span>{{
+                                            formatValue(data.LMY_MTD, data.ValueType) }}</span></span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(data.LMY_VARIANCE)}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LMY_VARIANCE,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.LMY_VARIANCE != null && data.LMY_VARIANCE != 0">$</span><span>{{
+                                            formatValue(data.LMY_VARIANCE, data.ValueType) }}</span></span>
+                                </td>
+                                <td (click)="openMenu(data,LM_Date)" style="cursor: pointer;"
+                                    [ngClass]="{ negative: !inTheGreen(data.LM_MTD) && (data.LABLE1 === 'Operating Profit' || data.LABLE1 === 'Net Profit')}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LM_MTD,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.LM_MTD != null && data.LM_MTD != 0">$</span><span>{{
+                                            formatValue(data.LM_MTD, data.ValueType) }}</span></span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(data.LM_VARIANCE)}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LM_VARIANCE,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.LM_VARIANCE != null && data.LM_VARIANCE != 0">$</span><span>{{
+                                            formatValue(data.LM_VARIANCE, data.ValueType) }}</span></span>
+                                </td>
+                                <td
+                                    [ngClass]="{ negative: !inTheGreen(data.YTD) && (data.LABLE1 === 'Operating Profit' || data.LABLE1 === 'Net Profit')}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.YTD,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.YTD != null && data.YTD != 0">$</span><span>{{
+                                            formatValue(data.YTD, data.ValueType) }}</span></span>
+                                </td>
+                                <td
+                                    [ngClass]="{ negative: !inTheGreen(+data.CY_BUDGET) && (data.LABLE1 === 'Operating Profit' || data.LABLE1 === 'Net Profit')}">
+                                    <span class="d-flex" [ngStyle]="getStyle(+data.CY_BUDGET,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && +data.CY_BUDGET != null && +data.CY_BUDGET != 0">$</span><span>{{
+                                            formatValue(+data.CY_BUDGET, data.ValueType) }}</span></span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(data.CY_VARIANCE)}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.CY_VARIANCE,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.CY_VARIANCE != null && data.CY_VARIANCE != 0">$</span><span>{{
+                                            formatValue(data.CY_VARIANCE, data.ValueType) }}</span></span>
+                                </td>
+                                <td
+                                    [ngClass]="{ negative: !inTheGreen(data.LY_YTD) && (data.LABLE1 === 'Operating Profit' || data.LABLE1 === 'Net Profit')}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LY_YTD,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.LY_YTD != null && data.LY_YTD != 0">$</span><span>{{
+                                            formatValue(data.LY_YTD, data.ValueType) }}</span></span>
+                                </td>
+                                <td [ngClass]="{ negative: !inTheGreen(data.LY_VARIANCE)}">
+                                    <span class="d-flex" [ngStyle]="getStyle(data.LY_VARIANCE,data.ValueType)">
+                                        <span
+                                            *ngIf="data.ValueType === '$' && data.LY_VARIANCE != null && data.LY_VARIANCE != 0">$</span><span>{{
+                                            formatValue(data.LY_VARIANCE, data.ValueType) }}</span></span>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #NoFsdata>
+                        <tr *ngIf="NoData">
+                            <td></td>
+                            <td colspan="13"
+                                style="text-align: center;font-size: 16px;background: transparent !important;color: black; display: revert;">
+                                <label>No Data Found</label>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- <button (click)="printDiv()">Print Report</button> -->

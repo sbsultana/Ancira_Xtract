@@ -1,0 +1,39 @@
+   .content-wrapper {
+    margin-left: 10.3rem; 
+    // background: radial-gradient(176.81% 119.6% at 21.24% 110.83%, #05F 0%, rgba(0, 85, 255, 0.10) 80.29%), radial-gradient(460.55% 83.6% at -4.76% 100%, rgba(0, 85, 255, 0.90) 0%, rgba(0, 85, 255, 0.12) 91.35%), radial-gradient(117.09% 53.18% at 71.73% 122.78%, #05F 11.81%, rgba(15, 89, 247, 0.10) 100%), #001D57;
+    // height: 300px; 
+    transition: margin-left 0.3s ease-in-out;
+  }
+
+ 
+ .content-wrapper.sidebar-collapsed {
+  margin-left: 70px; 
+
+ 
+}
+ 
+  
+.content-wrapper.sidebar-collapsed ::ng-deep  .bs-datepicker {
+    display: flex;
+    align-items: stretch;
+    flex-flow: row wrap;
+    background: #fff;
+    box-shadow: 0 0 10px 0 #aaa;
+    position: relative;
+    z-index: 1;
+    border-radius: 12px;
+    top: 120px;
+    right: 200px;
+    left: 19.8rem;
+}
+
+
+@media print {
+
+   .content-wrapper {
+       background: none !important;
+
+  }
+
+
+}
