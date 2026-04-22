@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   baseHref: '/reports/',
-  apiUrl1: 'https://ancinsightsapi.axelone.app/',
+  apiUrl1: 'https://ancinsightsapi.axelone.app/api/',
   apiUrl: 'https://ancxtractapi.axelautomotive.com/api/',
   apiconn:'https://ancinsightsapi.axelone.app/',
   apiDev2: 'https://dev2api.axelxtract.com/api/',
