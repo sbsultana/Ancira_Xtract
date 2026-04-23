@@ -20,13 +20,15 @@
     .groups {
         width: auto;
         flex-shrink: 0;
-        border-right: 1px solid #dbe7ff !important;
+        // border-right: 1px solid #dbe7ff !important;
+        border-right: none;
     }
 
     .stores {
         flex: 1;
         overflow-x: auto;
-        border-left: none;
+        // border-left: none;
+        border-left: 1px solid #dbe7ff !important;
     }
 
     .groups-wrapper,

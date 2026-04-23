@@ -32,7 +32,7 @@
             <input #dp="bsDatepicker" type="text" bsDatepicker [(ngModel)]="selectDate" [bsConfig]="bsConfig" readonly
               (keydown)="$event.preventDefault()" style="position: absolute; opacity: 0; height: 0; width: 0;" />
           </div>
-          <div class="dropdown">
+          <div class="dropdown d-none">
             <button class="dropdown-toggle" (click)="togglePopover(1)">
               Department <span class="light-font"> {{ selectedLabel }} </span> <span class="arrow"></span>
             </button>
@@ -61,7 +61,7 @@
           <tr>
             <th>For the period ending</th>
             <th></th>
-            <th colspan="4"></th>
+            <th colspan="3"></th>
             <th [attr.colspan]="ExpenseTrendKeys.length"></th>
           </tr>
 
@@ -75,7 +75,6 @@
             <th><span>&nbsp;</span></th>
             <th><span>YTD</span></th>
             <th><span>PYTD</span></th>
-            <th><span>Pace</span></th>
             <th>
               <span>Average</span>
             </th>
@@ -143,17 +142,6 @@
                 !=
                 null ? data.PYTD + '%' : '-' }}</td>
 
-              <td class="text-end" *ngIf="!data.DISPLAY_LABLE.includes('%')"
-                [ngClass]="{ negative: !inTheGreen(data.PACE)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
-                <span class="d-flex justify-content-between">
-                  $<span>{{ data.PACE ?
-                    (data.PACE | number: '1.0-0') :
-                    '-' }}</span></span>
-              </td>
-              <td class="text-end" *ngIf="data.DISPLAY_LABLE.includes('%')"
-                [ngClass]="{ negative: !inTheGreen(data.PACE)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
-                {{ data.PACE !=
-                null ? data.PACE + '%' : '-' }}</td>
 
               <td *ngIf="!data.DISPLAY_LABLE.includes('%')"
                 [ngClass]="{ negative: !inTheGreen(data.AVG)  && (data.DISPLAY_LABLE === 'Operating Profit' || data.DISPLAY_LABLE === 'Net Profit (Loss)')}">
@@ -174,8 +162,8 @@
                       (data[key] | number: '1.0-0') :
                       '-' }}</span></span>
                 </td>
-                <td class="text-end" (click)="openMonthDetails(data,ExpenseTrendKeys[i],data.DISPLAY_LABLE,data.ROWID,'MTD')"
-                  [ngStyle]="{
+                <td class="text-end"
+                  (click)="openMonthDetails(data,ExpenseTrendKeys[i],data.DISPLAY_LABLE,data.ROWID,'MTD')" [ngStyle]="{
                         'cursor': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'not-allowed' : 'pointer',
                         'pointer-events': data.PARENTLABLECODE === '' ||  data.ISHEAD_TOTAL === 'Y' || data.DISPLAY_PARENTLABLE === 'IncomeSummary' || data.DISPLAY_PARENTLABLE === '' ? 'none' : 'auto'
                       }" *ngIf="data.DISPLAY_LABLE.includes('%')"

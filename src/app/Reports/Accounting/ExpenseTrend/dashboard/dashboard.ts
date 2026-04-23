@@ -263,8 +263,8 @@ export class Dashboard {
     );
     const obj = {
       AS_IDS: this.storeIds.toString(),
-      DATE: this.shared.datePipe.transform(date,'yyyy-MM')+'-10',
-      DEPARTMENT: filters.toString()
+      DATE: this.shared.datePipe.transform(date, 'yyyy-MM') + '-10',
+      // DEPARTMENT: filters.toString()
     };
     console.log(obj);
     this.apiSrvc
@@ -274,7 +274,7 @@ export class Dashboard {
           this.isLoading = false;
           if (x.status == 200) {
             this.ExpenseTrendByStoreMonth = x.response;
-            const serviceKeys = Object.keys(x.response[0]).slice(11);
+            const serviceKeys = Object.keys(x.response[0]).slice(10);
             this.ExpenseTrendKeys = serviceKeys;
             console.log(
               'ExpenseTrendByStoreMonth',
@@ -450,7 +450,6 @@ export class Dashboard {
       `${startDate} - ${endDate}`,
       'YTD',
       'PYTD',
-      'PACE',
       'AVG',
       ...this.ExpenseTrendKeys
     ];
@@ -464,7 +463,6 @@ export class Dashboard {
         d.DISPLAY_LABLE,
         d.YTD ?? '-',
         d.PYTD ?? '-',
-        d.PACE ?? '-',
         d.AVG ?? '-'
       ];
 
@@ -480,7 +478,6 @@ export class Dashboard {
     });
 
 
-    /* ================= TABLE ================= */
     autoTable(doc, {
       startY: 18,
       head: [header],
@@ -491,74 +488,89 @@ export class Dashboard {
         fontSize: 8,
         cellPadding: 2,
         halign: 'right',
-        textColor: [20, 20, 20], // 👈 slightly richer black
+        textColor: [20, 20, 20],
+        lineWidth: 0.3,
+        lineColor: [200, 200, 200]
       },
 
       headStyles: {
         fillColor: [5, 84, 239],
         textColor: [255, 255, 255],
         fontStyle: 'bold',
-        halign: 'center'
+        halign: 'center',
+        lineWidth: 0.3,
+        lineColor: [200, 200, 200]
       },
 
       didParseCell: (data: any) => {
 
-        /* ===== HEADER ===== */
         if (data.section === 'head') {
           data.cell.styles.fillColor = [5, 84, 239];
           data.cell.styles.textColor = [255, 255, 255];
           data.cell.styles.fontStyle = 'bold';
 
-          if (data.column.index === 0) {
-            data.cell.styles.halign = 'left';
-          } else {
-            data.cell.styles.halign = 'center';
-          }
-
+          data.cell.styles.halign = data.column.index === 0 ? 'left' : 'center';
           return;
         }
 
-        /* ===== BODY ===== */
         const rowData = this.ExpenseTrendByStoreMonth[data.row.index];
         if (!rowData) return;
 
-        /* ===== ALIGNMENT ===== */
         if (data.column.index === 0) {
           data.cell.styles.halign = 'left';
         } else {
           data.cell.styles.halign = 'right';
         }
 
-        /* ===== REMOVE '-' LOGIC ===== */
         if (rowData.DISPLAYHEAD_FLAG === 1) {
           if (!data.cell.raw || data.cell.raw === '-') {
             data.cell.text = [''];
-            return; // ✅ IMPORTANT (stop further formatting)
+            return;
           }
         } else {
           if (!data.cell.raw || data.cell.raw === '-') {
             data.cell.text = ['-'];
             data.cell.styles.halign = 'center';
-            return; // ✅ IMPORTANT
+            return;
           }
         }
+        const isAdvertisingRow = rowData.DISPLAY_LABLE === 'Advertising Rebates';
+        const isPercentRow = rowData.DISPLAY_LABLE?.includes('%');
 
-        /* ===== FORMAT: $ + ROUND (NO DECIMALS) ===== */
         if (data.column.index > 0) {
+
           let val = parseFloat(data.cell.raw);
 
           if (!isNaN(val)) {
-            const rounded = Math.round(val);
 
-            data.cell.text = [`$ ${rounded.toLocaleString()}`];
+            /* 🔹 PERCENT */
+            if (isPercentRow) {
 
-            if (rounded < 0) {
-              data.cell.styles.textColor = [220, 53, 69];
+              if (isAdvertisingRow) {
+                data.cell.text = val < 0
+                  ? [`(${Math.abs(val)}%)`]
+                  : [`${val}%`];
+              } else {
+                data.cell.text = [`${val}%`];
+              }
+
+            } else {
+
+              const rounded = Math.round(val);
+              const formatted = Math.abs(rounded).toLocaleString();
+
+              /* 🔥 ACCOUNTING FORMAT */
+              if (isAdvertisingRow) {
+                data.cell.text = rounded < 0
+                  ? [`($${formatted})`]   // ✅ HERE
+                  : [`$${formatted}`];
+              } else {
+                data.cell.text = [`$${formatted}`];
+              }
+
             }
           }
         }
-
-        /* ===== SECTION HEADER (FULL ROW COLOR) ===== */
         if (rowData.DISPLAYHEAD_FLAG === 1) {
           Object.values(data.row.cells).forEach((cell: any) => {
             cell.styles.fillColor = [217, 231, 255];
@@ -567,12 +579,10 @@ export class Dashboard {
           });
         }
 
-        /* ===== TOTAL ROW ===== */
         if (rowData.ISHEAD_TOTAL === 'Y') {
           data.cell.styles.fontStyle = 'bold';
         }
 
-        /* ===== ALTERNATE ROW ===== */
         if (
           data.row.index % 2 === 0 &&
           rowData.DISPLAYHEAD_FLAG !== 1 &&
@@ -727,7 +737,7 @@ export class Dashboard {
     const StartDate = this.datepipe.transform(this.dates[0], 'MMM yyyy');
     const EndDate = this.datepipe.transform(this.dates[11], 'MMM yyyy');
 
-    const Header = [StartDate + ' - ' + EndDate, 'YTD', 'PYTD', 'PACE', 'AVG'];
+    const Header = [StartDate + ' - ' + EndDate, 'YTD', 'PYTD', 'AVG'];
 
     for (let i = 0; i < this.ExpenseTrendKeys.length; i++) {
       Header.push(this.ExpenseTrendKeys[i]);
@@ -767,7 +777,6 @@ export class Dashboard {
         d.DISPLAY_LABLE,
         d.YTD ?? '-',
         d.PYTD ?? '-',
-        d.PACE ?? '-',
         d.AVG ?? '-'
       ];
 
@@ -932,7 +941,7 @@ export class Dashboard {
     const Obj = {
       as_ids: this.storeIds.toString(),
       // dept: this.selectedFilters.toString(),
-      dept: this.selectedFilters.toString(),
+      dept: '',
       subtype: '',
       subtypedetail: Object.DISPLAY_LABLE,
       FinSummary: Object.DISPLAY_PARENTLABLE,
@@ -967,7 +976,7 @@ export class Dashboard {
     const Obj = {
       as_ids: StoreName,
       // dept: this.selectedFilters.toString(),
-      dept: this.selectedFilters.toString(),
+      dept: '',
       subtype: '',
       subtypedetail: this.SubtypeDetailLable,
       FinSummary: this.FinSummaryLable,
@@ -1308,12 +1317,12 @@ export class Dashboard {
           label: 'Group',
           value: this.groupName || ''
         },
-        {
-          label: 'Department',
-          value: this.Filter && this.Filter.length
-            ? this.Filter.join(', ')
-            : 'All'
-        },
+        // {
+        //   label: 'Department',
+        //   value: this.Filter && this.Filter.length
+        //     ? this.Filter.join(', ')
+        //     : 'All'
+        // },
         {
           label: 'Month',
           value: this.datepipe.transform(this.currentMonth, 'MMMM yyyy')

@@ -22,16 +22,10 @@
       th:nth-child(7),
       th:nth-child(8),
       th:nth-child(10),
-      th:nth-child(21),
-      th:nth-child(26),
-      th:nth-child(29),
 
       td:nth-child(7),
       td:nth-child(8),
-      td:nth-child(10),
-      td:nth-child(21),
-      td:nth-child(26),
-      td:nth-child(29) {
+      td:nth-child(10){
         box-shadow:
           inset 0 0.4px 0 0 #e0edff,
           inset -3px 0 0 0 #e0edff,

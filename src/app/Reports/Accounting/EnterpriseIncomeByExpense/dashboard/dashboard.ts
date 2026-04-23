@@ -141,7 +141,7 @@ export class Dashboard {
     this.CurrentRoute = this.router.url.substring(1);
     switch (this.CurrentRoute) {
       case 'FixedIncomeByExpense':
-        this.filters = ['Service', 'Parts', 'Details'];
+        this.filters = ['Service', 'Parts'];
         this.SetTitle = 'Fixed Income / Expense';
         break;
       case 'VariableIncomeByExpense':
@@ -149,7 +149,7 @@ export class Dashboard {
         this.SetTitle = 'Variable Income / Expense';
         break;
       case 'EnterpriseIncomeByExpense':
-        this.filters = ['New', 'Used', 'Service', 'Parts', 'Details'];
+        this.filters = ['New', 'Used', 'Service', 'Parts'];
         this.SetTitle = 'Enterprise Income / Expense';
         break;
       default:
@@ -1083,25 +1083,51 @@ export class Dashboard {
       ...this.IncomeSummaryDataKeys.map((k: string) => this.formatKey(k))
     ]];
 
-    /* ================= BODY ================= */
+    const percentColumns: number[] = [];
+
+    this.IncomeSummaryDataKeys.forEach((k: string, i: number) => {
+      if (k.endsWith('_GP')) {
+        percentColumns.push(i + 3); // shift (label + total + avg)
+      }
+    });
     const body: any[] = [];
 
     this.IncomeSummaryData.forEach((d: any) => {
 
-      let row = [
+      let mainRow = [
         d.DISPLAY_LABLE,
         d.TOTAL,
         d.AVG
       ];
 
       this.IncomeSummaryDataKeys.forEach((k: any) => {
-        row.push(d[k] === '' || d[k] === null ? '-' : Number(d[k]));
+        mainRow.push(d[k] === '' || d[k] === null ? '-' : Number(d[k]));
       });
 
       body.push({
         rowData: d,
-        values: row
+        values: mainRow
       });
+
+      d.SubData?.forEach((sub: any) => {
+
+        let subRow = [
+          '   ' + sub.Department,
+          sub.TOTAL,
+          sub.AVG
+        ];
+
+        this.IncomeSummaryDataKeys.forEach((k: any) => {
+          subRow.push(sub[k] === '' || sub[k] === null ? '-' : Number(sub[k]));
+        });
+
+        body.push({
+          rowData: d,
+          isSub: true,
+          values: subRow
+        });
+      });
+
     });
 
     /* ================= TABLE ================= */
@@ -1132,9 +1158,8 @@ export class Dashboard {
         const rowObj = body[data.row.index];
         const rowData = rowObj?.rowData;
 
-        /* ================= HEADER ================= */
         if (data.section === 'head') {
-          data.cell.styles.fillColor = [5, 84, 239]; // Excel blue
+          data.cell.styles.fillColor = [5, 84, 239];
           data.cell.styles.textColor = [255, 255, 255];
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.halign = 'center';
@@ -1146,46 +1171,43 @@ export class Dashboard {
         const isHeaderRow = rowData.DISPLAYHEAD_FLAG === 1;
         const isTotalRow = rowData.ISHEAD_TOTAL === 'Y';
 
-        /* ================= ALIGN ================= */
-        data.cell.styles.halign =
-          data.column.index === 0 ? 'left' : 'right';
+        data.cell.styles.halign = data.column.index === 0 ? 'left' : 'right';
 
-        /* ================= EMPTY LOGIC ================= */
-        const valEmpty =
-          data.cell.raw === null ||
-          data.cell.raw === undefined ||
-          data.cell.raw === '' ||
-          data.cell.raw === 0;
+        const rawValue = body[data.row.index]?.values[data.column.index];
+
+        const isEmpty =
+          rawValue === null ||
+          rawValue === undefined ||
+          rawValue === '' ||
+          rawValue === 0 ||
+          rawValue === '-';
 
         if (isHeaderRow) {
-          if (valEmpty) {
+          if (isEmpty) {
             data.cell.text = [''];
             return;
           }
         } else {
-          if (valEmpty) {
+          if (isEmpty) {
             data.cell.text = ['-'];
             data.cell.styles.halign = 'center';
             return;
           }
         }
 
-        /* ================= NUMBER FORMAT ================= */
         if (data.column.index > 0) {
-
-          const rawValue = body[data.row.index]?.values[data.column.index];
-
-          if (rawValue === '-' || rawValue === null || rawValue === undefined || rawValue === '') {
-            return;
-          }
 
           let val = Number(rawValue);
 
           if (!isNaN(val)) {
 
-            /* ✅ % VALUES (keep decimals) */
-            if (rowData.DISPLAY_LABLE?.includes('% of GP') ||
-              rowData.DISPLAY_LABLE?.includes('Selling Gross %')) {
+            const isPercentCol = percentColumns.includes(data.column.index);
+
+            const isRowPercent =
+              rowData.DISPLAY_LABLE?.includes('% of GP');
+
+            /* 🔹 % FORMAT (COLUMN OR ROW BASED) */
+            if (isPercentCol || isRowPercent) {
 
               const formatted = val.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -1193,30 +1215,32 @@ export class Dashboard {
               });
 
               data.cell.text = [`${formatted}%`];
-              data.cell.styles.halign = 'right';
 
             } else {
 
-              /* ✅ $ VALUES (ROUND FIGURE) */
+              /* 🔹 CURRENCY */
               const rounded = Math.round(val);
 
-              const formatted = rounded.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-              });
+              const formatted = rounded.toLocaleString();
 
-              data.cell.text = [`$ ${formatted}`];
+              data.cell.text = [`$${formatted}`];
 
-              if (rounded < 0) {
+              /* 🔴 NEGATIVE ONLY FOR SPECIFIC ROWS */
+              if (
+                (rowData.DISPLAY_LABLE === 'Net Profit (Loss)' ||
+                  rowData.DISPLAY_LABLE === 'Operating Net') &&
+                rounded < 0
+              ) {
                 data.cell.styles.textColor = [220, 53, 69];
               }
             }
           }
         }
-        /* ================= SECTION HEADER ROW ================= */
+
+        /* ================= HEADER ROW STYLE ================= */
         if (isHeaderRow) {
           Object.values(data.row.cells).forEach((cell: any) => {
-            cell.styles.fillColor = [217, 231, 255]; // light blue
+            cell.styles.fillColor = [217, 231, 255];
             cell.styles.fontStyle = 'bold';
           });
         }
@@ -1225,12 +1249,18 @@ export class Dashboard {
         if (isTotalRow) {
           Object.values(data.row.cells).forEach((cell: any) => {
             cell.styles.fontStyle = 'bold';
-            cell.styles.fillColor = null;
+          });
+        }
+
+        /* ================= SUB ROW BG ================= */
+        if (rowObj?.isSub) {
+          Object.values(data.row.cells).forEach((cell: any) => {
+            cell.styles.fillColor = [237, 243, 255];
           });
         }
 
         /* ================= ZEBRA ================= */
-        if (!isHeaderRow && data.row.index % 2 === 0) {
+        if (!isHeaderRow && !rowObj?.isSub && data.row.index % 2 === 0) {
           Object.values(data.row.cells).forEach((cell: any) => {
             cell.styles.fillColor = [245, 247, 250];
           });
@@ -1497,8 +1527,5 @@ export class Dashboard {
     });
   }
 
-  GetPrintData() {
-    window.print();
-  }
 
 }

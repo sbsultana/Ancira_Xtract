@@ -195,7 +195,7 @@ export class IncomestatementstoreDetails {
     };
 
     this.apiSrvc
-      .postmethod(this.comm.routeEndpoint + 'GetFinancialSummaryDetailsV3', Obj)
+      .postmethod(this.comm.routeEndpoint + 'GetFinancialSummaryDetailsV2', Obj)
       .subscribe((res) => {
         this.spinnerLoader = false;
         if (res.status === 200) {

@@ -153,9 +153,9 @@ export class Dashboard {
     }
     const obj = {
       stores: this.storeIds.toString(),
-      date: '10-'+this.shared.datePipe.transform(monthDate,'MMM-yyyy'),
+      DATE: this.shared.datePipe.transform(monthDate, 'yyyy-MM') + '-10',
     };
-    this.apiSrvc.postmethod(this.comm.routeEndpoint + 'GetFbFinancialStatementReport', obj).subscribe({
+    this.apiSrvc.postmethod(this.comm.routeEndpoint + 'GetFinStatementReport', obj).subscribe({
       next: (res) => {
         this.spinner.hide();
 
@@ -351,7 +351,7 @@ export class Dashboard {
     const obj = {
       "Store": this.storeIds,
       "Department": Object.Department,
-      "DATE": '10-'+this.shared.datePipe.transform(new Date(this.selectedDate),'MMM-yyyy'),
+      "DATE": '10-' + this.shared.datePipe.transform(new Date(this.selectedDate), 'MMM-yyyy'),
       "Headname": Object.DisplayName
     };
 
@@ -426,7 +426,7 @@ export class Dashboard {
   }
 
   getStyle(value: any, valueType: string) {
-    if (value === null || value === '' || value === 0 || value === '0') {
+    if (value === null || value === '' || value === 0 || value === '0' || value === undefined) {
       return { 'justify-content': 'center' };
     }
     switch (valueType) {
@@ -441,7 +441,7 @@ export class Dashboard {
     }
   }
   formatValue(value: any, valueType: string): string {
-    if (value === null || value === undefined || value === 0 || value === '0') {
+    if (value === null || value === undefined || value === 0 || value === '0' || value === undefined) {
       return '-';
     } else if (valueType === '#') {
       return typeof value === 'number' ? numeral(value).format('0,0') : value;
@@ -466,7 +466,7 @@ export class Dashboard {
   }
 
   formatExcelValue(value: any, valueType: string) {
-    if (value === null || value === '' || value === undefined || value === 0 || value === '0') {
+    if (value === null || value === '' || value === undefined || value === 0 || value === '0' ) {
       return '-';
     }
     switch (valueType) {

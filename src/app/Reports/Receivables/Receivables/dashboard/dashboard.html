@@ -49,7 +49,7 @@
                     All</a>
                 </div>
                 <div class="store-columns flex-grow-1">
-                  <!-- <ng-container *ngIf="storeIds.length > 0">
+                  <!-- <ng-container *ngIf="hidestoreIds.length > 0">
                     <div class="allstores text-start" *ngIf="selectedFiManagersvalues.length == 0">
                       <a class="text-primary text-decoration-none cursor-pointer me-2" style="pointer-events: none;">No
                         Records Found
@@ -94,7 +94,7 @@
             </div>
           </div>
         </div>
-        <div class="all-debits d-flex align-items-center">
+        <div class="all-debits d-flex align-items-center d-none">
 
           <div class="form-check me-3">
             <input class="form-check-input" type="radio" name="balanceFilter" id="allFilter" value="all"
@@ -151,7 +151,9 @@
       <div class="scorecard-aging-header mt-2">
         <table class="table mb-0">
           <thead style="text-transform: uppercase;">
-            <tr>
+
+            <!-- 🔹 DEFAULT -->
+            <tr *ngIf="selectedreceviabe.path!='Finance A/R' && selectedreceviabe.path!='Service/Parts A/R'">
               <th colspan="5">&nbsp;</th>
               <th>Total</th>
               <th>0-5</th>
@@ -159,66 +161,123 @@
               <th>11-15</th>
               <th>15+</th>
             </tr>
+
+            <!-- 🔹 FINANCE -->
+            <tr *ngIf="selectedreceviabe.path=='Finance A/R'">
+              <th colspan="5">&nbsp;</th>
+              <th>Total</th>
+              <th>0-15</th>
+              <th>16-30</th>
+              <th>31-60</th>
+              <th>61+</th>
+            </tr>
+
+            <!-- 🔹 SERVICE / PARTS -->
+            <tr *ngIf="selectedreceviabe.path=='Service/Parts A/R'">
+              <th colspan="5">&nbsp;</th>
+              <th>Total</th>
+              <th>0-30</th>
+              <th>31-60</th>
+              <th>61-90</th>
+              <th>90+</th>
+            </tr>
+
           </thead>
 
-          <tbody *ngIf="FloorPlanData?.length > 0">
+          <tbody *ngIf="FloorPlanTotalData?.length > 0">
+
             <tr>
-              <td colspan="5">{{ selectedreceviabe.title }} Aging</td>
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.TOTAL) }">
-
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.TOTAL) }} -->
+              <td colspan="5">{{ selectedreceviabe.Receivables }} Aging</td>
+              <!-- 🔹 TOTAL -->
+              <td [ngClass]="{ negative: !inTheGreen(FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL) }">
                 <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.TOTAL != null ?
-                    (FloorPlanData[0].AgeData[0].TOTAL | number: '1.0-0') : '-' }}
+                  {{
+                  (FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL ==
+                  null)
+                  ? ''
+                  : '$'
+                  }}
+                  <span>
+                    {{
+                    (FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL ==
+                    null)
+                    ? '-'
+                    : (FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL | number:'1.0-0')
+                    }}
+                  </span>
+                </span>
+              </td>
+              <!-- 🔹 D1 -->
+              <td [ngClass]="{ negative: !inTheGreen(FloorPlanTotalData[0]?.AgeData?.[0]?.D1) }">
+                <span class="d-flex justify-content-between">
+                  {{
+                  (FloorPlanTotalData[0]?.AgeData?.[0]?.D1 == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.D1 == null)
+                  ? ''
+                  : '$'
+                  }}
+                  <span>
+                    {{
+                    (FloorPlanTotalData[0]?.AgeData?.[0]?.D1 == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.D1 == null)
+                    ? '-'
+                    : (FloorPlanTotalData[0]?.AgeData?.[0]?.D1 | number:'1.0-0')
+                    }}
+                  </span>
+                </span>
+              </td>
+              <!-- 🔹 D2 -->
+              <td [ngClass]="{ negative: !inTheGreen(FloorPlanTotalData[0]?.AgeData?.[0]?.D2) }">
+                <span class="d-flex justify-content-between">
+                  {{
+                  (FloorPlanTotalData[0]?.AgeData?.[0]?.D2 == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.D2 == null)
+                  ? ''
+                  : '$'
+                  }}
+                  <span>
+                    {{
+                    (FloorPlanTotalData[0]?.AgeData?.[0]?.D2 == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.D2 == null)
+                    ? '-'
+                    : (FloorPlanTotalData[0]?.AgeData?.[0]?.D2 | number:'1.0-0')
+                    }}
+                  </span>
+                </span>
+              </td>
+              <!-- 🔹 D3 -->
+              <td [ngClass]="{ negative: !inTheGreen(FloorPlanTotalData[0]?.AgeData?.[0]?.D3) }">
+                <span class="d-flex justify-content-between">
+                  {{
+                  (FloorPlanTotalData[0]?.AgeData?.[0]?.D3 == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.D3 == null)
+                  ? ''
+                  : '$'
+                  }}
+                  <span>
+                    {{
+                    (FloorPlanTotalData[0]?.AgeData?.[0]?.D3 == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.D3 == null)
+                    ? '-'
+                    : (FloorPlanTotalData[0]?.AgeData?.[0]?.D3 | number:'1.0-0')
+                    }}
+                  </span>
+                </span>
+              </td>
+              <!-- 🔹 D4 -->
+              <td [ngClass]="{ negative: !inTheGreen(FloorPlanTotalData[0]?.AgeData?.[0]?.D4) }">
+                <span class="d-flex justify-content-between">
+                  {{
+                  (FloorPlanTotalData[0]?.AgeData?.[0]?.D4 == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.D4 == null)
+                  ? ''
+                  : '$'
+                  }}
+                  <span>
+                    {{
+                    (FloorPlanTotalData[0]?.AgeData?.[0]?.D4 == 0 || FloorPlanTotalData[0]?.AgeData?.[0]?.D4 == null)
+                    ? '-'
+                    : (FloorPlanTotalData[0]?.AgeData?.[0]?.D4 | number:'1.0-0')
+                    }}
                   </span>
                 </span>
               </td>
 
-              <!-- 0–5 -->
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.D1) }">
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.D1) }} -->
-                <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.D1 != null ?
-                    (FloorPlanData[0].AgeData[0].D1 | number: '1.0-0') : '-' }}
-                  </span>
-                </span>
-              </td>
-
-              <!-- 6–10 -->
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.D2) }">
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.D2) }} -->
-                <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.D2 != null ?
-                    (FloorPlanData[0].AgeData[0].D2 | number: '1.0-0') : '-' }}
-                  </span>
-                </span>
-              </td>
-
-              <!-- 11–15 -->
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.D3) }">
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.D3) }} -->
-                <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.D3 != null ?
-                    (FloorPlanData[0].AgeData[0].D3 | number: '1.0-0') : '-' }}
-                  </span>
-                </span>
-              </td>
-
-              <!-- 15+ -->
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.D4) }">
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.D4) }} -->
-                <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.D4 != null ?
-                    (FloorPlanData[0].AgeData[0].D4 | number: '1.0-0' ) : '-' }}
-                  </span>
-                </span>
-              </td>
             </tr>
+
           </tbody>
         </table>
       </div>
@@ -226,13 +285,13 @@
       <!-- Right-side Info -->
       <div>
         <div class="text-end asofnow pe-2">
-          Count : {{ FloorPlanData[0]?.AgeData?.[0]?.D6 != null
-          ? (FloorPlanData[0].AgeData[0].D6 | number:'1.0-0')
+          Count : {{ FloorPlanTotalData[0]?.AgeData?.[0]?.D6 != null
+          ? (FloorPlanTotalData[0].AgeData[0].D6 | number:'1.0-0')
           : '-' }}
-          &nbsp;&nbsp; As of {{ FloorPlanData[0]?.AgeData?.[0]?.D5 | timeconversion}}
+          &nbsp;&nbsp; As of {{ FloorPlanTotalData[0]?.AgeData?.[0]?.D5 | timeconversion}}
         </div>
         <div>
-          <!-- Count: {{ FloorPlanData[0]?.AgeData?.[0]?.D6 != null ? FloorPlanData[0].AgeData[0].D6 : '-'
+          <!-- Count: {{ FloorPlanTotalData[0]?.AgeData?.[0]?.D6 != null ? FloorPlanTotalData[0].AgeData[0].D6 : '-'
                         }} -->
           <div class="pagination-container d-flex align-items-center justify-content-end text-black mt-2">
 
@@ -270,18 +329,31 @@
     <div class="scorecard-triple-header receivables-tbl mt-2" *ngIf="actionType == 'Y'">
       <table class="table mb-0 w-100">
         <thead>
+
           <tr>
-            <th class="boxshadow-none" *ngIf="Role=='Super Admin' || userid=='8'"></th>
+            <th *ngIf="Role=='Super Admin' || userid=='8'" class="boxshadow-none"></th>
+
             <th colspan="6"></th>
+
             <th>Balances</th>
-            <th colspan="2">Customer</th>
-            <th colspan="1" class="boxshadow-none" *ngIf="storeIds.toString().indexOf(',')> 0  "></th>
-            <th colspan="10">Deal Info</th>
-            <th colspan="3" class="boxshadow-none">Vehicle</th>
-            <!-- <th colspan="1" style="border-right: 2px solid #e0e1e2;">Notes</th> -->
+
+            <th colspan="2">
+              {{ selectedreceviabe.path == 'Employee A/R' ? 'Employee' : 'Customer' }}
+            </th>
+
+            <th *ngIf="hidestoreIds.toString().indexOf(',') > 0" class="boxshadow-none"></th>
+
+            <th *ngIf="isDealInfoFull()" colspan="8">Deal Info</th>
+            <th *ngIf="selectedreceviabe.path=='Wholesale A/R'" colspan="3">Deal Info</th>
+            <th *ngIf="selectedreceviabe.path=='Incentives A/R'" colspan="6">Deal Info</th>
+
+
+            <th class="boxshadow-none" *ngIf="selectedreceviabe.path!='BodyShop A/R'" colspan="3">Vehicle</th>
           </tr>
+
           <tr>
 
+            <!-- HIDE -->
             <th *ngIf="Role=='Super Admin' || userid=='8'">
               <div class="form-check d-flex justify-content-center py-0 my-0">
                 <input class="form-check-input" type="checkbox" [checked]="check" id="symbol"
@@ -299,47 +371,65 @@
               <i class="fa-solid fa-eye-slash" *ngIf="commentsVisibility"></i>
             </th>
 
-            <th (click)="sortTable('AGE')" class="cursor">Age</th>
-            <th (click)="sortTable('FundedDate')" class="cursor">Date</th>
-            <th (click)="sortTable('AccountDesc2')" class="cursor">Account</th>
-            <th (click)="sortTable('Control')" class="cursor">Control</th>
-            <th (click)="sortTable('control2')" class="cursor">Control 2</th>
+            <th (click)="sortTable('AGE')" class="cursor-pointer">Age</th>
+            <th (click)="sortTable('FundedDate')" class="cursor-pointer">Date</th>
+            <th (click)="sortTable('AccountDesc2')" class="cursor-pointer">Account</th>
+            <th (click)="sortTable('Control')" class="cursor-pointer">Control</th>
+            <th (click)="sortTable('control2')" class="cursor-pointer">Control 2</th>
 
-            <th (click)="sortTable('Balance')" class="cursor">Balance</th>
+            <th (click)="sortTable('Balance')" class="cursor-pointer">Balance</th>
 
-            <th (click)="sortTable('CustomerName')" class="cursor">Customer</th>
+            <th (click)="sortTable('CustomerName')" class="cursor-pointer">Name</th>
+            <th (click)="sortTable('CustomerNumber')" class="cursor-pointer">Number</th>
 
-            <th (click)="sortTable('CustomerNumber')" class="cursor">Number</th>
-            <th (click)="sortTable('SaleDate')" style="cursor:pointer;">Sale Date</th>
-            <th (click)="sortTable('SaleAge')" style="cursor:pointer;">Sale Age</th>
+            <th *ngIf="hidestoreIds.toString().indexOf(',') > 0" (click)="sortTable('store')" class="cursor-pointer">Store</th>
 
-            <th *ngIf="StoreVal.toString().indexOf(',') > 0" (click)="sortTable('store')" class="cursor">
-              Store
-            </th>
+            <!-- DEAL INFO -->
+            <ng-container *ngIf="isDealInfoFull()">
+              <th class="cursor-pointer" (click)="sortTable('StockNo')">Stock #</th>
+              <th class="cursor-pointer" (click)="sortTable('DealNo')">Deal #</th>
+              <th class="cursor-pointer" (click)="sortTable('Stage')">Stage</th>
+              <th class="cursor-pointer" (click)="sortTable('FIManager')">F&I Mgr</th>
+              <th class="cursor-pointer" (click)="sortTable('DealType')">New/Used</th>
+              <th class="cursor-pointer" (click)="sortTable('SaleType')">Type</th>
+              <th class="cursor-pointer" (click)="sortTable('DealStatus')">Status</th>
+              <th class="cursor-pointer" (click)="sortTable('BankName')" class="box-shadow">Bank Name</th>
+            </ng-container>
 
-            <th (click)="sortTable('StockNo')" class="cursor">Stock #</th>
-            <th (click)="sortTable('DealNo')" class="cursor">Deal #</th>
-            <th (click)="sortTable('Stage')" class="cursor">Stage</th>
+            <!-- WHOLESALE -->
+            <ng-container *ngIf="selectedreceviabe.path=='Wholesale A/R'">
+              <th class="cursor-pointer" (click)="sortTable('StockNo')">Stock #</th>
+              <th class="cursor-pointer" (click)="sortTable('DealNo')">Deal #</th>
+              <th class="cursor-pointer" (click)="sortTable('Stage')" class="box-shadow">Stage</th>
+            </ng-container>
 
-            <th (click)="sortTable('FIManager')" class="cursor">F&I Mgr</th>
-            <th (click)="sortTable('SaleType')" class="cursor">New/Used</th>
-            <th (click)="sortTable('DealType')" class="cursor">Type</th>
+            <!-- INCENTIVES -->
+            <ng-container *ngIf="selectedreceviabe.path=='Incentives A/R'">
+              <th class="cursor-pointer" (click)="sortTable('StockNo')">Stock #</th>
+              <th class="cursor-pointer" (click)="sortTable('DealNo')">Deal #</th>
+              <th class="cursor-pointer" (click)="sortTable('Stage')">Stage</th>
+              <th class="cursor-pointer" (click)="sortTable('SalesManager')">Sales Mgr</th>
+              <th class="cursor-pointer" (click)="sortTable('SaleType')">Type</th>
+              <th class="cursor-pointer" (click)="sortTable('BankName')" class="box-shadow">Bank Name</th>
+            </ng-container>
 
-            <th (click)="sortTable('DealStatus')" class="cursor">Status</th>
-            <th (click)="sortTable('BankName')" class="cursor">Bank Name</th>
-
-            <th (click)="sortTable('VehicleYear')" class="cursor">Year</th>
-            <th (click)="sortTable('VehicleMake')" class="cursor">Make</th>
-            <th (click)="sortTable('VehicleModel')" class="cursor">Model</th>
+            <!-- VEHICLE -->
+            <ng-container *ngIf="selectedreceviabe.path!='BodyShop A/R'">
+              <th class="cursor-pointer" (click)="sortTable('VehicleYear')">Year</th>
+              <th class="cursor-pointer" (click)="sortTable('VehicleMake')">Make</th>
+              <th class="cursor-pointer" (click)="sortTable('VehicleModel')">Model</th>
+            </ng-container>
 
           </tr>
         </thead>
 
-        <!-- Rows -->
+        <!-- ROWS -->
         <tbody>
           <ng-container *ngFor="let fp of paginatedItems; let j=index;'index+1' as i ;">
+
             <tr [ngClass]="{ even: i % 2 === 0, odd: i % 2 !== 0 }">
 
+              <!-- HIDE -->
               <td *ngIf="Role=='Super Admin' || userid=='8'" class="text-center">
                 <div class="form-check d-flex justify-content-center">
                   <input class="form-check-input" type="checkbox" id="symbols" [checked]="fp.check"
@@ -347,77 +437,97 @@
                 </div>
               </td>
 
+              <!-- NOTES -->
               <td class="text-center">
                 <img *ngIf="fp.NotesStatus === 'N'" src="images/Actionblack.png" (click)="addNotes(fp)"
-                  style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#payplan">
-
+                  data-bs-toggle="modal" data-bs-target="#payplan">
                 <img *ngIf="fp.NotesStatus === 'Y'" src="images/notes_unread.png" (click)="addNotes(fp)"
-                  style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#payplan">
+                  data-bs-toggle="modal" data-bs-target="#payplan">
               </td>
 
-              <td class="text-center">{{ fp.AGE || '-' }}</td>
-              <td class="text-center">
-                {{ fp.FundedDate ? (fp.FundedDate | date:'MM.dd.yyyy') : '-' }}
-              </td>
+              <td>{{ fp.AGE || '-' }}</td>
+              <td class="text-center">{{ fp.FundedDate ? (fp.FundedDate | date:'MM.dd.yyyy') : '-' }}</td>
               <td class="text-start">{{ fp.AccountDesc2 || '-' }}</td>
               <td class="text-start">{{ fp.Control || '-' }}</td>
               <td class="text-start">{{ fp.control2 || '-' }}</td>
 
-              <!-- <td style="text-align: right;" [ngClass]="{ negative: !inTheGreen(fp.Balance) }">
-              {{ formatBalance(fp.Balance) }}
-            </td> -->
-              <td style="text-align:right" [ngClass]="{ negative: !inTheGreen(fp.Balance) }">
-                <span *ngIf="fp.Balance !== null && fp.Balance !== undefined && fp.Balance !== 0; else noBalance"
-                  class="d-flex justify-content-between">
-                  $<span>{{ fp.Balance | number:'1.2-2' }}</span>
-                </span>
+              <!-- BALANCE -->
+              <td class="text-end" [ngClass]="{ negative: !inTheGreen(fp.Balance) }">
+                <span class="d-flex" [ngClass]="{
+              'justify-content-center': fp.Balance == 0 || fp.Balance == null,
+              'justify-content-between': fp.Balance != 0 && fp.Balance != null
+            }">
 
-                <ng-template #noBalance>-</ng-template>
+                  {{ (fp.Balance == 0 || fp.Balance == null) ? '' : '$' }}
+
+                  <span>
+                    {{ (fp.Balance == 0 || fp.Balance == null)
+                    ? '-'
+                    : (fp.Balance | number:'1.2-2') }}
+                  </span>
+                </span>
               </td>
+
               <td class="text-start">{{ fp.CustomerName || '-' }}</td>
               <td class="text-center">{{ fp.CustomerNumber || '-' }}</td>
-              <td class="text-center">
-                {{ fp.SaleDate ? (fp.SaleDate | date:'MM.dd.yyyy') : '-' }}
-              </td>
 
-              <td class="text-center">
-                {{ fp.SaleAge || '-' }}
-              </td>
+              <td *ngIf="hidestoreIds.toString().indexOf(',') > 0" class="text-start">{{ fp.store || '-' }}</td>
 
-              <td *ngIf="StoreVal.toString().indexOf(',') > 0" class="text-start">
-                {{ fp.store || '-' }}
-              </td>
+              <!-- DEAL INFO FULL -->
+              <ng-container *ngIf="isDealInfoFull()">
+                <td class="text-start">{{ fp.StockNo || '-' }}</td>
+                <td class="text-center" [ngClass]="{ 'deal-link': isValidDealNo(fp.DealNo) }"
+                  (click)="isValidDealNo(fp.DealNo) && openSalesModal(fp.DealNo, fp.vin, fp.storeid, fp.StockNo, fp?.source, fp?.CustomerNumber)">
+                  {{
+                  fp.DealNo || '-' }}</td>
+                <td class="text-start">{{ fp.Stage || '-' }}</td>
+                <td class="text-start">{{ fp.FIManager || '-' }}</td>
+                <td class="text-center">{{ fp.DealType || '-' }}</td>
+                <td class="text-center">{{ fp.SaleType || '-' }}</td>
+                <td class="text-center">{{ fp.DealStatus || '-' }}</td>
+                <td class="text-start box-shadow">{{ fp.BankName || '-' }}</td>
+              </ng-container>
 
-              <td class="text-start">{{ fp.StockNo || '-' }}</td>
+              <ng-container *ngIf="selectedreceviabe.path=='Wholesale A/R'">
+                <td class="text-start">{{ fp.StockNo || '-' }}</td>
+                <td class="text-center" [ngClass]="{ 'deal-link': isValidDealNo(fp.DealNo) }"
+                  (click)="isValidDealNo(fp.DealNo) && openSalesModal(fp.DealNo, fp.vin, fp.storeid, fp.StockNo, fp?.source, fp?.CustomerNumber)">
+                  {{
+                  fp.DealNo || '-' }}</td>
+                <td class="text-start box-shadow">{{ fp.Stage || '-' }}</td>
+              </ng-container>
 
-              <td class="text-center popuppointer"
-                (click)="openSalesModal(fp.DealNo,fp.vin,fp.storeid,fp.StockNo,fp?.source,fp?.CustomerNumber)"
-                [ngClass]="[fp.DealNo != 0 && fp.DealNo != null && fp.DealNo != undefined && fp.DealNo != '' && fp.DealNo != '-' ? 'popuppointer' : 'popupdisable']">
-                {{ fp.DealNo || '-' }}
-              </td>
+              <ng-container *ngIf="selectedreceviabe.path=='Incentives A/R'">
+                <td class="text-start">{{ fp.StockNo || '-' }}</td>
+                <td class="text-center" [ngClass]="{ 'deal-link': isValidDealNo(fp.DealNo) }"
+                  (click)="isValidDealNo(fp.DealNo) && openSalesModal(fp.DealNo, fp.vin, fp.storeid, fp.StockNo, fp?.source, fp?.CustomerNumber)">
+                  {{
+                  fp.DealNo || '-' }}</td>
+                <td class="text-start">{{ fp.Stage || '-' }}</td>
+                <td class="text-start">{{ fp.SalesManager || '-' }}</td>
+                <td class="text-center">{{ fp.SaleType || '-' }}</td>
+                <td class="text-start box-shadow">{{ fp.BankName || '-' }}</td>
+              </ng-container>
 
-              <td class="text-start">{{ fp.Stage || '-' }}</td>
-              <td class="text-start">{{ fp.FIManager || '-' }}</td>
 
-              <td class="text-center">{{ fp.DealType || '-' }}</td>
-              <td class="text-center">{{ fp.SaleType || '-' }}</td>
-              <td class="text-center">{{ fp.DealStatus || '-' }}</td>
-              <td class="text-start">{{ fp.BankName || '-' }}</td>
-
-              <td class="text-center">{{ fp.VehicleYear || '-' }}</td>
-              <td class="text-start">{{ fp.VehicleMake || '-' }}</td>
-              <td class="text-start">{{ fp.VehicleModel || '-' }}</td>
+              <ng-container *ngIf="selectedreceviabe.path!='BodyShop A/R'">
+                <td class="text-center">{{ fp.VehicleYear || '-' }}</td>
+                <td class="text-start">{{ fp.VehicleMake || '-' }}</td>
+                <td class="text-start">{{ fp.VehicleModel || '-' }}</td>
+              </ng-container>
 
             </tr>
 
             <tr *ngIf="commentsVisibility && fp.duplicateNotes">
-
               <td></td>
-              <td colspan="29" class="text-start ps-3">
+
+              <td [attr.colspan]="getNotesColspan()" class="text-start ps-3">
                 <h6 class="fw-bold small text-primary">Notes</h6>
+
                 <div *ngFor="let notes of fp.duplicateNotes" class="ps-4">
                   {{ notes.NOTES || '-' }}
                 </div>
+
                 <div *ngIf="fp.allNotes?.length > 3" class="ps-4">
                   <a class="font-blue cursor-pointer" (click)="viewmoreAction(fp)">
                     {{ fp.Notesstate == '+' ? 'View More' : 'View Less' }}
@@ -428,28 +538,26 @@
           </ng-container>
         </tbody>
 
-        <!-- Sticky Total Row -->
         <tbody
           style="position: sticky; top:0; bottom: 0; left: 0; right: 0;z-index: 995;font-family: 'Roboto' !important;">
-          <tr class="even divBold" *ngIf="FloorPlanTotalData?.length > 0">
-            <td colspan="1" *ngIf="Role=='Super Admin' || userid=='8'"></td>
+          <tr *ngIf="FloorPlanTotalData?.length > 0" class="divBold">
+            <td *ngIf="Role=='Super Admin' || userid=='8'"></td>
             <td colspan="6" class="text-end box-shadow">Totals</td>
-            <td class="TotalDueDates box-shadow" [ngClass]="{ negative: !inTheGreen(BalanceTotal) }">
 
-              <span *ngIf="BalanceTotal !== null && BalanceTotal !== undefined && BalanceTotal !== 0; else noTotal"
-                class="d-flex justify-content-between">
-                $<span>{{ BalanceTotal | number:'1.2-2' }}</span>
+            <td class="text-end box-shadow" [ngClass]="{ negative: !inTheGreen(BalanceTotal) }">
+              <span *ngIf="BalanceTotal">
+                ${{ BalanceTotal | number:'1.2-2' }}
               </span>
-
-              <ng-template #noTotal>-</ng-template>
-
+              <span *ngIf="!BalanceTotal">-</span>
             </td>
-            <td colspan="20"></td>
+
+            <td [attr.colspan]="getDynamicColspan()"></td>
           </tr>
         </tbody>
+
         <tbody *ngIf="NoData">
           <tr>
-            <td colspan="32" class="text-center">No Records Found</td>
+            <td colspan="100" class="text-center">No Records Found</td>
           </tr>
         </tbody>
       </table>

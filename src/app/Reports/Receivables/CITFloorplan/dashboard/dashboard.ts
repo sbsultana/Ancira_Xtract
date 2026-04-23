@@ -353,50 +353,47 @@ export class Dashboard implements OnInit {
       .filter(term => term.length > 0);
 
     const filtered = this.filteredFloorplanData.filter((x: any) =>
-      searchTerms.some(term =>
+      searchTerms.some(term => {
 
-        x.AGE?.toString().toLowerCase().includes(term) ||
-        x.AgeDate?.toString().toLowerCase().includes(term) ||
-        x.Account?.toString().toLowerCase().includes(term) ||
-        x.Control?.toString().toLowerCase().includes(term) ||
-        x.Control2?.toString().toLowerCase().includes(term) ||
+        const t = term.toLowerCase();
 
-        x.BalCIT?.toString().toLowerCase().includes(term) ||
-        x.BalFloorplan?.toString().toLowerCase().includes(term) ||
+        return (
 
-        x.CustomerName?.toLowerCase().includes(term) ||
-        x.CustomerNumber?.toString().toLowerCase().includes(term) ||
+          // ===== BASIC =====
+          this.normalize(x.AGE).includes(t) ||
+          this.normalize(x.AgeDate).includes(t) ||
+          this.normalize(x.Control).includes(t) ||
 
-        x.store?.toLowerCase().includes(term) ||
+          // ===== BALANCES =====
+          this.normalize(x.BalCIT).includes(t) ||
+          this.normalize(x.CITAccount).includes(t) ||
+          this.normalize(x.BalCashOSF).includes(t) ||
+          this.normalize(x.CashOSFAccount).includes(t) ||
 
-        x.StockNumner?.toString().toLowerCase().includes(term) ||
-        x.Deal?.toString().toLowerCase().includes(term) ||
+          // ===== CUSTOMER =====
+          this.normalize(x.CustomerName).includes(t) ||
+          this.normalize(x.CustomerNumber).includes(t) ||
+          this.normalize(x.store).includes(t) ||
 
-        x.Stage?.toLowerCase().includes(term) ||
-        x.FIManager?.toLowerCase().includes(term) ||
-        x.SalesManager?.toLowerCase().includes(term) ||
-        x.SP1?.toLowerCase().includes(term) ||
+          // ===== DEAL INFO =====
+          this.normalize(x.StockNumner).includes(t) ||
+          this.normalize(x.Deal).includes(t) ||
+          this.normalize(x.BankName).includes(t) ||
+          this.normalize(x.FIManager).includes(t) ||
+          this.normalize(x.SalesManager).includes(t) ||
+          this.normalize(x.SP1).includes(t) ||
+          this.normalize(x.SaleType).includes(t) ||
+          this.normalize(x.DealType).includes(t) ||
+          this.normalize(x.DealStatus).includes(t) ||
 
-        x.SaleType?.toLowerCase().includes(term) ||
-        x.DealType?.toLowerCase().includes(term) ||
-        x.DealStatus?.toLowerCase().includes(term) ||
+          // ===== VEHICLE =====
+          this.normalize(x.VehicleYear).includes(t) ||
+          this.normalize(x.VehicleMake).includes(t) ||
+          this.normalize(x.VehicleModel).includes(t)
 
-        x.BankName?.toLowerCase().includes(term) ||
-
-        x.VehicleYear?.toString().toLowerCase().includes(term) ||
-        x.VehicleMake?.toLowerCase().includes(term) ||
-        x.VehicleModel?.toLowerCase().includes(term) ||
-
-        x.DeliveryDate?.toString().toLowerCase().includes(term) ||
-        x.DateSale?.toString().toLowerCase().includes(term) ||
-        x.FundingDate?.toString().toLowerCase().includes(term) ||
-
-        x.trade1year?.toString().toLowerCase().includes(term) ||
-        x.trade1modelname?.toLowerCase().includes(term)
-
-      )
+        );
+      })
     );
-
     return filtered.sort((a: any, b: any) => {
 
       const aIndex = searchTerms.findIndex(term =>
@@ -412,7 +409,10 @@ export class Dashboard implements OnInit {
     });
 
   }
-
+  normalize(value: any): string {
+    if (value === null || value === undefined) return '';
+    return value.toString().toLowerCase().trim();
+  }
   async openSalesModal(dealnumber: any, vin: any, storeid: any, stock: any, source: any, custno: any) {
     const module = await import('../../../../Layout/cdpdataview/deal/deal-module');
     const component = module.Deal;
@@ -499,9 +499,19 @@ export class Dashboard implements OnInit {
     }, 0);
   }
 
-  get BalFloorplanTotal(): number {
+  get CITAccount(): number {
     return this.filteredData.reduce((total, item) => {
-      return total + (parseFloat(item.BalFloorplan) || 0);
+      return total + (parseFloat(item.CITAccount) || 0);
+    }, 0);
+  }
+  get BalCashOSF(): number {
+    return this.filteredData.reduce((total, item) => {
+      return total + (parseFloat(item.BalCashOSF) || 0);
+    }, 0);
+  }
+  get CashOSFAccount(): number {
+    return this.filteredData.reduce((total, item) => {
+      return total + (parseFloat(item.CashOSFAccount) || 0);
     }, 0);
   }
   ////////////////////////////////////Pagination Code End////////////////////////////////////////////
@@ -1581,7 +1591,7 @@ export class Dashboard implements OnInit {
   printPDF() {
     try {
       const doc = this.createPDF();
-    const pdfBlob = doc.output('blob');
+      const pdfBlob = doc.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
       const isEdge = /Edg/.test(navigator.userAgent);
       if (isEdge) {

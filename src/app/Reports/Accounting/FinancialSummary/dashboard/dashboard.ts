@@ -268,7 +268,7 @@ export class Dashboard {
     let Obj = {
       as_Id: this.storeIds.toString(),
       SalesDate: this.shared.datePipe.transform(new Date(date),'yyyy-MM')+'-10',
-      UserID: 0,
+      // UserID: 0,
     };
     console.log(Obj);
     this.apiSrvc

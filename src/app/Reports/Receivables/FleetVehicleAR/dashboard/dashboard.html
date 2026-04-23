@@ -16,7 +16,7 @@
             [ngStyle]="{'display' : activePopover === 0 ? 'block' : 'none','position' : activePopover === 0 ? 'fixed' : '','z-index': activePopover === 0 ? '1050' : ''}"
             [storesFilterData]="storesFilterData" (StoresData)="StoresData($event)"></app-stores>
         </div>
-        <div class="dropdown">
+        <!-- <div class="dropdown">
           <button class="dropdown-toggle" (click)="togglePopover(3)">
             Deal Status
             <span class="light-font">
@@ -42,7 +42,7 @@
               </button>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="dropdown">
           <button class="dropdown-toggle" (click)="togglePopover(4)">
             <div *ngIf="spinnerLoader" class="graph-loader d-flex align-items-center justify-content-center">
@@ -76,14 +76,6 @@
                     All</a>
                 </div>
                 <div class="store-columns flex-grow-1">
-
-                  <!-- <ng-container *ngIf="storeIds.length > 0">
-                    <div class="allstores text-start" *ngIf="selectedFiManagersvalues.length == 0">
-                      <a class="text-primary text-decoration-none cursor-pointer me-2" style="pointer-events: none;">No
-                        Records Found
-                      </a>
-                    </div>
-                  </ng-container> -->
                   <ng-container *ngIf="activePopover==4">
                     <ng-container *ngFor="let fm of financeManager;let i=index">
                       <button class="btn btn-outline-primary store-button" (click)="employees('FM',fm.FiId,fm.FiName)"
@@ -97,7 +89,7 @@
             </div>
           </div>
         </div>
-        <div class="dropdown">
+        <!-- <div class="dropdown">
           <button class="dropdown-toggle" (click)="togglePopover(5)">
             Deal Type
             <span class="light-font">
@@ -133,7 +125,7 @@
               </button>
             </div>
           </div>
-        </div>
+        </div> -->
         &nbsp;
         <div class="dropdown">
           <button class="apply-button" (click)="viewreport()" [disabled]="spinnerLoader"
@@ -165,7 +157,7 @@
 
           <tbody *ngIf="FloorPlanData?.length > 0">
             <tr>
-              <td colspan="5">Booked Aging</td>
+              <td colspan="5">Fleet Vehicle Aging</td>
 
               <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.TOTAL) }">
                 <span
@@ -259,21 +251,24 @@
     </div>
     <div class="scorecard-triple-header bookeddeals-tbl mt-2" *ngIf="actionType == 'Y'">
       <table class="table mb-0 w-100">
+
+        <!-- ================= HEADER ROW 1 ================= -->
         <thead>
           <tr>
-            <th class="boxshadow-none" *ngIf="Role=='Super Admin' || userid=='8'"></th>
+            <th *ngIf="Role=='Super Admin'||Role=='Admin'||Role=='General Manager'" class="boxshadow-none"></th>
             <th class="boxshadow-none"></th>
             <th colspan="3"></th>
-            <th colspan="1">Balances</th>
+            <th colspan="6">Balances</th>
             <th colspan="2">Customer</th>
-            <th colspan="1" class="boxshadow-none" *ngIf="hidestoreIds.toString().indexOf(',') > 0"></th>
-            <th colspan="10">Deal Info</th>
-            <th colspan="1" class="boxshadow-none"></th>
-            <!-- Optional vehicle columns if needed -->
-            <!-- <th colspan="3" class="boxshadow-none">Vehicle</th> -->
+            <th *ngIf="hidestoreIds?.toString().indexOf(',') > 0" class="boxshadow-none"></th>
+            <th colspan="8">Deal Info</th>
+            <th colspan="3">Vehicle</th>
+            <th colspan="2">Dates</th>
           </tr>
+
+          <!-- ================= HEADER ROW 2 ================= -->
           <tr>
-            <th *ngIf="Role=='Super Admin' || userid=='8'">
+            <th *ngIf="Role=='Super Admin'||Role=='Admin'||Role=='General Manager'">
               <div class="form-check d-flex justify-content-center py-0 my-0">
                 <input class="form-check-input" type="checkbox" [checked]="check" id="symbol"
                   (change)="collectHidevalues($event,'',confirm,'multi','')">
@@ -281,44 +276,57 @@
               </div>
             </th>
 
+            <!-- NOTES -->
             <th (click)="openComments()" style="cursor:pointer;">
               Notes
               <i class="fa fa-eye" *ngIf="!commentsVisibility"></i>
-              <i class="fa-solid fa-eye-slash" *ngIf="commentsVisibility"></i>
+              <i class="fa fa-eye-slash" *ngIf="commentsVisibility"></i>
             </th>
-            <th (click)="sort('CTAge')" class="cursor-pointer">Age</th>
-            <th (click)="sort('CTDate')" class="cursor-pointer">Date</th>
-            <th (click)="sort('Dealno')" class="cursor-pointer">Deal #</th>
-            <th (click)="sort('Balance')" class="cursor-pointer" style="text-align:right">Balance</th>
-            <th (click)="sort('VehicleARBalance')" class="cursor-pointer" style="display:none">Vehicle A/R</th>
-            <th (click)="sort('BalFloorplan')" class="cursor-pointer" style="display:none">Floorplan</th>
-            <th (click)="sort('CustName')" class="cursor-pointer">Name</th>
-            <th (click)="sort('CustId')" class="cursor-pointer">Number</th>
-            <th (click)="sort('store')" class="cursor-pointer" *ngIf="hidestoreIds.toString().indexOf(',') > 0">Store
-            </th>
-            <th (click)="sort('Stockno')" class="cursor-pointer">Stock #</th>
-            <th (click)="sort('Stage')" class="cursor-pointer">Stage</th>
-            <th (click)="sort('FIMgr_Name')" class="cursor-pointer">F&I Mgr</th>
-            <th (click)="sort('SalesMgr_Name')" class="cursor-pointer">Sales Mgr</th>
-            <th (click)="sort('SP1_Name')" class="cursor-pointer">Sales Person</th>
-            <th (click)="sort('SaleType')" class="cursor-pointer">Type</th>
-            <th (click)="sort('DealType2')" class="cursor-pointer">Deal Type #</th>
-            <th (click)="sort('DealType')" class="cursor-pointer">New/Used</th>
-            <th (click)="sort('DealStatus')" class="cursor-pointer">Status</th>
-            <th (click)="sort('Lender')" class="cursor-pointer box-shadow">Bank Name</th>
-            <th>Trade</th>
-            <!-- <th (click)="sort('VehicleYear')" class="cursor">Year</th>
-            <th (click)="sort('VehicleMake')" class="cursor">Make</th>
-            <th (click)="sort('VehicleModel')" class="cursor">Model</th> -->
+
+            <th (click)="sort('AGE')">Age</th>
+            <th (click)="sort('Control')">Control</th>
+            <th (click)="sort('Control2')">Control 2</th>
+
+            <!-- BALANCES -->
+            <th (click)="sort('Balance')">Balance</th>
+            <th (click)="sort('CIT')">CIT</th>
+            <th (click)="sort('CITAccount')">CIT Account</th>
+            <th (click)="sort('CashOSF')">CashOSF</th>
+            <th (click)="sort('CashOSFAccount')">CashOSF Account</th>
+            <th (click)="sort('W/O Credits')">W/O Credits</th>
+
+            <!-- CUSTOMER -->
+            <th (click)="sort('CustomerName')">Name</th>
+            <th (click)="sort('CustomerNo')">Number</th>
+
+            <!-- STORE -->
+            <th *ngIf="hidestoreIds?.toString().indexOf(',') > 0" (click)="sort('store')">Store</th>
+
+            <!-- DEAL INFO -->
+            <th (click)="sort('Stage')">Stage</th>
+            <th (click)="sort('Stockno')">Stock #</th>
+            <th (click)="sort('DealNo')">Deal #</th>
+            <th (click)="sort('FIManager')">F&I Mgr</th>
+            <th (click)="sort('DealType')">New/Used</th>
+            <th (click)="sort('SaleType')">Type</th>
+            <th (click)="sort('DealStatus')">Status</th>
+            <th (click)="sort('BankName')" class="box-shadow">Bank Name</th>
+            <th (click)="sort('VehicleYear')">Year</th>
+            <th (click)="sort('VehicleMake')">Make</th>
+            <th (click)="sort('VehicleModel')" class="box-shadow">Model</th>
+
+            <th (click)="sort('SaleDate')">Sale</th>
+            <th (click)="sort('FundedDate')">Funding</th>
           </tr>
         </thead>
 
+        <!-- ================= BODY ================= -->
         <tbody>
-          <ng-container *ngFor="let fp of paginatedItems; let j=index; 'index+1' as i">
-            <tr [ngClass]="{'even': i % 2 === 0, 'odd': i % 2 !== 0, 'Selectedrow': i.toString() == index}" [ngStyle]="{ 'color': i.toString() != index ? '' : 'white', 
-                       'background-color': i.toString() != index ? '' : '#363b4f' }">
+          <ng-container *ngFor="let fp of paginatedItems; let i = index">
 
-              <td *ngIf="Role=='Super Admin' || userid=='8'" class="text-center">
+            <tr [ngClass]="{ 'even': i % 2 === 0, 'odd': i % 2 !== 0 }">
+
+              <td *ngIf="Role=='Super Admin'||Role=='Admin'||Role=='General Manager'">
                 <div class="form-check d-flex justify-content-center">
                   <input class="form-check-input" type="checkbox" id="symbols" [checked]="fp.check"
                     (change)="collectHidevalues($event,fp,confirm,'single',fp.StockNo)">
@@ -332,75 +340,148 @@
                   data-bs-target="#payplan" (click)="addNotes(fp)" style="cursor:pointer;">
               </td>
 
-              <td class="text-center">{{ fp.CTAge || '-' }}</td>
-              <td class="text-center">{{ fp.CTDate ? (fp.CTDate | date:'MM.dd.yyyy') : '-' }}</td>
-              <td class="text-center" [ngClass]="{ 'deal-link': isValidDealNo(fp.DealNo) }"
-                (click)="openSalesModal(fp.Dealno,fp.vin,fp.storeid,fp.Stockno,fp?.source,fp?.CustId)"
-                [ngClass]="[fp.Dealno != 0 && fp.Dealno != null && fp.Dealno != undefined && fp.Dealno != '' && fp.Dealno != '-' ? 'popuppointer' : 'popupdisable']">
-                {{ fp.Dealno || '-' }}</td>
-              <td class="text-end TotalDueDates" [ngClass]="{ negative: !inTheGreen(fp.Balance) }">
-                <span *ngIf="fp.Balance !== null && fp.Balance !== undefined && fp.Balance !== 0; else noBalance"
-                  class="d-flex justify-content-between">
-                  $<span>{{ fp.Balance | number:'1.2-2' }}</span>
-                </span>
-                <ng-template #noBalance>-</ng-template>
-              </td>
-              <!-- <td class="text-end" style="display:none">{{ fp.VehicleARBalance || '-' }}</td>
-              <td class="text-end" style="display:none">{{ fp.BalFloorplan || '-' }}</td> -->
-              <td class="text-start">{{ fp.CustName || '-' }}</td>
-              <td class="text-center">{{ fp.CustId || '-' }}</td>
-              <td *ngIf="hidestoreIds.toString().indexOf(',') > 0" class="text-start">{{ fp.store || '-' }}</td>
 
-              <td class="text-start">{{ fp.Stockno || '-' }}</td>
+              <td>{{ fp.AGE || '-' }}</td>
+              <td class="text-start">{{ fp.Control || '-' }}</td>
+              <td class="text-start">{{ fp.Control2 || '-' }}</td>
+
+              <td style="text-align: right;" [ngClass]="{ negative: !inTheGreen(fp.Balance)}">
+                <span class="d-flex justify-content-between"> {{
+                  ( fp.Balance == 0 || fp.Balance == null || fp.Balance == undefined ? '' :
+                  '$') }} <span> {{
+                    ( fp.Balance == 0 || fp.Balance== null ? '-' :
+                    fp.Balance |number:'1.2-2') }}</span></span>
+              </td>
+              <td style="text-align: right;" [ngClass]="{ negative: !inTheGreen(fp['CIT'])}">
+                <span class="d-flex justify-content-between"> {{
+                  ( fp['CIT'] == 0 || fp['CIT'] == null || fp['CIT'] ==
+                  undefined ? '' :
+                  '$') }} <span> {{
+                    ( fp['CIT'] == 0 || fp['CIT']== null ? '-' :
+                    fp['CIT'] |number:'1.2-2') }}</span></span>
+              </td>
+              <td>{{ fp.CITAccount || '-' }}</td>
+              <td style="text-align: right;" [ngClass]="{ negative: !inTheGreen(fp.CashOSF)}">
+                <span class="d-flex justify-content-between"> {{
+                  ( fp.CashOSF == 0 || fp.CashOSF == null ||
+                  fp.CashOSF == undefined ? '' :
+                  '$') }} <span> {{
+                    ( fp.CashOSF == 0 || fp.CashOSF== null ? '-' :
+                    fp.CashOSF |number:'1.2-2') }}</span></span>
+              </td>
+
+              <td>{{ fp.CashOSFAccount || '-' }}</td>
+              <td style="text-align: right;" [ngClass]="{ negative: !inTheGreen(fp['W/O Credits'])}">
+                <span class="d-flex justify-content-between"> {{
+                  ( fp['W/O Credits'] == 0 || fp['W/O Credits'] == null ||
+                  fp['W/O Credits'] == undefined ? '' :
+                  '$') }} <span> {{
+                    ( fp['W/O Credits'] == 0 || fp['W/O Credits']== null ? '-' :
+                    fp['W/O Credits'] |number:'1.2-2') }}</span></span>
+              </td>
+
+              <td class="text-start">{{ fp.CustomerName || '-' }}</td>
+              <td class="text-start">{{ fp.CustomerNo || '-' }}</td>
+
+              <td *ngIf="hidestoreIds?.toString().indexOf(',') > 0">{{ fp.store || '-' }}</td>
+
               <td class="text-start">{{ fp.Stage || '-' }}</td>
-              <td class="text-start">{{ fp.FIMgr_Name || '-' }}</td>
-              <td class="text-start">{{ fp.SalesMgr_Name || '-' }}</td>
-              <td class="text-start">{{ fp.SP1_Name || '-' }}</td>
-              <td class="text-center">{{ fp.SaleType || '-' }}</td>
-              <td class="text-center">{{ fp.DealType2 || '-' }}</td>
+              <td class="text-start">{{ fp.Stockno || '-' }}</td>
+
+              <td class="text-center" (click)="viewDeal(fp)" [ngClass]="fp.DealNo ? 'popuppointer' : 'popupdisable'">
+                {{ fp.DealNo || '-' }}
+              </td>
+
+              <td class="text-start">{{ fp.FIManager || '-' }}</td>
               <td class="text-center">{{ fp.DealType || '-' }}</td>
+              <td class="text-center">{{ fp.SaleType || '-' }}</td>
               <td class="text-center">{{ fp.DealStatus || '-' }}</td>
-              <td class="text-start box-shadow">{{ fp.Lender || '-' }}</td>
-              <td class="text-start" title="Trade info">{{ fp.trade1year ? fp.trade1year : '' }} {{ fp.trade1modelname
-                || '-' }}</td>
+              <td class="text-start" class="box-shadow">{{ fp.BankName || '-' }}</td>
+              <td class="text-center">{{ fp.VehicleYear || '-' }}</td>
+              <td class="text-start">{{ fp.VehicleMake || '-' }}</td>
+              <td class="text-start" class="box-shadow">{{ fp.VehicleModel || '-' }}</td>
+
+              <td class="text-center">{{ fp.SaleDate ? (fp.SaleDate | date:'MM.dd.yyyy') : '-' }}</td>
+              <td class="text-center">{{ fp.FundedDate ? (fp.FundedDate | date:'MM.dd.yyyy') : '-' }}</td>
+
             </tr>
 
-            <tr *ngIf="commentsVisibility && fp.duplicateNotes">
+            <tr *ngIf="commentsVisibility && (fp.CommentsStatus=='Y' || fp.Notes)">
               <td></td>
-              <td colspan="19" class="text-start ps-3">
-                <h6 class="fw-bold small text-primary">Notes</h6>
-                <div *ngFor="let notes of fp.duplicateNotes" class="ps-4">
-                  {{ notes.NOTES || '-' }}
+
+              <td [attr.colspan]="25">
+
+
+                <div *ngIf="fp.Comments?.length">
+                  <div *ngFor="let comment of fp.Comments" class="mb-1">
+                    <span>{{ comment.WC_Comments || '-' }}</span>
+                    <small class="ms-2">{{ comment.WC_From_UserName }}</small>
+                    <small class="ms-2">
+                      {{ comment.WC_TS | date:'MM.dd.yy HH:mm' }}
+                    </small>
+                  </div>
                 </div>
-                <div *ngIf="fp.allNotes?.length > 3" class="ps-4">
-                  <a class="font-blue cursor-pointer" (click)="viewmoreAction(fp)">
-                    {{ fp.Notesstate == '+' ? 'View More' : 'View Less' }}
+
+                <div *ngIf="fp.Notes?.length">
+                  <div *ngFor="let notes of fp.duplicateNotes">
+                    [{{ notes.STAGE || '' }}]
+                    {{ notes.NOTES || '-' }} -
+                    {{ notes.UserName || '-' }}
+                    ({{ notes.NOTESDATE | date:'MM.dd.yyyy' }})
+                  </div>
+
+                  <a *ngIf="fp.Notes?.length > 3" (click)="viewmoreAction(fp)" class="text-primary cursor-pointer">
+                    {{ fp.Notesstate === '+' ? 'View More' : 'View Less' }}
                   </a>
                 </div>
+
               </td>
             </tr>
           </ng-container>
         </tbody>
-
-        <!-- Sticky Totals Row -->
         <tbody
           style="position: sticky; top:0; bottom: 0; left: 0; right: 0;z-index: 995;font-family: 'Roboto' !important;">
-          <tr class="even divBold" *ngIf="FloorPlanTotalData?.length > 0">
+          <tr class="divBold" *ngIf="FloorPlanData?.length > 0">
             <td colspan="1" *ngIf="Role=='Super Admin' || userid=='8'"></td>
             <td></td>
             <td></td>
             <td></td>
             <td>Totals</td>
-            <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(BalanceTotal) }">
-              <span *ngIf="BalanceTotal !== null && BalanceTotal !== undefined && BalanceTotal !== 0; else noTotal"
+            <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(CIT) }">
+              <span *ngIf="CIT !== null && CIT !== undefined && CIT !== 0; else noTotal"
                 class="d-flex justify-content-between">
-                $<span>{{ BalanceTotal | number:'1.2-2' }}</span>
+                $<span>{{ CIT | number:'1.2-2' }}</span>
+              </span>
+              <ng-template #noTotal>-</ng-template>
+            </td>
+            <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(Balance) }">
+              <span *ngIf="Balance !== null && Balance !== undefined && Balance !== 0; else noTotal"
+                class="d-flex justify-content-between">
+                $<span>{{ Balance | number:'1.2-2' }}</span>
               </span>
               <ng-template #noTotal>-</ng-template>
             </td>
             <td></td>
+            <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(CashOSF) }">
+              <span *ngIf="CashOSF !== null && CashOSF !== undefined && CashOSF !== 0; else noTotal"
+                class="d-flex justify-content-between">
+                $<span>{{ CashOSF | number:'1.2-2' }}</span>
+              </span>
+              <ng-template #noTotal>-</ng-template>
+            </td>
             <td></td>
+            <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(WOCredits) }">
+              <span *ngIf="WOCredits !== null && WOCredits !== undefined && WOCredits !== 0; else noTotal"
+                class="d-flex justify-content-between">
+                $<span>{{ WOCredits | number:'1.2-2' }}</span>
+              </span>
+              <ng-template #noTotal>-</ng-template>
+            </td>
             <td colspan="1" *ngIf="hidestoreIds.toString().indexOf(',')> 0"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -416,14 +497,12 @@
         </tbody>
       </table>
     </div>
-
     <div *ngIf="actionType == 'N'" class="d-flex justify-content-center align-items-center p-5 m-5 text-black">
       Please select Store to Fetch data..!
     </div>
 
   </div>
 </main>
-
 
 <ng-template #confirm let-modal>
   <div class="overlay">

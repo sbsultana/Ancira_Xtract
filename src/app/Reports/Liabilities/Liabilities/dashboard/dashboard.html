@@ -147,89 +147,123 @@
     <div class="d-flex justify-content-between" *ngIf="FloorPlanData?.length > 0 && actionType == 'Y'">
       <div class="scorecard-aging-header mt-2">
         <table class="table mb-0">
+
           <thead style="text-transform: uppercase;">
             <tr>
               <th colspan="5">&nbsp;</th>
-              <th>Total</th>
-              <th>0-5</th>
-              <th>6-10</th>
-              <th>11-15</th>
-              <th>15+</th>
+
+              <th *ngFor="let h of getAgingHeaders(selectedreceviabe.path)">
+                {{ h }}
+              </th>
             </tr>
           </thead>
+          <tbody *ngIf="FloorPlanTotalData?.length > 0">
 
-          <tbody *ngIf="FloorPlanData?.length > 0">
             <tr>
-              <td colspan="5">{{ selectedreceviabe.title }} Aging</td>
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.TOTAL) }">
+              <td colspan="5">
+                {{ selectedreceviabe.title || selectedreceviabe.Receivables }} Aging
+              </td>
 
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.TOTAL) }} -->
+
+              <td [ngClass]="{ negative: !inTheGreen(safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL)) }">
                 <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.TOTAL != null ?
-                    (FloorPlanData[0].AgeData[0].TOTAL | number: '1.0-0') : '-' }}
+
+                  <span *ngIf="safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL) !== null">$</span>
+
+                  <span>
+                    {{
+                    safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL) !== null
+                    ? (safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.TOTAL) | number:'1.0-0')
+                    : '-'
+                    }}
                   </span>
+
+                </span>
+              </td>
+              <td [ngClass]="{ negative: !inTheGreen(safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D1)) }">
+                <span class="d-flex justify-content-between">
+
+                  <span *ngIf="safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D1) !== null">$</span>
+
+                  <span>
+                    {{
+                    safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D1) !== null
+                    ? (safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D1) | number:'1.0-0')
+                    : '-'
+                    }}
+                  </span>
+
                 </span>
               </td>
 
-              <!-- 0–5 -->
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.D1) }">
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.D1) }} -->
+              <td [ngClass]="{ negative: !inTheGreen(safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D2)) }">
                 <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.D1 != null ?
-                    (FloorPlanData[0].AgeData[0].D1 | number: '1.0-0') : '-' }}
+
+                  <span *ngIf="safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D2) !== null">$</span>
+
+                  <span>
+                    {{
+                    safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D2) !== null
+                    ? (safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D2) | number:'1.0-0')
+                    : '-'
+                    }}
                   </span>
+
+                </span>
+              </td>
+              <td [ngClass]="{ negative: !inTheGreen(safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D3)) }">
+                <span class="d-flex justify-content-between">
+
+                  <span *ngIf="safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D3) !== null">$</span>
+
+                  <span>
+                    {{
+                    safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D3) !== null
+                    ? (safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D3) | number:'1.0-0')
+                    : '-'
+                    }}
+                  </span>
+
+                </span>
+              </td>
+              <td [ngClass]="{ negative: !inTheGreen(safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D4)) }">
+                <span class="d-flex justify-content-between">
+
+                  <span *ngIf="safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D4) !== null">$</span>
+
+                  <span>
+                    {{
+                    safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D4) !== null
+                    ? (safeNumber(FloorPlanTotalData[0]?.AgeData?.[0]?.D4) | number:'1.0-0')
+                    : '-'
+                    }}
+                  </span>
+
                 </span>
               </td>
 
-              <!-- 6–10 -->
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.D2) }">
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.D2) }} -->
-                <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.D2 != null ?
-                    (FloorPlanData[0].AgeData[0].D2 | number: '1.0-0') : '-' }}
-                  </span>
-                </span>
-              </td>
-
-              <!-- 11–15 -->
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.D3) }">
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.D3) }} -->
-                <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.D3 != null ?
-                    (FloorPlanData[0].AgeData[0].D3 | number: '1.0-0') : '-' }}
-                  </span>
-                </span>
-              </td>
-
-              <!-- 15+ -->
-              <td [ngClass]="{ negative: !inTheGreen(FloorPlanData[0]?.AgeData?.[0]?.D4) }">
-                <!-- {{ formatBalancetozero(FloorPlanData[0]?.AgeData?.[0]?.D4) }} -->
-                <span class="d-flex justify-content-between">
-                  $<span>
-                    {{ FloorPlanData[0]?.AgeData?.[0]?.D4 != null ?
-                    (FloorPlanData[0].AgeData[0].D4 | number: '1.0-0' ) : '-' }}
-                  </span>
-                </span>
-              </td>
             </tr>
+
           </tbody>
+          <!-- <tbody *ngIf="!FloorPlanTotalData || FloorPlanTotalData.length === 0">
+            <tr>
+              <td colspan="10" class="text-center">No Records Found</td>
+            </tr>
+          </tbody> -->
+
         </table>
       </div>
 
       <!-- Right-side Info -->
       <div>
         <div class="text-end asofnow pe-2">
-          Count : {{ FloorPlanData[0]?.AgeData?.[0]?.D6 != null
-          ? (FloorPlanData[0].AgeData[0].D6 | number:'1.0-0')
+          Count : {{ FloorPlanTotalData[0]?.AgeData?.[0]?.D6 != null
+          ? (FloorPlanTotalData[0].AgeData[0].D6 | number:'1.0-0')
           : '-' }}
-          &nbsp;&nbsp; As of {{ FloorPlanData[0]?.AgeData?.[0]?.D5 | timeconversion}}
+          &nbsp;&nbsp; As of {{ FloorPlanTotalData[0]?.AgeData?.[0]?.D5 | timeconversion}}
         </div>
         <div>
-          <!-- Count: {{ FloorPlanData[0]?.AgeData?.[0]?.D6 != null ? FloorPlanData[0].AgeData[0].D6 : '-'
+          <!-- Count: {{ FloorPlanTotalData[0]?.AgeData?.[0]?.D6 != null ? FloorPlanTotalData[0].AgeData[0].D6 : '-'
                         }} -->
           <div class="pagination-container d-flex align-items-center justify-content-end text-black mt-2">
 
@@ -272,8 +306,8 @@
             <th colspan="6"></th>
             <th>Balances</th>
             <th colspan="2">Customer</th>
-            <th colspan="1" class="boxshadow-none" *ngIf="storeIds.toString().indexOf(',')> 0  "></th>
-            <th colspan="10">Deal Info</th>
+            <th colspan="1" class="boxshadow-none" *ngIf="hidestoreIds.toString().indexOf(',')> 0  "></th>
+            <th colspan="8">Deal Info</th>
             <th colspan="3" class="boxshadow-none">Vehicle</th>
             <!-- <th colspan="1" style="border-right: 2px solid #e0e1e2;">Notes</th> -->
           </tr>
@@ -295,40 +329,40 @@
               <i class="fa-solid fa-eye-slash" *ngIf="commentsVisibility"></i>
             </th>
 
-            <th (click)="sort('AGE')" class="cursor">Age</th>
-            <th (click)="sort('FundedDate')" class="cursor">Date</th>
-            <th (click)="sort('AccountDesc2')" class="cursor">Account</th>
-            <th (click)="sort('Control')" class="cursor">Control</th>
-            <th (click)="sort('control2')" class="cursor">Control 2</th>
+            <th (click)="sort('AGE')" class="cursor-pointer">Age</th>
+            <th (click)="sort('FundedDate')" class="cursor-pointer">Date</th>
+            <th (click)="sort('AccountDesc2')" class="cursor-pointer">Account</th>
+            <th (click)="sort('Control')" class="cursor-pointer">Control</th>
+            <th (click)="sort('control2')" class="cursor-pointer">Control 2</th>
 
-            <th (click)="sort('Balance')" class="cursor">Balance</th>
+            <th (click)="sort('Balance')" class="cursor-pointer">Balance</th>
 
-            <th (click)="sort('CustomerName')" class="cursor">Customer</th>
+            <th (click)="sort('CustomerName')" class="cursor-pointer">Customer</th>
 
-            <th (click)="sort('CustomerNumber')" class="cursor">Number</th>
-            <th (click)="sort('SaleDate')" style="cursor: pointer;">Sale Date</th>
-            <th (click)="sort('SaleAge')" style="cursor: pointer;">Sale Age</th>
+            <th (click)="sort('CustomerNumber')" class="cursor-pointer">Number</th>
+            <!-- <th (click)="sort('SaleDate')" style="cursor-pointer: pointer;">Sale Date</th>
+            <th (click)="sort('SaleAge')" style="cursor-pointer: pointer;">Sale Age</th> -->
 
 
 
-            <th *ngIf="StoreVal.toString().indexOf(',') > 0" (click)="sort('store')" class="cursor">
+            <th *ngIf="hidestoreIds.toString().indexOf(',') > 0" (click)="sort('store')" class="cursor-pointer">
               Store
             </th>
 
-            <th (click)="sort('StockNo')" class="cursor">Stock #</th>
-            <th (click)="sort('DealNo')" class="cursor">Deal #</th>
-            <th (click)="sort('Stage')" class="cursor">Stage</th>
+            <th (click)="sort('StockNo')" class="cursor-pointer">Stock #</th>
+            <th (click)="sort('DealNo')" class="cursor-pointer">Deal #</th>
+            <th (click)="sort('Stage')" class="cursor-pointer">Stage</th>
 
-            <th (click)="sort('FIManager')" class="cursor">F&I Mgr</th>
-            <th (click)="sort('SaleType')" class="cursor">New/Used</th>
-            <th (click)="sort('DealType')" class="cursor">Type</th>
+            <th (click)="sort('FIManager')" class="cursor-pointer">F&I Mgr</th>
+            <th (click)="sort('SaleType')" class="cursor-pointer">New/Used</th>
+            <th (click)="sort('DealType')" class="cursor-pointer">Type</th>
 
-            <th (click)="sort('DealStatus')" class="cursor">Status</th>
-            <th (click)="sort('BankName')" class="cursor">Bank Name</th>
+            <th (click)="sort('DealStatus')" class="cursor-pointer">Status</th>
+            <th (click)="sort('BankName')" class="cursor-pointer box-shadow">Bank Name</th>
 
-            <th (click)="sort('VehicleYear')" class="cursor">Year</th>
-            <th (click)="sort('VehicleMake')" class="cursor">Make</th>
-            <th (click)="sort('VehicleModel')" class="cursor">Model</th>
+            <th (click)="sort('VehicleYear')" class="cursor-pointer">Year</th>
+            <th (click)="sort('VehicleMake')" class="cursor-pointer">Make</th>
+            <th (click)="sort('VehicleModel')" class="cursor-pointer">Model</th>
           </tr>
         </thead>
 
@@ -372,15 +406,15 @@
               </td>
               <td class="text-start">{{ fp.CustomerName || '-' }}</td>
               <td class="text-center">{{ fp.CustomerNumber || '-' }}</td>
-              <td class="text-center">
+              <!-- <td class="text-center">
                 {{ fp.SaleDate ? (fp.SaleDate | date:'MM.dd.yyyy') : '-' }}
               </td>
 
               <td class="text-center">
                 {{ fp.SaleAge || '-' }}
-              </td>
+              </td> -->
 
-              <td *ngIf="StoreVal.toString().indexOf(',') > 0" class="text-start">
+              <td *ngIf="hidestoreIds.toString().indexOf(',') > 0" class="text-start">
                 {{ fp.store || '-' }}
               </td>
 
@@ -398,7 +432,7 @@
               <td class="text-center">{{ fp.DealType || '-' }}</td>
               <td class="text-center">{{ fp.SaleType || '-' }}</td>
               <td class="text-center">{{ fp.DealStatus || '-' }}</td>
-              <td class="text-start">{{ fp.BankName || '-' }}</td>
+              <td class="text-start box-shadow">{{ fp.BankName || '-' }}</td>
 
               <td class="text-center">{{ fp.VehicleYear || '-' }}</td>
               <td class="text-start">{{ fp.VehicleMake || '-' }}</td>
@@ -408,7 +442,7 @@
 
             <tr *ngIf="commentsVisibility && fp.duplicateNotes">
               <td></td>
-              <td colspan="29" class="text-start ps-3">
+              <td colspan="27" class="text-start ps-3">
                 <h6 class="fw-bold small text-primary">Notes</h6>
                 <div *ngFor="let notes of fp.duplicateNotes" class="ps-4">
                   {{ notes.NOTES || '-' }}
@@ -439,12 +473,12 @@
               <ng-template #noTotal>-</ng-template>
 
             </td>
-            <td colspan="20"></td>
+            <td colspan="18"></td>
           </tr>
         </tbody>
         <tbody *ngIf="NoData">
           <tr>
-            <td colspan="32" class="text-center">No Records Found</td>
+            <td colspan="30" class="text-center">No Records Found</td>
           </tr>
         </tbody>
       </table>

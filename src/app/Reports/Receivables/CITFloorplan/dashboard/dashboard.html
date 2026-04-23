@@ -138,7 +138,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="dropdown">
+                <!-- <div class="dropdown">
                     <button class="dropdown-toggle" (click)="togglePopover(5)">
                         Priority <span class="light-font">
                             (
@@ -173,7 +173,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="all-debits d-flex align-items-center">
 
                     <div class="form-check me-3">
@@ -328,22 +328,17 @@
                 <table class="table mb-0 w-100">
                     <thead>
                         <tr>
-                            <th class="boxshadow-none"></th>
-                            <th colspan="5" class="boxshadow-none"></th>
-                            <th colspan="1" class="boxshadow-none" *ngIf="Role=='Super Admin' || userid=='8'"></th>
-                            <th colspan="1" *ngIf="Role=='Super Admin' || Role=='CFO' ||Role=='General Manager'"></th>
-                            <th colspan="1">Balances</th>
+                            <th colspan="4" class="boxshadow-none"></th>
+                            <th colspan="1" *ngIf="Role=='Super Admin'||Role=='Admin'||Role=='General Manager'"></th>
+                            <th colspan="4">Balances</th>
                             <th colspan="2">Customer</th>
-                            <th colspan="1" class="boxshadow-none" *ngIf="storeIds.toString().indexOf(',')> 0  "></th>
-                            <th colspan="10">Deal Info</th>
-                            <th colspan="3">Vehicle</th>
-                            <th colspan="3">Dates</th>
-                            <th colspan="1" class="boxshadow-none"></th>
-                            <!-- <th colspan="1" style="border-right: 2px solid #e0e1e2;">Notes</th> -->
+                            <th colspan="1" class="boxshadow-none" *ngIf="storeIds.toString().indexOf(',')> 0"></th>
+                            <th colspan="9">Deal Info</th>
+                            <th colspan="3" class="boxshadow-none">Vehicle</th>
                         </tr>
                         <tr>
 
-                            <th class="text-center" *ngIf="Role=='Super Admin' || userid=='8'">
+                            <th class="text-center" *ngIf="Role=='Super Admin'||Role=='Admin'||Role=='General Manager'">
                                 <div class="form-check d-flex justify-content-center py-0 my-0" *ngIf="hideVisibility">
                                     <input class="form-check-input me-1" type="checkbox" id="symbol" [checked]="check"
                                         (change)="collectHidevalues($event,'',confirm,'multi','')">
@@ -359,27 +354,6 @@
                                 <i class="fa-solid fa-eye-slash" *ngIf="commentsVisibility"></i>
                             </th>
 
-                            <th class="text-center"
-                                *ngIf="Role=='Super Admin'  || Role=='CFO' || Role=='General Manager'">
-
-                                <div class="form-check d-flex justify-content-center" *ngIf="priorityVisibility">
-
-                                    <input class="form-check-input me-1" type="checkbox" id="priority"
-                                        [(ngModel)]="prioritycheck"
-                                        (change)="priority($event,'',priorityconfirm,'multi','')">
-
-                                    <label class="form-check-label" for="priority">
-                                        Priority
-                                    </label>
-
-                                </div>
-
-                                <span *ngIf="!priorityVisibility" (click)="sortTable('HasPriority')"
-                                    style="cursor:pointer;">
-                                    Priority
-                                </span>
-
-                            </th>
 
                             <th (click)="sortTable('AGE')" style="cursor:pointer;">
                                 CIT Age
@@ -389,22 +363,20 @@
                                 Date
                             </th>
 
-                            <th (click)="sortTable('Account')" style="cursor:pointer;">
-                                Account
-                            </th>
 
                             <th (click)="sortTable('Control')" style="cursor:pointer;">
                                 Control
                             </th>
 
-                            <th (click)="sortTable('Control2')" style="cursor:pointer;">
-                                Control 2
-                            </th>
 
                             <th (click)="sortTable('BalCIT')">
-                                CIT
-                            </th>
-
+                                CIT</th>
+                            <th (click)="sortTable('CITAccount')">
+                                CIT Account</th>
+                            <th (click)="sortTable('BalCashOSF')">
+                                CashOSF</th>
+                            <th (click)="sortTable('CashOSFAccount')">
+                                CashOSF Account</th>
                             <!-- <th (click)="sortTable('BalFloorplan')">
                                 Floorplan
                             </th> -->
@@ -430,8 +402,8 @@
                                 Deal #
                             </th>
 
-                            <th (click)="sortTable('Stage')" style="cursor:pointer;">
-                                Stage
+                            <th (click)="sortTable('BankName')" style="cursor:pointer;">
+                                Bank Name
                             </th>
 
                             <th (click)="sortTable('FIManager')" style="cursor:pointer;">
@@ -458,9 +430,6 @@
                                 Status
                             </th>
 
-                            <th (click)="sortTable('BankName')" style="cursor:pointer;">
-                                Bank Name
-                            </th>
 
                             <th (click)="sortTable('VehicleYear')" style="cursor:pointer;">
                                 Year
@@ -473,21 +442,6 @@
                             <th (click)="sortTable('VehicleModel')" style="cursor:pointer;">
                                 Model
                             </th>
-
-                            <th (click)="sortTable('DeliveryDate')" style="cursor:pointer;">
-                                Delivery
-                            </th>
-
-                            <th (click)="sortTable('DateSale')" style="cursor:pointer;">
-                                Sale
-                            </th>
-
-                            <th (click)="sortTable('FundingDate')" style="cursor:pointer;">
-                                Funding
-                            </th>
-
-                            <th>Trade</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -495,7 +449,8 @@
 
                             <tr [ngClass]="{'even' : i % 2 == 0 , 'odd' : i % 2 != 0, 'Selectedrow':  i.toString() == index}"
                                 [ngStyle]="{  'color': i.toString() != index  ?  '' : 'white' , 'background-color':  i.toString() != index  ?  '' : '#363b4f' } ">
-                                <td class="text-center" *ngIf="Role=='Super Admin' || userid=='8'">
+                                <td class="text-center"
+                                    *ngIf="Role=='Super Admin'||Role=='Admin'||Role=='General Manager'">
 
                                     <div class="form-check d-flex justify-content-center">
                                         <input class="form-check-input" type="checkbox" id="symbols"
@@ -515,36 +470,15 @@
                                         style="cursor: pointer;">
 
                                 </td>
-                                <td class="text-center"
-                                    *ngIf="Role=='Super Admin' || Role=='CFO' || Role=='General Manager'">
 
-                                    <div class="form-check d-flex justify-content-center align-items-center">
-
-                                        <input class="form-check-input mt-0" type="checkbox" *ngIf=" Role=='Super Admin' || Role=='CFO'"
-                                            id="priority{{fp.StockNumner}}" [checked]="fp.HasPriority === 'Y'"
-                                            [ngClass]="{ 'priority-red': fp.HasPriority === 'Y'  }"
-                                            style="cursor: pointer;"
-                                            (change)="priority($event,fp,priorityconfirm,'single',fp.StockNumner)">
-
-                                        <label class="form-check-label ps-1" for="priority{{fp.StockNumner}}">
-                                            {{ fp.Prioritised_User == null ? '' : fp.Prioritised_User }}
-                                        </label>
-
-                                    </div>
-
-                                </td>
                                 <td class="divRed"> {{ fp.AGE == 0 || fp.AGE == null || fp.AGE == undefined ||
                                     fp.AGE == ''? '-' : fp.AGE}}</td>
                                 <td style="text-align: center;"> {{ fp.AgeDate == 0 || fp.AgeDate == null || fp.AgeDate
                                     ==
                                     undefined|| fp.AgeDate == '' ? '-' : fp.AgeDate| date:'MM.dd.yyyy'}}</td>
-                                <td style="text-align: center;"> {{ fp.Account == 0 || fp.Account == null || fp.Account
-                                    == undefined||
-                                    fp.Account == '' ? '-' : fp.Account}}</td>
                                 <td style="text-align: center; ">{{ fp.Control == null || fp.Control == undefined||
                                     fp.Control == '' ? '-' : fp.Control}}</td>
-                                <td style="text-align: left; ">{{ fp.Control2 == null || fp.Control2 == undefined||
-                                    fp.Control2 == '' ? '-' : fp.Control2}}</td>
+
                                 <td style="text-align: right;" [ngClass]="{ negative: !inTheGreen(fp.BalCIT)}">
                                     <span class="d-flex justify-content-between"> {{
                                         ( fp.BalCIT == 0 || fp.BalCIT == null || fp.BalCIT == undefined ? '' :
@@ -552,6 +486,32 @@
                                             ( fp.BalCIT == 0 || fp.BalCIT== null ? '-' :
                                             fp.BalCIT |number:'1.2-2') }}</span></span>
                                 </td>
+                                <td style="text-align: right;" [ngClass]="{ negative: !inTheGreen(fp['CITAccount'])}">
+                                    <span class="d-flex justify-content-between"> {{
+                                        ( fp['CITAccount'] == 0 || fp['CITAccount'] == null || fp['CITAccount'] ==
+                                        undefined ? '' :
+                                        '$') }} <span> {{
+                                            ( fp['CITAccount'] == 0 || fp['CITAccount']== null ? '-' :
+                                            fp['CITAccount'] |number:'1.2-2') }}</span></span>
+                                </td>
+                                <td style="text-align: right;" [ngClass]="{ negative: !inTheGreen(fp['BalCashOSF'])}">
+                                    <span class="d-flex justify-content-between"> {{
+                                        ( fp['BalCashOSF'] == 0 || fp['BalCashOSF'] == null || fp['BalCashOSF'] ==
+                                        undefined ? '' :
+                                        '$') }} <span> {{
+                                            ( fp['BalCashOSF'] == 0 || fp['BalCashOSF']== null ? '-' :
+                                            fp['BalCashOSF'] |number:'1.2-2') }}</span></span>
+                                </td>
+                                <td style="text-align: right;"
+                                    [ngClass]="{ negative: !inTheGreen(fp['CashOSFAccount'])}">
+                                    <span class="d-flex justify-content-between"> {{
+                                        ( fp['CashOSFAccount'] == 0 || fp['CashOSFAccount'] == null ||
+                                        fp['CashOSFAccount'] == undefined ? '' :
+                                        '$') }} <span> {{
+                                            ( fp['CashOSFAccount'] == 0 || fp['CashOSFAccount']== null ? '-' :
+                                            fp['CashOSFAccount'] |number:'1.2-2') }}</span></span>
+                                </td>
+
                                 <!-- <td [ngClass]="{ negative: !inTheGreen(fp.BalFloorplan)}">
                                     <span class="d-flex " [ngClass]="{'justify-content-center' : fp.BalFloorplan == 0 || fp.BalFloorplan == null , 
                     'justify-content-between': fp.BalFloorplan != 0 && fp.BalFloorplan != null }">
@@ -597,10 +557,15 @@
                                     ==
                                     '' ? '-' : fp.Deal}}</td>
 
-                                <td style="text-align: left;"> {{ fp.Stage == 0 || fp.Stage == null || fp.Stage ==
-                                    undefined||
-                                    fp.Stage == '' ? '-' : fp.Stage}}</td>
-
+                                <td
+                                    [ngStyle]="{'text-align':fp.BankName == 0 ||
+                fp.BankName == null || fp.BankName == undefined || fp.BankName == '' || fp.BankName == '-'?'center':'left'}">
+                                    <span *ngIf="fp.BankName == 0 ||
+                fp.BankName == null || fp.BankName == undefined || fp.BankName == '' || fp.BankName == '-'">-</span>
+                                    <span
+                                        *ngIf="fp.BankName != 0 &&
+                fp.BankName != null && fp.BankName != undefined && fp.BankName != '' && fp.BankName != '-'">{{fp.BankName}}</span>
+                                </td>
                                 <td style="text-align: left;"> {{ fp.FIManager == 0 || fp.FIManager == null ||
                                     fp.FIManager ==
                                     undefined||
@@ -627,15 +592,7 @@
                                 <td style="text-align: center;"> {{ fp.DealStatus == 0 || fp.DealStatus == null ||
                                     fp.DealStatus ==
                                     undefined|| fp.DealStatus == '' ? '-' : fp.DealStatus}}</td>
-                                <td
-                                    [ngStyle]="{'text-align':fp.BankName == 0 ||
-                fp.BankName == null || fp.BankName == undefined || fp.BankName == '' || fp.BankName == '-'?'center':'left'}">
-                                    <span *ngIf="fp.BankName == 0 ||
-                fp.BankName == null || fp.BankName == undefined || fp.BankName == '' || fp.BankName == '-'">-</span>
-                                    <span
-                                        *ngIf="fp.BankName != 0 &&
-                fp.BankName != null && fp.BankName != undefined && fp.BankName != '' && fp.BankName != '-'">{{fp.BankName}}</span>
-                                </td>
+
                                 <td style="text-align: center;"> {{ fp.VehicleYear == 0 || fp.VehicleYear == null ||
                                     fp.VehicleYear ==
                                     undefined|| fp.VehicleYear == '' ? '-' : fp.VehicleYear}}</td>
@@ -651,27 +608,6 @@
                                     +
                                     ( fp.VehicleModel.length >14 ? '..':''))}}</td>
 
-
-                                <td style="text-align: center;"> {{ fp.DeliveryDate == 0 || fp.DeliveryDate == null ||
-                                    fp.DeliveryDate
-                                    ==
-                                    undefined|| fp.DeliveryDate == '' ? '-' : fp.DeliveryDate| date:'MM.dd.yyyy'}}</td>
-                                <td style="text-align: center;"> {{ fp.DateSale == 0 || fp.DateSale == null ||
-                                    fp.DateSale ==
-                                    undefined||
-                                    fp.DateSale == '' ? '-' : fp.DateSale| date:'MM.dd.yyyy'}}</td>
-                                <td style="text-align: center;"> {{ fp.FundingDate == 0 || fp.FundingDate == null ||
-                                    fp.FundingDate ==
-                                    undefined|| fp.FundingDate == '' ? '-' : fp.FundingDate| date:'MM.dd.yyyy'}}</td>
-                                <td style="cursor: pointer;"
-                                    title=" Trade-In {{fp.trade1year }}  {{fp.trade1modelname}} &#013;
-                  {{fp.trade1mileage}}  Miles  &#013; OA/UA: {{fp.totaltradeallowance}}-{{fp.totaltradesacv}}={{fp.totaltradesover}} &#013; VIN:{{fp.trade1vin}}">
-                                    {{ fp.trade1year == 0 || fp.trade1year == null || fp.trade1year ==
-                                    undefined|| fp.trade1year == '' ? '' : fp.trade1year}}
-
-                                    {{ fp.trade1modelname == 0 || fp.trade1modelname == null || fp.trade1modelname ==
-                                    undefined|| fp.trade1modelname == '' ? '-' : fp.trade1modelname}}
-                                </td>
                             </tr>
                             <!-- <ng-container *ngIf="fp.Notes != null">
                                 <tr style="border-bottom: none !important;" *ngIf="fp.Notes != null">
@@ -730,16 +666,27 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
-                                <td></td>
-                                <td *ngIf="Role=='Super Admin' || userid=='8'"></td>
                                 <td *ngIf="Role=='Super Admin' || Role=='CFO' ||Role=='General Manager'"></td>
                                 <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(BalCITTotal) }">
 
                                     {{ BalCITTotal ? (BalCITTotal | currency:'USD':'symbol':'1.2-2') : '-' }}
 
                                 </td>
+                                <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(CITAccount) }">
 
+                                    {{ CITAccount ? (CITAccount | currency:'USD':'symbol':'1.2-2') : '-' }}
+
+                                </td>
+                                <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(BalCashOSF) }">
+
+                                    {{ BalCashOSF ? (BalCashOSF | currency:'USD':'symbol':'1.2-2') : '-' }}
+
+                                </td>
+                                <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(CashOSFAccount) }">
+
+                                    {{ CashOSFAccount ? (CashOSFAccount | currency:'USD':'symbol':'1.2-2') : '-' }}
+
+                                </td>
                                 <!-- <td class="TotalDueDates" [ngClass]="{ negative: !inTheGreen(BalFloorplanTotal) }">
 
                                     {{ BalFloorplanTotal ? (BalFloorplanTotal | currency:'USD':'symbol':'1.2-2') : '-'
@@ -761,18 +708,14 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+
                             </tr>
                         </ng-container>
 
                     <tbody>
                     <tbody *ngIf="NoData">
                         <tr>
-                            <td colspan="33" style="text-align: center;">No Records Found</td>
+                            <td colspan="26" style="text-align: center;">No Records Found</td>
                         </tr>
                     </tbody>
                 </table>

@@ -543,29 +543,37 @@ export class Dashboard {
       .filter(term => term.length > 0);
 
     const filtered = this.filteredFloorplanData.filter((x: any) =>
-      searchTerms.some(term =>
+      searchTerms.some(term => {
 
-        x.age?.toString().toLowerCase().includes(term) ||
-        x.dealdate?.toString().toLowerCase().includes(term) ||
+        const t = term.toLowerCase();
 
-        x.stock?.toString().toLowerCase().includes(term) ||
+        return (
 
-        x.customername?.toLowerCase().includes(term) ||
-        x.customer?.toString().toLowerCase().includes(term) ||
+          // ===== BASIC =====
+          this.normalize(x.age).includes(t) ||
+          this.normalize(x.dealdate).includes(t) ||
 
-        x.deal?.toString().toLowerCase().includes(term) ||
-        x.dealstatus?.toLowerCase().includes(term) ||
+          // ===== STOCK / DEAL =====
+          this.normalize(x.stock).includes(t) ||
+          this.normalize(x.deal).includes(t) ||
+          this.normalize(x.dealstatus).includes(t) ||
 
-        x.year?.toString().toLowerCase().includes(term) ||
-        x.make?.toLowerCase().includes(term) ||
-        x.model?.toLowerCase().includes(term) ||
+          // ===== CUSTOMER =====
+          this.normalize(x.customername).includes(t) ||
+          this.normalize(x.customer).includes(t) ||
 
-        x.vin?.toLowerCase().includes(term) ||
+          // ===== VEHICLE =====
+          this.normalize(x.year).includes(t) ||
+          this.normalize(x.make).includes(t) ||
+          this.normalize(x.model).includes(t) ||
+          this.normalize(x.vin).includes(t) ||
 
-        x.invstatus?.toLowerCase().includes(term) ||
-        x.titlerecd?.toString().toLowerCase().includes(term)
+          // ===== INVENTORY =====
+          this.normalize(x.invstatus).includes(t) ||
+          this.normalize(x.titlerecd).includes(t)
 
-      )
+        );
+      })
     );
     return filtered.sort((a: any, b: any) => {
       const aIndex = searchTerms.findIndex(term =>
@@ -576,6 +584,10 @@ export class Dashboard {
       );
       return aIndex - bIndex;
     });
+  }
+  normalize(value: any): string {
+    if (value === null || value === undefined) return '';
+    return value.toString().toLowerCase().trim();
   }
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -1292,7 +1304,7 @@ export class Dashboard {
     }
   }
   printPDF() {
-     try {
+    try {
       const doc = this.createPDF();
       const pdfBlob = doc.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);

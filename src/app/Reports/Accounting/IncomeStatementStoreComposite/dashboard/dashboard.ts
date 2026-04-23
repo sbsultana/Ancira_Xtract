@@ -929,8 +929,8 @@ export class Dashboard {
 
         /* ===== HEADER ===== */
         if (data.section === 'head') {
-          data.cell.styles.fillColor = [69, 132, 255];
-          data.cell.styles.textColor = [255, 255, 255];
+          data.cell.styles.fillColor = '#0554ef';
+          data.cell.styles.textColor =  '#ffffff';
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.halign = 'center';
           return;
@@ -979,7 +979,7 @@ export class Dashboard {
               data.cell.text = [val.toLocaleString()];
             }
             else {
-              data.cell.text = [`$ ${Math.abs(val).toLocaleString()}`];
+              data.cell.text = [`$${Math.abs(val).toLocaleString()}`];
 
               if (val < 0) {
                 data.cell.styles.textColor = isSpecial

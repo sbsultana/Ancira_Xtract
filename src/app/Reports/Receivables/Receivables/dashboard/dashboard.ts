@@ -40,9 +40,10 @@ export class Dashboard {
   NoData: boolean = false;
   FloorPlanData: any = [];
   FloorPlanTotalData: any = [];
+  selectedheadertab: string[] = ['BodyShop A/R'];
   ReceivablesData: any = [
     {
-      Receivables: 'Finance A/R',
+      Receivables: 'Finance Reserve A/R',
       path: 'Finance A/R',
       title: 'Finance',
       url: 'FinanceReserve'
@@ -53,7 +54,12 @@ export class Dashboard {
       title: 'Wholesale',
       url: 'Wholesale'
     },
-
+    {
+      Receivables: 'Dealer Trade A/R',
+      path: 'DealerTrade A/R',
+      title: 'DealerTrade',
+      url: 'DealerTradeReceivables'
+    },
     {
       Receivables: 'Employee A/R',
       path: 'Employee A/R',
@@ -61,25 +67,90 @@ export class Dashboard {
       url: 'Employee'
     },
     {
-      Receivables: 'Holdback',
-      path: 'Holdback',
-      title: 'Holdback',
-      url: 'Holdback'
+      Receivables: 'Service/Parts A/R',
+      path: 'Service/Parts A/R',
+      title: 'ServiceParts',
+      url: 'ServiceParts'
     },
     {
-      Receivables: 'Rental/LoanerInventory A/R',
-      path: 'Rental/LoanerInventory A/R',
-      title: 'Rental/LoanerInventory',
-      url: 'RentalInventory'
-    }
-    ,
+      Receivables: 'Deposits A/R',
+      path: 'CustomerDeposits A/R',
+      title: 'Deposits',
+      url: 'DepositsAR'
+    },
     {
-      Receivables: 'Fleet Rebates A/R',
-      path: 'Fleet Rebates A/R',
-      title: 'Fleet Rebates',
-      url: 'FleetRebates'
-    }
-  ];
+      Receivables: 'BodyShop A/R',
+      path: 'BodyShop A/R',
+      title: 'BodyShop',
+      url: 'BodyShop'
+    },
+    {
+      Receivables: 'Factory Incentives A/R',
+      path: 'Incentives A/R',
+      title: 'Incentives',
+      url: 'Incentives'
+    },
+    {
+      Receivables: 'Warranty A/R',
+      path: 'Warranty A/R',
+      title: 'Warranty',
+      url: 'Warranty'
+    },
+    {
+      Receivables: 'Other A/R',
+      path: 'Misc/Other A/R',
+      title: 'MiscOther',
+      url: 'Other'
+    },
+    // {
+    //   Receivables: 'Product A/R',
+    //   path: 'Product A/R',
+    //   title: 'Product',
+
+    //   url: 'Product A/R'
+    // }
+    // ,
+    // {
+    //   Receivables: 'Bad Debt A/R',
+    //   path: 'BadDebt A/R',
+    //   title: 'BadDebt',
+    //   url: 'BadDebt'
+    // },
+    // ,
+    // {
+    //   Receivables: 'OtherIncentives A/R',
+    //   path:'OtherIncentives A/R',
+    //   title:'OtherIncentives',
+    //   url:'OtherIncentives'
+    // },
+    // {
+    //   Receivables: 'Cash/CreditClearing A/R',
+    //   path:'Cash/CreditClearing A/R',
+    //     title:'Cash/CreditClearing',
+    //   url:'CashCreditClearing'
+    // },
+    // ,
+    // {
+    //   Receivables: 'Factory Holdback A/R',
+    //   path:'FactoryHoldback A/R',
+    //     title:'FactoryHoldback',
+    //   url:'FactoryHoldback'
+    // },
+    // {
+    //   Receivables: 'Rental Inventory A/R',
+    //   path:'Rental/LoanerInventoryAR',
+    //     title:'RentalInventory',
+    //   url:'RentalInventory'
+    // }
+    // ,
+    // ,
+    // {
+    //   Receivables: 'UnbookedDeals A/R',
+    //   path:'UnbookedDeals A/R',
+    //     title:'UnbookedDeals',
+    //   url:'UnbookedDeals'
+    // }
+  ]
   allordebit: any = 'dr';
   selectedreceviabe: any = [];
   StoreVal: any = '71,53,8,7,4,35,1,32,40,50,25,18,31,3,70,72,2,17,41,55,42,51,12,73,54,9,15,5,14,30,11';
@@ -541,25 +612,38 @@ export class Dashboard {
 
           if (res.response.length > 0) {
             this.FloorPlanData = res.response.filter((e: any) => e.store !== 'TOTAL');
-            this.FloorPlanTotalData = res.response.filter((e: any) => e.store === 'TOTAL');
+            this.FloorPlanTotalData = [];
+            const totalRow = res.response.find(
+              (e: any) => e.store === 'TOTAL'
+            );
+            if (totalRow) {
+              if (totalRow.AgeData && typeof totalRow.AgeData === 'string') {
+                try {
+                  totalRow.AgeData = JSON.parse(totalRow.AgeData);
+                } catch (err) {
+                  console.error('Failed to parse TOTAL AgeData', err);
+                  totalRow.AgeData = [];
+                }
+              } else if (!Array.isArray(totalRow.AgeData)) {
+                totalRow.AgeData = [];
+              }
+              this.FloorPlanTotalData = [totalRow];
+            }
             this.FloorPlanData.forEach((x: any) => {
               x.AgeData = JSON.parse(x.AgeData);
-
               if (x.Comments) x.Comments = JSON.parse(x.Comments);
               if (x.Notes) {
                 x.Notes = JSON.parse(x.Notes);
-
-                x.allNotes = [...x.Notes];        // ✅ full data
-                x.duplicateNotes = x.allNotes.slice(0, 3); // ✅ first 3 only
-
+                x.allNotes = [...x.Notes];
+                x.duplicateNotes = x.allNotes.slice(0, 3);
                 x.Notesstate = '+';
               }
             });
-
             if (this.callLoadingState == 'ANS') {
               this.sort(this.column, this.callLoadingState);
             }
             this.filteredFloorplanData = this.FloorPlanData || [];
+            console.log('this.filteredFloorplanData', this.filteredFloorplanData);
             this.NoData = this.FloorPlanData.length == 0;
           } else {
             this.NoData = true;
@@ -609,43 +693,46 @@ export class Dashboard {
       .filter(term => term.length > 0);
 
     const filtered = this.filteredFloorplanData.filter((x: any) =>
-      searchTerms.some(term =>
+      searchTerms.some(term => {
 
-        x.AGE?.toString().toLowerCase().includes(term) ||
-        x.FundedDate?.toString().toLowerCase().includes(term) ||
-        x.AccountDesc2?.toLowerCase().includes(term) ||
+        const t = term.toLowerCase();
 
-        x.Control?.toLowerCase().includes(term) ||
-        x.control2?.toLowerCase().includes(term) ||
+        return (
+          this.normalize(x.AGE).includes(t) ||
+          this.normalize(x.FundedDate).includes(t) ||
+          this.normalize(x.AccountDesc2).includes(t) ||
 
-        x.Balance?.toString().toLowerCase().includes(term) ||
+          this.normalize(x.Control).includes(t) ||
+          this.normalize(x.control2).includes(t) ||
 
-        x.CustomerName?.toLowerCase().includes(term) ||
-        x.CustomerNumber?.toString().toLowerCase().includes(term) ||
+          this.normalize(x.Balance).includes(t) ||
 
-        x.SaleDate?.toString().toLowerCase().includes(term) ||
-        x.SaleAge?.toString().toLowerCase().includes(term) ||
+          this.normalize(x.CustomerName).includes(t) ||
+          this.normalize(x.CustomerNumber).includes(t) ||
 
-        x.store?.toLowerCase().includes(term) ||
+          this.normalize(x.SaleDate).includes(t) ||
+          this.normalize(x.SaleAge).includes(t) ||
 
-        x.StockNo?.toString().toLowerCase().includes(term) ||
-        x.DealNo?.toString().toLowerCase().includes(term) ||
+          this.normalize(x.store).includes(t) ||
 
-        x.Stage?.toLowerCase().includes(term) ||
-        x.FIManager?.toLowerCase().includes(term) ||
-        x.SalesManager?.toLowerCase().includes(term) ||
+          this.normalize(x.StockNo).includes(t) ||
+          this.normalize(x.DealNo).includes(t) ||
 
-        x.DealType?.toLowerCase().includes(term) ||
-        x.SaleType?.toLowerCase().includes(term) ||
-        x.DealStatus?.toLowerCase().includes(term) ||
+          this.normalize(x.Stage).includes(t) ||
+          this.normalize(x.FIManager).includes(t) ||
+          this.normalize(x.SalesManager).includes(t) ||
 
-        x.BankName?.toLowerCase().includes(term) ||
+          this.normalize(x.DealType).includes(t) ||
+          this.normalize(x.SaleType).includes(t) ||
+          this.normalize(x.DealStatus).includes(t) ||
 
-        x.VehicleYear?.toString().toLowerCase().includes(term) ||
-        x.VehicleMake?.toLowerCase().includes(term) ||
-        x.VehicleModel?.toLowerCase().includes(term)
+          this.normalize(x.BankName).includes(t) ||
 
-      )
+          this.normalize(x.VehicleYear).includes(t) ||
+          this.normalize(x.VehicleMake).includes(t) ||
+          this.normalize(x.VehicleModel).includes(t)
+        );
+      })
     );
     return filtered.sort((a: any, b: any) => {
       const aIndex = searchTerms.findIndex(term =>
@@ -656,6 +743,10 @@ export class Dashboard {
       );
       return aIndex - bIndex;
     });
+  }
+  normalize(val: any): string {
+    if (val === null || val === undefined) return '';
+    return val.toString().toLowerCase();
   }
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -796,7 +887,66 @@ export class Dashboard {
     // }
   }
   /* ------------------------------- NOTES LOGIC ------------------------------- */
+  isSelected(item: string): boolean {
+    console.log(this.selectedheadertab.includes(item))
+    return this.selectedheadertab.includes(item);
+  }
+  isDealInfoFull() {
+    const p = this.selectedreceviabe?.path;
+    return ![
+      'Employee A/R',
+      'Service/Parts A/R',
+      'BodyShop A/R',
+      'Warranty A/R',
+      'Wholesale A/R',
+      'Incentives A/R'
+    ].includes(p);
+  }
+  isValidDealNo(value: any): boolean {
+    return value !== null && value !== undefined && value !== '' && value !== 0;
+  }
+  getDynamicColspan() {
+    const p = this.selectedreceviabe?.path;
 
+    if (p === 'Wholesale A/R') return 10;
+    if (p === 'Incentives A/R') return 13;
+    if (p === 'BodyShop A/R') return 6;
+
+    return 18; // default
+  }
+
+  getNotesColspan(): number {
+    let baseCols = 2;
+    let dynamicCols = 0;
+    if (this.Role === 'Super Admin' || this.Role === 'Admin' || this.Role === 'General Manager') {
+      dynamicCols += 1;
+    }
+    if (this.storeIds?.toString().indexOf(',') > 0) {
+      dynamicCols += 1;
+    }
+    if (
+      this.selectedreceviabe.path !== 'Employee A/R' &&
+      this.selectedreceviabe.path !== 'Service/Parts A/R' &&
+      this.selectedreceviabe.path !== 'BodyShop A/R' &&
+      this.selectedreceviabe.path !== 'Warranty A/R' &&
+      this.selectedreceviabe.path !== 'Wholesale A/R' &&
+      this.selectedreceviabe.path !== 'Incentives A/R'
+    ) {
+      dynamicCols += 8;
+    } else if (
+      this.selectedreceviabe.path === 'Wholesale A/R'
+    ) {
+      dynamicCols += 3;
+    } else if (
+      this.selectedreceviabe.path === 'Incentives A/R'
+    ) {
+      dynamicCols += 6;
+    }
+    if (this.selectedreceviabe.path !== 'BodyShop A/R') {
+      dynamicCols += 3;
+    }
+    return baseCols + dynamicCols + 10; // +10 for fixed columns (Age, Date, Account, etc.)
+  }
   viewmoreAction(fp: any) {
     if (fp.Notesstate === '+') {
       fp.Notesstate = '-';
@@ -1049,6 +1199,7 @@ export class Dashboard {
       this.activePopover = popoverIndex;
     }
   }
+  hidestoreIds: any = '';
   viewreport() {
     this.activePopover = -1;
 
@@ -1059,8 +1210,10 @@ export class Dashboard {
 
     this.AgeFrom = this.AgeFrom;
     this.AgeTo = this.AgeTo;
+    this.hidestoreIds = Array.isArray(this.storeIds)
+      ? [...this.storeIds]
+      : this.storeIds;
 
-    // ✅ Store validation
     if (!this.storeIds || this.storeIds.length === 0) {
       this.toast.show(
         'Please Select Atleast One Store',
@@ -1085,7 +1238,7 @@ export class Dashboard {
 
   getEmployees(val?: any, ids?: any, count?: any, bar?: any) {
     const obj = {
-      AS_ID: this.StoreVal,
+      AS_ID: this.storeIds.toString(),
       type: 'F',
     };
     this.spinnerLoader = true;
@@ -1429,7 +1582,7 @@ export class Dashboard {
     }
     try {
       const doc = this.createPDF();
-     const pdfBlob = doc.output('blob');
+      const pdfBlob = doc.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
       const isEdge = /Edg/.test(navigator.userAgent);
       if (isEdge) {

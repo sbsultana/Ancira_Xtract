@@ -164,11 +164,11 @@ export class Dashboard {
 
     }
 
-    this.shared.setTitle(this.comm.titleName + '-Booked Deals');
+    this.shared.setTitle(this.comm.titleName + '-Fleet Vehicle');
 
     /* --------- HEADER FOR REPORTING --------- */
     const data = {
-      title: 'Booked Deals',
+      title: 'Fleet Vehicle',
       stores: this.StoreVal,
       groups: this.groups,
       financemanagers: '',
@@ -207,7 +207,7 @@ export class Dashboard {
   excel!: Subscription;
   ngAfterViewInit(): void {
     this.shared.api.getStores().subscribe((res: any) => {
-      if (this.shared.common.pageName == 'Booked Deals') {
+      if (this.shared.common.pageName == 'Fleet Vehicle') {
         if (res.obj.storesData != undefined) {
           this.groupsArray = res.obj.storesData;
           this.stores = this.shared.common.groupsandstores.filter((v: any) => v.sg_id == this.groupId)[0].Stores;
@@ -218,14 +218,14 @@ export class Dashboard {
       }
     })
     this.shared.api.GetReportOpening().subscribe((res) => {
-      if (res.obj.Module === 'Booked Deals') {
+      if (res.obj.Module === 'Fleet Vehicle') {
         document.getElementById('report')?.click();
       }
     });
 
     /* -------- REFRESH DATA FROM HEADER -------- */
     this.reportgetting = this.shared.api.GetReports().subscribe((data) => {
-      if (data.obj.Reference === 'Booked Deals') {
+      if (data.obj.Reference === 'Fleet Vehicle') {
         this.FloorPlanData = [];
         // this.actionType = 'Y';
         this.NoData = false;
@@ -247,7 +247,7 @@ export class Dashboard {
 
         /* Update header for next reload */
         const headerdata = {
-          title: 'Booked Deals',
+          title: 'Fleet Vehicle',
           stores: this.StoreVal,
           groups: this.groups,
           financemanagers: this.financeManagerId,
@@ -272,28 +272,28 @@ export class Dashboard {
 
     this.excel = this.shared.api.getExportToExcelAllReports().subscribe((res: any) => {
       const obj = res?.obj;
-      if (!obj || obj.title !== 'Booked Deals') return;
+      if (!obj || obj.title !== 'Fleet Vehicle') return;
       if (obj.state) {
         this.exportToExcel();
       }
     });
     this.print = this.shared.api.getExportToPrintAllReports().subscribe((res: any) => {
       const obj = res?.obj;
-      if (!obj || obj.title !== 'Booked Deals') return;
+      if (!obj || obj.title !== 'Fleet Vehicle') return;
       if (obj.statePrint) {
         this.printPDF();
       }
     });
     this.pdf = this.shared.api.getExportToPDFAllReports().subscribe((res: any) => {
       const obj = res?.obj;
-      if (!obj || obj.title !== 'Booked Deals') return;
+      if (!obj || obj.title !== 'Fleet Vehicle') return;
       if (obj.statePDF) {
         this.generatePDF();
       }
     });
     this.email = this.shared.api.getExportToEmailPDFAllReports().subscribe((res: any) => {
       const obj = res?.obj;
-      if (!obj || obj.title !== 'Booked Deals') return;
+      if (!obj || obj.title !== 'Fleet Vehicle') return;
       if (obj.stateEmailPdf) {
         this.sendEmailData(obj.Email, obj.notes, obj.from);
       }
@@ -450,15 +450,15 @@ export class Dashboard {
 
     const obj = {
       AS_ID: this.storeIds.toString(),
-      DealStatus: this.dealStatus.toString(),
+      // DealStatus: this.dealStatus.toString(),
       FIManagerID: this.financeManagerId,
-      UserID: 0,
-      DealType2: this.dealType.toString(),
+      UserID: "1",
+      // DealType2: this.dealType.toString(),
     };
 
     let startFrom = new Date().getTime();
 
-    this.shared.api.postmethod(this.comm.routeEndpoint + 'GetScheduleBookedDeal', obj).subscribe(
+    this.shared.api.postmethod(this.comm.routeEndpoint + 'GetCITVehicleReport', obj).subscribe(
       (res) => {
         if (res.status == 200 && res.response) {
           this.spinner.hide();
@@ -505,8 +505,6 @@ export class Dashboard {
     );
   }
 
-
-
   ////////////////////////////////////////////Pagination Code////////////////////////////////////
 
   searchText: string = '';
@@ -538,35 +536,46 @@ export class Dashboard {
 
         return (
 
-          // ===== CORE =====
+          // ===== BASIC =====
           this.normalize(x.CTAge).includes(t) ||
           this.normalize(x.CTDate).includes(t) ||
           this.normalize(x.Dealno).includes(t) ||
 
-          // ===== BALANCE =====
+          this.normalize(x.Control).includes(t) ||
+          this.normalize(x.Control2).includes(t) ||
+
+          // ===== BALANCES =====
           this.normalize(x.Balance).includes(t) ||
+          this.normalize(x.CIT).includes(t) ||
+          this.normalize(x.CITAccount).includes(t) ||
+          this.normalize(x.CashOSF).includes(t) ||
+          this.normalize(x.CashOSFAccount).includes(t) ||
+          this.normalize(x['W/O Credits']).includes(t) ||
 
           // ===== CUSTOMER =====
-          this.normalize(x.CustName).includes(t) ||
-          this.normalize(x.CustId).includes(t) ||
+          this.normalize(x.CustomerName).includes(t) ||
+          this.normalize(x.CustomerNo).includes(t) ||
+
+          // ===== STORE =====
           this.normalize(x.store).includes(t) ||
 
           // ===== DEAL INFO =====
-          this.normalize(x.Stockno).includes(t) ||
           this.normalize(x.Stage).includes(t) ||
-          this.normalize(x.FIMgr_Name).includes(t) ||
-          this.normalize(x.SalesMgr_Name).includes(t) ||
-          this.normalize(x.SP1_Name).includes(t) ||
-          this.normalize(x.SaleType).includes(t) ||
-          this.normalize(x.DealType2).includes(t) ||
+          this.normalize(x.Stockno).includes(t) ||
+          this.normalize(x.FIManager).includes(t) ||
           this.normalize(x.DealType).includes(t) ||
+          this.normalize(x.SaleType).includes(t) ||
           this.normalize(x.DealStatus).includes(t) ||
-          this.normalize(x.Lender).includes(t) ||
+          this.normalize(x.BankName).includes(t) ||
 
-          // ===== VEHICLE / TRADE =====
+          // ===== VEHICLE =====
           this.normalize(x.VehicleYear).includes(t) ||
-          this.normalize(x.trade1year).includes(t) ||
-          this.normalize(x.trade1modelname).includes(t)
+          this.normalize(x.VehicleMake).includes(t) ||
+          this.normalize(x.VehicleModel).includes(t) ||
+
+          // ===== DATES =====
+          this.normalize(x.SaleDate).includes(t) ||
+          this.normalize(x.FundedDate).includes(t)
 
         );
       })
@@ -651,17 +660,31 @@ export class Dashboard {
       : endIndex;
   }
 
-  get BalanceTotal(): number {
+  get CIT(): number {
+    return this.filteredData.reduce((total, item) => {
+      return total + (parseFloat(item.CIT) || 0);
+    }, 0);
+  }
+
+  get Balance(): number {
     return this.filteredData.reduce((total, item) => {
       return total + (parseFloat(item.Balance) || 0);
     }, 0);
   }
 
-  get BalFloorplanTotal(): number {
+  get CashOSF(): number {
     return this.filteredData.reduce((total, item) => {
-      return total + (parseFloat(item.BalFloorplan) || 0);
+      return total + (parseFloat(item.CashOSF) || 0);
     }, 0);
   }
+
+  get WOCredits(): number {
+    return this.filteredData.reduce((total, item) => {
+      return total + (parseFloat(item['W/O Credits']) || 0);
+    }, 0);
+  }
+
+
   ////////////////////////////////////Pagination Code End////////////////////////////////////////////
 
 
@@ -760,10 +783,9 @@ export class Dashboard {
 
   getDropDown(companyid: any) {
     const obj = {
-      AssociatedReport: this.selectedreceviabe.path,
-      CompanyID: companyid,
-    };
-
+      "AssociatedReport": "CIT",
+      "CompanyID": companyid
+    }
     this.shared.api
       .postmethod(this.comm.routeEndpoint + 'GetScheduleNoteStages', obj)
       .subscribe((res) => {
@@ -1118,6 +1140,11 @@ export class Dashboard {
     }
   }
 
+
+  showStoreColumn(): boolean {
+    return this.hidestoreIds?.length > 1;
+  }
+
   isValidDealNo(value: any): boolean {
     return value !== null && value !== undefined && value !== '' && value !== 0;
   }
@@ -1143,7 +1170,7 @@ export class Dashboard {
   private createPDF(): jsPDF {
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a2' });
     doc.setFontSize(14);
-    doc.text('Booked Deals', 14, 12);
+    doc.text('Fleet Vehicle', 14, 12);
 
     const aging = this.FloorPlanData?.[0]?.AgeData?.[0] ?? {};
     autoTable(doc, {
@@ -1355,7 +1382,7 @@ export class Dashboard {
     this.shared.spinner.show();
     try {
       const doc = this.createPDF();
-      doc.save(`Booked Deals.pdf`);
+      doc.save(`Fleet Vehicle.pdf`);
     } catch (e) {
       console.error(e);
       this.toast.show('Error generating PDF', 'danger', 'Error');
@@ -1394,10 +1421,10 @@ export class Dashboard {
         this.spinner.hide();
         return;
       }
-      const pdfFile = this.blobToFile(pdfBlob, 'Booked Deals.pdf');
+      const pdfFile = this.blobToFile(pdfBlob, 'Fleet Vehicle.pdf');
       const formData = new FormData();
       formData.append('to_email', Email);
-      formData.append('subject', 'Booked Deals');
+      formData.append('subject', 'Fleet Vehicle');
       formData.append('file', pdfFile);
       formData.append('notes', notes);
       formData.append('from', from);
@@ -1508,7 +1535,7 @@ export class Dashboard {
   private exportToExcel(): void {
 
     const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('Booked Deals');
+    const worksheet = workbook.addWorksheet('Fleet Vehicle');
 
     worksheet.views = [
       {
@@ -1518,7 +1545,7 @@ export class Dashboard {
         showGridLines: false,
       },
     ];
-    const titleRow = worksheet.addRow(['Booked Deals']);
+    const titleRow = worksheet.addRow(['Fleet Vehicle']);
     titleRow.font = { size: 16, bold: true };
     worksheet.mergeCells(1, 1, 1, 19);
     titleRow.getCell(1).alignment = { horizontal: 'left' };

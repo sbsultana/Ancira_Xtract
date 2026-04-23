@@ -71,30 +71,33 @@
         <thead>
           <tr>
             <th colspan="3"></th>
+            <th *ngIf="selectedreceviabe.path == 'Inventory'"></th>
             <th *ngIf="selectedreceviabe.path != 'Inventory'" colspan="2">Customer</th>
-            <th *ngIf="selectedreceviabe.path != 'Inventory'" colspan="2">Deal Info</th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'" colspan="3">Deal Info</th>
             <th colspan="6">Vehicle</th>
           </tr>
           <tr>
-            <th (click)="sort('age')" class="cursor">Age</th>
-            <th (click)="sort('dealdate')" class="cursor">Date</th>
-            <th (click)="sort('stock')" class="cursor box-shadow">Stock #</th>
-            <th *ngIf="selectedreceviabe.path != 'Inventory'" (click)="sort('customername')" class="cursor">Name</th>
+            <th (click)="sort('age')" class="cursor-pointer">Age</th>
+            <th (click)="sort('dealdate')" class="cursor-pointer">Date</th>
+            <th (click)="sort('stock')" class="cursor-pointer box-shadow">Stock #</th>
+            <th *ngIf="selectedreceviabe.path == 'Inventory'" (click)="sort('storename')" class="cursor-pointer box-shadow">Store</th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'" (click)="sort('customername')" class="cursor-pointer">Name</th>
             <th *ngIf="selectedreceviabe.path != 'Inventory'"
               [ngClass]="selectedreceviabe.path != 'Inventory' ? 'box-shadow' : 'boxshadow-none'"
-              (click)="sort('customer')" class="cursor">Number</th>
+              (click)="sort('customer')" class="cursor-pointer">Number</th>
 
-            <th *ngIf="selectedreceviabe.path != 'Inventory'" (click)="sort('deal')" class="cursor">Deal #</th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'" (click)="sort('storename')" class="cursor-pointer">Store</th>
+            <th *ngIf="selectedreceviabe.path != 'Inventory'" (click)="sort('deal')" class="cursor-pointer">Deal #</th>
             <th *ngIf="selectedreceviabe.path != 'Inventory'"
               [ngClass]="selectedreceviabe.path != 'Inventory' ? 'box-shadow' : 'boxshadow-none'"
-              (click)="sort('dealstatus')" class="cursor">Status</th>
+              (click)="sort('dealstatus')" class="cursor-pointer">Status</th>
 
-            <th (click)="sort('year')" class="cursor">Year</th>
-            <th (click)="sort('make')" class="cursor">Make</th>
-            <th (click)="sort('model')" class="cursor">Model</th>
-            <th (click)="sort('vin')" class="cursor">VIN</th>
-            <th (click)="sort('invstatus')" class="cursor">INV Status</th>
-            <th (click)="sort('titlerecd')" class="cursor">Title Record</th>
+            <th (click)="sort('year')" class="cursor-pointer">Year</th>
+            <th (click)="sort('make')" class="cursor-pointer">Make</th>
+            <th (click)="sort('model')" class="cursor-pointer">Model</th>
+            <th (click)="sort('vin')" class="cursor-pointer">VIN</th>
+            <th (click)="sort('invstatus')" class="cursor-pointer">INV Status</th>
+            <th (click)="sort('titlerecd')" class="cursor-pointer">Title Record</th>
           </tr>
         </thead>
 
@@ -108,13 +111,19 @@
               <td [ngClass]="{'text-center': !fp.stock, 'text-start': fp.stock}" class="box-shadow">
                 {{ fp.stock || '-' }}
               </td>
+              <td *ngIf="selectedreceviabe.path == 'Inventory'" class="text-start box-shadow">
+                {{ fp.storename || '-' }}
+              </td>
               <td *ngIf="selectedreceviabe.path != 'Inventory'" class="text-start">
-                <span ngbTooltip="{{fp.customername}}">{{ fp.customername ? (fp.customername | slice:0:20) +
-                  (fp.customername.length > 20 ? '..' : '') : '-' }}</span>
+                <span ngbTooltip="{{fp.customername}}">{{ fp.customername ? (fp.customername | slice:0:40) +
+                  (fp.customername.length > 40 ? '..' : '') : '-' }}</span>
               </td>
               <td *ngIf="selectedreceviabe.path != 'Inventory'"
                 [ngClass]="selectedreceviabe.path != 'Inventory' ? 'box-shadow' : 'boxshadow-none'" class="text-center">
                 {{ fp.customer || '-' }}
+              </td>
+              <td *ngIf="selectedreceviabe.path != 'Inventory'" class="text-start">
+                {{ fp.storename || '-' }}
               </td>
               <td *ngIf="selectedreceviabe.path != 'Inventory'" class="text-center">
                 {{ fp.deal || '-' }}
@@ -126,7 +135,7 @@
               <td class="text-center">{{ fp.year || '-' }}</td>
               <td class="text-start">{{ fp.make || '-' }}</td>
               <td class="text-start" title="{{fp.model}}">
-                {{ fp.model ? (fp.model | slice:0:16) + (fp.model.length > 14 ? '..' : '') : '-' }}
+                {{ fp.model ? (fp.model | slice:0:20) + (fp.model.length > 20 ? '..' : '') : '-' }}
               </td>
               <td class="text-start">{{ fp.vin || '-' }}</td>
 
@@ -136,7 +145,7 @@
             </tr>
             <tr *ngIf="fp.duplicateNotes && commentsVisibility">
               <td></td>
-              <td colspan="12" class="text-start ps-3">
+              <td colspan="13" class="text-start ps-3">
                 <h6 class="fw-bold font-blue small">Notes</h6>
                 <div *ngFor="let notes of fp.duplicateNotes" class="ps-4">
                   {{ notes.NOTES || '-' }}
@@ -152,7 +161,7 @@
         </tbody>
         <tbody *ngIf="NoData">
           <tr>
-            <td colspan="13" class="text-center">No Records Found</td>
+            <td colspan="14" class="text-center">No Records Found</td>
           </tr>
         </tbody>
       </table>

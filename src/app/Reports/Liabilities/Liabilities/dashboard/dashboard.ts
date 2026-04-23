@@ -40,37 +40,25 @@ export class Dashboard {
   FloorPlanTotalData: any = [];
   LiabilitiesData: any = [
     {
-      Liabilities: 'TT&L A/P',
+      Liabilities: 'Tax, Title, & License',
       path: 'TT&L A/P',
       title: 'TT&L',
       url: 'TT&L'
     },
     {
-      Liabilities: 'Payoffs A/P',
+      Liabilities: 'Fleet TT&L',
+      path: 'Fleet TT&L A/P',
+      title: 'Fleet TT&L',
+      url: 'FleetTT&L'
+    },
+    {
+      Liabilities: 'Payoffs',
       path: 'LienPayoffs A/P',
       title: 'LienPayoffs',
       url: 'LienPayoffs'
     },
-    // {
-    //   Liabilities: 'Aftermarkets A/P',
-    //   path:'Aftermarkets A/P',
-    //   title:'Aftermarkets',
-    //   url:'Aftermarkets'
-    // },
-    // {
-    //   Liabilities: 'Deposits A/P',
-    //   path:'CustomerDeposits A/P',
-    //     title:'Deposits',
-    //   url:'Deposits'
-    // },
-    // {
-    //   Liabilities: 'Service Contracts A/P',
-    //   path:'ServiceContract A/P',
-    //     title:'Service Contracts',
-    //   url:'ServiceContracts'
-    // } ,
     {
-      Liabilities: 'We Owe A/P',
+      Liabilities: 'We Owes',
       path: 'WeOwe A/P',
       title: 'We Owe',
       url: 'WeOwe'
@@ -88,25 +76,11 @@ export class Dashboard {
       url: 'UsedFlooring'
     },
 
-    // {
-    //   Liabilities: 'Sublets A/P',
-    //   path:'Sublets A/P',
-    //     title:'Sublets',
-    //   url:'Sublets'
-    // }
-    // ,
-
-    // {
-    //   Liabilities: 'Insurance A/P',
-    //   path:'Insurance A/P',
-    //     title:'Insurance',
-    //   url:'Insurance'
-    // },
     {
-      Liabilities: 'Rental/Loaner Flooring A/P',
-      path: 'Rental/LoanerFlooring A/P',
-      title: 'Rental/Loaner Flooring',
-      url: 'RentalInventory'
+      Liabilities: 'Sublet',
+      path: 'Sublets A/P',
+      title: 'Sublets',
+      url: 'Sublets'
     }
     // ,
     //  ,
@@ -592,25 +566,38 @@ export class Dashboard {
 
           if (res.response.length > 0) {
             this.FloorPlanData = res.response.filter((e: any) => e.store !== 'TOTAL');
-            this.FloorPlanTotalData = res.response.filter((e: any) => e.store === 'TOTAL');
+            this.FloorPlanTotalData = [];
+            const totalRow = res.response.find(
+              (e: any) => e.store === 'TOTAL'
+            );
+            if (totalRow) {
+              if (totalRow.AgeData && typeof totalRow.AgeData === 'string') {
+                try {
+                  totalRow.AgeData = JSON.parse(totalRow.AgeData);
+                } catch (err) {
+                  console.error('Failed to parse TOTAL AgeData', err);
+                  totalRow.AgeData = [];
+                }
+              } else if (!Array.isArray(totalRow.AgeData)) {
+                totalRow.AgeData = [];
+              }
+              this.FloorPlanTotalData = [totalRow];
+            }
             this.FloorPlanData.forEach((x: any) => {
               x.AgeData = JSON.parse(x.AgeData);
-
               if (x.Comments) x.Comments = JSON.parse(x.Comments);
               if (x.Notes) {
                 x.Notes = JSON.parse(x.Notes);
-
-                x.allNotes = [...x.Notes];        // ✅ full data
-                x.duplicateNotes = x.allNotes.slice(0, 3); // ✅ first 3 only
-
+                x.allNotes = [...x.Notes];
+                x.duplicateNotes = x.allNotes.slice(0, 3);
                 x.Notesstate = '+';
               }
             });
-
             if (this.callLoadingState == 'ANS') {
               this.sort(this.column, this.callLoadingState);
             }
             this.filteredFloorplanData = this.FloorPlanData || [];
+            console.log('this.filteredFloorplanData', this.filteredFloorplanData);
             this.NoData = this.FloorPlanData.length == 0;
           } else {
             this.NoData = true;
@@ -627,8 +614,38 @@ export class Dashboard {
       },
     );
   }
+  getAgingHeaders(path: string) {
 
+    if (path === 'LienPayoffs A/P')
+      return ['Total', '0-5', '6-10', '11-15', '15+'];
 
+    if (path === 'TT&L A/P' || path === 'Fleet TT&L A/P')
+      return ['Total', '0-10', '11-20', '21-30', '31+'];
+
+    if (
+      path === 'WeOwe A/P' ||
+      path === 'NewFlooring A/P' ||
+      path === 'UsedFlooring A/P' ||
+      path === 'Sublets A/P'
+    )
+      return ['Total', '0-30', '31-60', '61-90', '90+'];
+
+    if (path === 'Finance A/R')
+      return ['Total', '0-15', '16-30', '31-60', '61+'];
+
+    if (path === 'Service/Parts A/R')
+      return ['Total', '0-30', '31-60', '61-90', '90+'];
+
+    return [];
+  }
+  safeNumber(value: any): number | null {
+    if (value === null || value === undefined || value === '') return null;
+
+    const cleaned = value.toString().replace(/[^0-9.-]/g, '');
+    const num = parseFloat(cleaned);
+
+    return isNaN(num) ? null : num;
+  }
 
   ////////////////////////////////////////////Pagination Code////////////////////////////////////
 
@@ -655,42 +672,47 @@ export class Dashboard {
       .filter(term => term.length > 0);
 
     const filtered = this.filteredFloorplanData.filter((x: any) =>
-      searchTerms.some(term =>
+      searchTerms.some(term => {
 
-        x.AGE?.toString().toLowerCase().includes(term) ||
-        x.FundedDate?.toString().toLowerCase().includes(term) ||
-        x.AccountDesc2?.toLowerCase().includes(term) ||
+        const t = term.toLowerCase();
 
-        x.Control?.toLowerCase().includes(term) ||
-        x.control2?.toLowerCase().includes(term) ||
+        return (
 
-        x.Balance?.toString().toLowerCase().includes(term) ||
+          // ===== BASIC =====
+          this.normalize(x.AGE).includes(t) ||
+          this.normalize(x.FundedDate).includes(t) ||
+          this.normalize(x.AccountDesc2).includes(t) ||
 
-        x.CustomerName?.toLowerCase().includes(term) ||
-        x.CustomerNumber?.toString().toLowerCase().includes(term) ||
+          this.normalize(x.Control).includes(t) ||
+          this.normalize(x.Control2).includes(t) ||
 
-        x.SaleDate?.toString().toLowerCase().includes(term) ||
-        x.SaleAge?.toString().toLowerCase().includes(term) ||
+          // ===== BALANCE =====
+          this.normalize(x.Balance).includes(t) ||
 
-        x.store?.toLowerCase().includes(term) ||
+          // ===== CUSTOMER =====
+          this.normalize(x.CustomerName).includes(t) ||
+          this.normalize(x.CustomerNumber).includes(t) ||
 
-        x.StockNo?.toString().toLowerCase().includes(term) ||
-        x.DealNo?.toString().toLowerCase().includes(term) ||
+          // ===== STORE =====
+          this.normalize(x.store).includes(t) ||
 
-        x.Stage?.toLowerCase().includes(term) ||
-        x.FIManager?.toLowerCase().includes(term) ||
+          // ===== DEAL INFO =====
+          this.normalize(x.StockNo).includes(t) ||
+          this.normalize(x.DealNo).includes(t) ||
+          this.normalize(x.Stage).includes(t) ||
+          this.normalize(x.FIManager).includes(t) ||
+          this.normalize(x.DealType).includes(t) ||
+          this.normalize(x.SaleType).includes(t) ||
+          this.normalize(x.DealStatus).includes(t) ||
+          this.normalize(x.BankName).includes(t) ||
 
-        x.DealType?.toLowerCase().includes(term) ||
-        x.SaleType?.toLowerCase().includes(term) ||
-        x.DealStatus?.toLowerCase().includes(term) ||
+          // ===== VEHICLE =====
+          this.normalize(x.VehicleYear).includes(t) ||
+          this.normalize(x.VehicleMake).includes(t) ||
+          this.normalize(x.VehicleModel).includes(t)
 
-        x.BankName?.toLowerCase().includes(term) ||
-
-        x.VehicleYear?.toString().toLowerCase().includes(term) ||
-        x.VehicleMake?.toLowerCase().includes(term) ||
-        x.VehicleModel?.toLowerCase().includes(term)
-
-      )
+        );
+      })
     );
     return filtered.sort((a: any, b: any) => {
       const aIndex = searchTerms.findIndex(term =>
@@ -701,6 +723,10 @@ export class Dashboard {
       );
       return aIndex - bIndex;
     });
+  }
+  normalize(value: any): string {
+    if (value === null || value === undefined) return '';
+    return value.toString().toLowerCase().trim();
   }
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -1018,7 +1044,8 @@ export class Dashboard {
 
   /* ------------------------------- UTIL ------------------------------- */
 
-  public inTheGreen(value: number): boolean {
+  inTheGreen(value: number | null | undefined): boolean {
+    if (value === null || value === undefined) return true; // or false based on your UI
     return value >= 0;
   }
   onclose() {
@@ -1060,15 +1087,20 @@ export class Dashboard {
       this.activePopover = popoverIndex;
     }
   }
+
+  hidestoreIds: any = '';
   viewreport() {
     this.activePopover = -1;
-
     ((this.groups = this.groups),
       (this.financeManagerId =
         this.selectedFiManagersvalues.length == this.financeManager.length
           ? '0'
           : this.selectedFiManagersvalues.toString()));
     ((this.AgeFrom = this.AgeFrom), (this.AgeTo = this.AgeTo));
+
+    this.hidestoreIds = Array.isArray(this.storeIds)
+      ? [...this.storeIds]
+      : this.storeIds;
     if (!this.storeIds || this.storeIds.length === 0) {
       this.toast.show(
         'Please Select Atleast One Store',
